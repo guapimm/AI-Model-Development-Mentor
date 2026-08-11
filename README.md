@@ -1,88 +1,85 @@
-# AI Model Mentor ｜ AI 模型导师
+# AI Model Mentor
 
 > **Turn your AI coding assistant into a cautious 10-year full-stack mentor — pure prompts, zero dependencies.**
-> 在项目初期加载这套 AI 模型导师框架，让你的 AI 更加谨慎地开发、代码更加方便维护。纯提示词版本，零依赖。
+> Load this framework at the early stage of your project to make your AI act more cautiously and produce code that is easier to maintain. Pure prompt implementation, no dependencies.
 
-[English Version](./en-US/README.md) ｜ 中文版本（当前页）
+## 🌍 Language / 语言
+
+[English](./README.md) · [中文](./zh-CN/README.md) · [日本語](./ja-JP/README.md) · [한국어](./ko-KR/README.md) · [Español](./es-ES/README.md) · [Français](./fr-FR/README.md) · [Deutsch](./de-DE/README.md) · [Português](./pt-BR/README.md) · [Русский](./ru-RU/README.md)
 
 ---
 
-## 这是什么？
+## What is this?
 
-一套**纯提示词（Prompt）框架**，把 AI 编码助手塑造成一位**拥有 10 年经验的全栈架构师兼开发导师**，核心服务对象是零基础代码小白。
+A **pure-prompt framework** that shapes your AI coding assistant into a **full-stack architect & development mentor with 10 years of experience**, built for coding beginners with zero foundation.
 
-它会强制 AI 遵守一套"铁律"，把"安全兜底、逻辑透明、文档先行、Token 高效、分步落地"变成默认行为——让 AI 从"能写出代码"升级为"写出安全、可维护、有文档的代码"。
+It forces the AI to follow a set of "iron rules" — making *Security First, Transparent Logic, Documentation First, Token Efficiency, and Phased Implementation* its default behavior. The result: AI that doesn't just *write code*, but writes **safe, maintainable, documented** code.
 
-> ⚠️ 当前支持平台：**小米 MIMO CLI**。需要其他产品（如 Claude Code、Cursor 等）的优化版，请到仓库留言。
+> ⚠️ Currently supports: **Xiaomi MIMO CLI**. Optimized builds for other products (Claude Code, Cursor, etc.) are planned — leave a comment if you need one.
 
-## 核心特性
+## Core Modules
 
-| 模块 | 文件 | 作用 |
-|------|------|------|
-| 🧑‍🏫 角色定义 | `AGENTS.md` | 全栈架构师导师人设 + 6 大铁律 + 安全自检清单 |
-| 🛡️ 安全规范 | `security.md` | 8 大安全领域规范：密钥管理 / 输入校验 / 数据库 / XSS / 文件系统 / 外部请求 / 异常处理 / 性能 |
-| 🎨 交互风格 | `style.md` | 生活化类比、阶段标签、先确认后执行、渐进式复杂度 |
-| 📋 开发工作流 | `workflow.md` | 文档体系 / 前端定位协议 / 部署灾备 / 测试自检闭环 / 版本锚点 |
+| Module | File | Purpose |
+|--------|------|---------|
+| 🧑‍🏫 Mentor Role | `AGENTS.md` | Architect-mentor persona + 6 iron rules + security self-check checklist |
+| 🛡️ Security Spec | `security.md` | 8 security domains: secrets / input validation / database / XSS / file system / external requests / error handling / performance |
+| 🎨 Interaction Style | `style.md` | Life analogies, phase tags, confirm-before-act, progressive complexity |
+| 📋 Dev Workflow | `workflow.md` | Docs system / frontend mapping protocol / deploy & rollback / test loop / version anchors |
 
-### 6 大铁律（角色模块核心）
+### The 6 Iron Rules
 
-1. **代码即文档** — 所有代码带中文注释，解释"为什么这样做"
-2. **安全前置** — 禁止硬编码密钥、输入严格校验、参数化查询、防 XSS
-3. **零破坏性变更** — 修改前分析依赖，标注【必选修改】/【可选优化】
-4. **分步执行** — 单次输出不超过 300 行，每步等确认
-5. **模块化隔离** — 单文件不超过 500 行，预留扩展接口
-6. **Token 高效** — 每次对话生成【上下文摘要】与【续传暗号】
+1. **Code as Documentation** — all code carries comments explaining the "why"
+2. **Security Upfront** — no hard-coded secrets, strict input validation, parameterized queries, XSS prevention
+3. **Zero-Destructive Changes** — analyze dependencies first, tag edits as [Mandatory] / [Optional]
+4. **Phased Execution** — never more than 300 lines per output, wait for confirmation at each step
+5. **Modular Isolation** — max 500 lines per file, reserve extension interfaces
+6. **Token Efficiency** — generate a context summary + resume token after every conversation
 
-## 快速上手（3 步）
+## Quick Start (3 steps)
 
 ```bash
-# 1. 把导师角色复制进你的项目（重命名为 AGENTS.md）
-cp zh-CN/xiaomi-mimo/AGENTS.md AGENTS.md
+# 1. Copy the mentor role into your project (rename it)
+cp en-US/xiaomi-mimo/AGENTS.md AGENTS.md
 
-# 2.（推荐）安全/风格/工作流规范一并加入项目
-cp zh-CN/xiaomi-mimo/security.md security.md
-cp zh-CN/xiaomi-mimo/style.md style.md
-cp zh-CN/xiaomi-mimo/workflow.md workflow.md
+# 2. (Recommended) Add security / style / workflow specs too
+cp en-US/xiaomi-mimo/security.md security.md
+cp en-US/xiaomi-mimo/style.md style.md
+cp en-US/xiaomi-mimo/workflow.md workflow.md
 ```
 
-3. 启动小米 MIMO，直接说：
+3. Launch Xiaomi MIMO and say:
 
-> "我是零基础小白，这是我的【项目需求说明书】：项目名称 ____、核心目标 ____、用户角色 ____、核心操作流程 ____、必须存储的数据 ____。请从阶段 0：环境准备与技术栈选型开始，逐步带我开发。"
+> "I'm a complete beginner. Here is my Project Requirement Specification: project name ____, core goals ____, user roles ____, core workflows ____, data to persist ____. Start from Phase 0: Environment Setup & Tech Stack Selection and guide me step by step."
 
-AI 将按"设计 → 核心逻辑 → 界面 → 测试"分步推进，每步等你确认。
+The AI will advance through "Design → Core Logic → UI → Testing", waiting for your confirmation at every stage.
 
-## 文件结构
+## File Structure
 
 ```
 AI_Model_Development_Mentor/
-├── README.md            # 本文件（双语门面）
+├── README.md            # English landing page + language switcher
 ├── LICENSE              # MIT License
-├── zh-CN/               # 中文
-│   ├── README.md        # 中文入口
-│   └── xiaomi-mimo/     # 小米 MIMO 适配版
-│       ├── AGENTS.md    # 导师角色定义 ★ 核心，必用
-│       ├── security.md  # 安全规范详细手册
-│       ├── style.md     # 交互风格与输出规范
-│       └── workflow.md  # 开发工作流规范
-└── en-US/               # English
-    ├── README.md        # English entry
-    └── xiaomi-mimo/     # Xiaomi MIMO build
-        ├── AGENTS.md    # Mentor role definition
-        ├── security.md  # Security spec
-        ├── style.md     # Interaction style
-        └── workflow.md  # Dev workflow
+├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
+└── <lang>/xiaomi-mimo/  # module files per language
+    ├── AGENTS.md        # mentor role ★ required
+    ├── security.md      # security spec
+    ├── style.md         # interaction style
+    └── workflow.md      # dev workflow
 ```
 
-> 📦 后续新增产品适配时，在语言目录下平行添加产品目录即可，如 `zh-CN/claude-code/`、`en-US/cursor/`。
+> 📦 New product builds are added as sibling directories under each language dir, e.g. `zh-CN/claude-code/`, `en-US/cursor/`.
 
-## 常见问题
+## FAQ
 
-**Q：一定要用全部 4 个模块吗？**
-A：不是。`AGENTS.md` 是核心必须，其余 3 个按需加载——想要更强安全就加 `security.md`，想要更舒适的对话体验就加 `style.md`。
+**Q: Do I need all 4 modules?**
+A: No. `AGENTS.md` is the only must-have. Add `security.md` for stronger guardrails, `style.md` for a friendlier conversation experience.
 
-**Q：支持其他 AI 产品吗？**
-A：目前只适配了小米 MIMO。其他产品的优化版正在计划中，欢迎留言告诉我们你的需求。
+**Q: Does this work with other AI products?**
+A: Only Xiaomi MIMO is supported for now. Optimized versions for other products are in progress — leave a comment to tell us what you need.
 
-## 许可
+**Q: Is this translated by machine?**
+A: All language versions are reviewed translations of the same Chinese original. If you spot an issue, feel free to open an issue or PR.
+
+## License
 
 [MIT License](./LICENSE) © 2026 guapimm

@@ -13,7 +13,7 @@ Create the following document structure upon project initialization:
 ```
 📁 /docs/
 ├── architecture.md      # Tech stack selection rationale (with daily analogies), system architecture diagrams (Mermaid), directory structure
-├── dev_shturl           # Development log: timestamps, changes, test results, known issues & fixes
+├── dev_log.md           # Development log: timestamps, changes, test results, known issues & fixes
 ├── api_interface.md     # Frontend-backend API contracts (URLs, parameters, return values, exception scenarios)
 └── SNAPSHOT.md          # Core snapshot (≤ 200 lines): tech stack versions, table list, API paths, business flow charts
 ```
@@ -54,7 +54,7 @@ Define page structure via ASCII wireframes or Mermaid component trees.
   1. `./rollback.sh latest` — Extract the latest backup archive
   2. `docker-compose restart` (or `pm2 restart all`)
   3. `./health_check.sh` — Output service running status
-- Record backup timestamps, paths and rollback operations in `dev_shturl`
+- Record backup timestamps, paths and rollback operations in `dev_log.md`
 
 ### Environment Isolation
 
@@ -87,3 +87,12 @@ Mandatorily attach this statement after outputting code:
 ## 6. Version Anchoring
 
 Output standardized Git Commit messages upon completing each milestone:
+
+```
+feat: user login module completed
+- Implement JWT Token authentication
+- Add password hash storage
+- Frontend login form validation
+Author: AI Assistant
+Date: 2026-08-08
+```

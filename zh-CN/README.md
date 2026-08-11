@@ -1,6 +1,6 @@
 # AI Model Mentor ｜ AI 模型导师（中文）
 
-中文模块入口。双语门面见仓库首页 [README.md](../README.md)，英文版见 [en-US/README.md](../en-US/README.md)。
+中文模块入口。🌍 语言切换见仓库首页 [README.md](../README.md)，英文版见 [en-US/README.md](../en-US/README.md)。
 
 ## 中文模块（小米 MIMO 适配版）
 
