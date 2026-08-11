@@ -1,8 +1,8 @@
-# AI Model Mentor
+# AI Model Mentor (English)
 
 > **Turn your AI coding assistant into a cautious 10-year full-stack mentor — pure prompts, zero dependencies.**
 
-[中文版本](./README.md) ｜ English (current page)
+[中文版本](../README.md) ｜ English (current page)
 
 ---
 
@@ -14,14 +14,14 @@ It forces the AI to follow a set of "iron rules" — making *Security First, Tra
 
 > ⚠️ Currently supports: **Xiaomi MIMO CLI**. Optimized builds for other products (Claude Code, Cursor, etc.) are planned — leave a comment if you need one.
 
-## Core Modules
+## Core Modules (Xiaomi MIMO build)
 
 | Module | File | Purpose |
 |--------|------|---------|
-| 🧑‍🏫 Mentor Role | `AGENTS.md` | Architect-mentor persona + 6 iron rules + security self-check checklist |
-| 🛡️ Security Spec | `security.md` | 8 security domains: secrets / input validation / database / XSS / file system / external requests / error handling / performance |
-| 🎨 Interaction Style | `style.md` | Life analogies, phase tags, confirm-before-act, progressive complexity |
-| 📋 Dev Workflow | `workflow.md` | Docs system / frontend mapping protocol / deploy & rollback / test loop / version anchors |
+| 🧑‍🏫 Mentor Role | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | Architect-mentor persona + 6 iron rules + security self-check checklist ★ core, must-use |
+| 🛡️ Security Spec | [security.md](./xiaomi-mimo/security.md) | 8 security domains: secrets / input validation / database / XSS / file system / external requests / error handling / performance |
+| 🎨 Interaction Style | [style.md](./xiaomi-mimo/style.md) | Life analogies, phase tags, confirm-before-act, progressive complexity |
+| 📋 Dev Workflow | [workflow.md](./xiaomi-mimo/workflow.md) | Docs system / frontend mapping protocol / deploy & rollback / test loop / version anchors |
 
 ### The 6 Iron Rules
 
@@ -36,12 +36,12 @@ It forces the AI to follow a set of "iron rules" — making *Security First, Tra
 
 ```bash
 # 1. Copy the mentor role into your project (rename it)
-cp AGENTS_EN.md AGENTS.md
+cp xiaomi-mimo/AGENTS.md AGENTS.md
 
 # 2. (Recommended) Add security / style / workflow specs too
-cp security_EN.md security.md
-cp style_EN.md style.md
-cp workflow_EN.md workflow.md
+cp xiaomi-mimo/security.md security.md
+cp xiaomi-mimo/style.md style.md
+cp xiaomi-mimo/workflow.md workflow.md
 ```
 
 3. Launch Xiaomi MIMO and say:
@@ -55,18 +55,24 @@ The AI will advance through "Design → Core Logic → UI → Testing", waiting 
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # Bilingual landing page
-├── README_ZH.md         # Chinese full version entry
-├── README_EN.md         # English full version (this file)
-├── AGENTS_ZH.md         # Mentor role (ZH) ★ core, must-use
-├── AGENTS_EN.md         # Mentor role (EN)
-├── security_ZH.md       # Security spec (ZH)
-├── security_EN.md       # Security spec (EN)
-├── style_ZH.md          # Interaction style (ZH)
-├── style_EN.md          # Interaction style (EN)
-├── workflow_ZH.md       # Dev workflow (ZH)
-├── workflow_EN.md       # Dev workflow (EN)
-└── LICENSE              # MIT License
+├── LICENSE              # MIT License
+├── zh-CN/               # Chinese
+│   ├── README.md        # Chinese entry
+│   └── xiaomi-mimo/     # Xiaomi MIMO build
+│       ├── AGENTS.md    # Mentor role (ZH)
+│       ├── security.md  # Security spec (ZH)
+│       ├── style.md     # Interaction style (ZH)
+│       └── workflow.md  # Dev workflow (ZH)
+└── en-US/               # English
+    ├── README.md        # English entry (this file)
+    └── xiaomi-mimo/     # Xiaomi MIMO build
+        ├── AGENTS.md    # Mentor role (EN)
+        ├── security.md  # Security spec (EN)
+        ├── style.md     # Interaction style (EN)
+        └── workflow.md  # Dev workflow (EN)
 ```
+
+> 📦 New product builds are added as sibling directories under each language dir, e.g. `zh-CN/claude-code/`, `en-US/cursor/`.
 
 ## FAQ
 
@@ -78,4 +84,4 @@ A: Only Xiaomi MIMO is supported for now. Optimized versions for other products 
 
 ## License
 
-[MIT License](./LICENSE) © 2026 guapimm
+[MIT License](../LICENSE) © 2026 guapimm

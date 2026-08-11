@@ -3,7 +3,7 @@
 > **Turn your AI coding assistant into a cautious 10-year full-stack mentor — pure prompts, zero dependencies.**
 > 在项目初期加载这套 AI 模型导师框架，让你的 AI 更加谨慎地开发、代码更加方便维护。纯提示词版本，零依赖。
 
-[English Version](./README_EN.md) ｜ 中文版本（当前页）
+[English Version](./en-US/README.md) ｜ 中文版本（当前页）
 
 ---
 
@@ -37,12 +37,12 @@
 
 ```bash
 # 1. 把导师角色复制进你的项目（重命名为 AGENTS.md）
-cp AGENTS_ZH.md AGENTS.md
+cp zh-CN/xiaomi-mimo/AGENTS.md AGENTS.md
 
 # 2.（推荐）安全/风格/工作流规范一并加入项目
-cp security_ZH.md security.md
-cp style_ZH.md style.md
-cp workflow_ZH.md workflow.md
+cp zh-CN/xiaomi-mimo/security.md security.md
+cp zh-CN/xiaomi-mimo/style.md style.md
+cp zh-CN/xiaomi-mimo/workflow.md workflow.md
 ```
 
 3. 启动小米 MIMO，直接说：
@@ -56,18 +56,24 @@ AI 将按"设计 → 核心逻辑 → 界面 → 测试"分步推进，每步等
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # 本文件（双语门面）
-├── README_ZH.md         # 中文完整版入口
-├── README_EN.md         # English full version
-├── AGENTS_ZH.md         # 导师角色定义（中文）★ 核心，必用
-├── AGENTS_EN.md         # Mentor role definition (EN)
-├── security_ZH.md       # 安全规范详细手册（中文）
-├── security_EN.md       # Security spec (EN)
-├── style_ZH.md          # 交互风格与输出规范（中文）
-├── style_EN.md          # Interaction style (EN)
-├── workflow_ZH.md       # 开发工作流规范（中文）
-├── workflow_EN.md       # Dev workflow (EN)
-└── LICENSE              # MIT License
+├── LICENSE              # MIT License
+├── zh-CN/               # 中文
+│   ├── README.md        # 中文入口
+│   └── xiaomi-mimo/     # 小米 MIMO 适配版
+│       ├── AGENTS.md    # 导师角色定义 ★ 核心，必用
+│       ├── security.md  # 安全规范详细手册
+│       ├── style.md     # 交互风格与输出规范
+│       └── workflow.md  # 开发工作流规范
+└── en-US/               # English
+    ├── README.md        # English entry
+    └── xiaomi-mimo/     # Xiaomi MIMO build
+        ├── AGENTS.md    # Mentor role definition
+        ├── security.md  # Security spec
+        ├── style.md     # Interaction style
+        └── workflow.md  # Dev workflow
 ```
+
+> 📦 后续新增产品适配时，在语言目录下平行添加产品目录即可，如 `zh-CN/claude-code/`、`en-US/cursor/`。
 
 ## 常见问题
 
