@@ -23,6 +23,10 @@ Ele obriga a IA a seguir um conjunto de "regras de ferro" — tornando *Seguran�
 | 🎨 Estilo de Interação | [style.md](./xiaomi-mimo/style.md) | Analogias da vida cotidiana, etiquetas de fase, confirmar antes de executar, complexidade progressiva |
 | 📋 Fluxo de Desenvolvimento | [workflow.md](./xiaomi-mimo/workflow.md) | Sistema de documentos / protocolo de mapeamento do front-end / implantação e rollback / ciclo de testes / âncoras de versão |
 
+## 📦 Mais documentos
+
+- [Prompt-Completo-do-Mentor.md](./Prompt-Completo-do-Mentor.md) — prompt completo consolidado (todos os módulos unificados)
+
 ### As 6 Regras de Ferro
 
 1. **Código como documentação** — todo o código carrega comentários que explicam o "porquê"
@@ -31,6 +35,127 @@ Ele obriga a IA a seguir um conjunto de "regras de ferro" — tornando *Seguran�
 4. **Execução em etapas** — nunca mais de 300 linhas por saída, aguarde a confirmação em cada etapa
 5. **Isolamento modular** — máximo de 500 linhas por arquivo, reserve interfaces de extensão
 6. **Eficiência de Tokens** — gere um resumo de contexto + senha de retomada após cada conversa
+
+## 📖 Guia de uso (MIMO CLI)
+
+### Comandos rápidos
+
+| Cenário | Ação |
+|------|------|
+| Desenvolvimento diário | Entre no projeto → `/skill AGENTS.md` → converse normalmente |
+| Projeto de longo prazo | Após o primeiro carregamento, use `/dream` para consolidar as regras no MEMORY.md |
+| Conexão inesperadamente perdida | Recupere com `mimo --continue`; as regras do skill continuam lá |
+| Abrir uma nova sessão por conta própria | Após executar `/new`, lembre-se de carregar `/skill AGENTS.md` novamente |
+
+### Estrutura de arquivos do projeto
+
+```
+📁 my-project/
+├── 📄 AGENTS.md          ← prompt principal
+├── 📄 security.md        ← normas de segurança
+├── 📄 workflow.md        ← normas de fluxo de trabalho
+├── 📄 style.md           ← estilo de interação
+└── 📁 src/
+```
+
+---
+
+### Demonstração de cenários concretos
+
+#### Cenário 1: escrever código no dia a dia (carregar apenas o AGENTS.md)
+
+> Você: "Me ajude a escrever uma API para obter a lista de usuários"
+
+A carregar: AGENTS.md (já carregado automaticamente, nenhuma ação necessária)
+
+A IA fará automaticamente:
+
+- código com comentários em português
+- marcar a lista de segurança antes de enviar o código
+- executar em etapas (≤300 linhas)
+- no máximo 500 linhas por arquivo
+
+#### Cenário 2: escrever a interface de login/cadastro (carregar AGENTS.md + security.md)
+
+> Você: "Me ajude a escrever a função de login do usuário, seguindo os requisitos do security.md"
+
+A carregar:
+
+```bash
+/skill security.md
+```
+
+A IA também fará:
+
+- armazenar as senhas com hash bcrypt
+- definir expiração para o Token JWT
+- prevenir força bruta (limite de tentativas de login)
+- prevenir injeção de SQL (consultas parametrizadas)
+
+#### Cenário 3: iniciar um projeto do zero (carregar AGENTS.md + workflow.md)
+
+> Você: "Quero criar um sistema de blog; com base no workflow.md, me ajude a montar o esqueleto do projeto"
+
+A carregar:
+
+```bash
+/skill workflow.md
+```
+
+A IA também fará:
+
+- criar docs/architecture.md (seleção da stack + diagrama de arquitetura)
+- criar docs/dev_log.md (modelo de log de desenvolvimento)
+- criar docs/api_interface.md (modelo de contrato de interface)
+- criar docs/SNAPSHOT.md (instantâneo do projeto)
+- gerar os scripts backup.sh e rollback.sh
+
+#### Cenário 4: a explicação da IA está obscura demais (carregar style.md)
+
+> Você: "Seguindo o estilo do style.md, me explique com analogias da vida cotidiana o que é JWT"
+
+A carregar:
+
+```bash
+/skill style.md
+```
+
+A IA também fará:
+
+- explicar JWT com o "cartão de fidelidade do restaurante"
+- adicionar a etiqueta de fase [📋 Análise de requisitos]
+- dar a conclusão primeiro e os detalhes depois
+- oferecer 2 a 3 opções
+
+#### Cenário 5: implantação em produção (carregar AGENTS.md + workflow.md)
+
+> Você: "Seguindo as normas de implantação do workflow.md, me ajude a escrever a configuração de implantação com Docker"
+
+A carregar:
+
+```bash
+/skill workflow.md
+```
+
+A IA também fará:
+
+- distinguir configurações do ambiente de desenvolvimento/produção
+- gerar docker-compose.yml
+- gerar health_check.sh
+- lembrar das etapas de backup e rollback
+
+### ⚠️ Quando NÃO carregar?
+
+| Quando não carregar | Motivo |
+|---------------|------|
+| Fazer perguntas puramente técnicas (como "como usar React useEffect") | AGENTS.md já é suficiente; adicionar o workflow só atrapalha |
+| Alterar um estilo CSS | Não precisa das normas de segurança nem do fluxo de implantação |
+| Pedir para a IA traduzir um texto | Não precisa de nenhum skill |
+| Refatorar levemente código existente | A lista de segurança do AGENTS.md já cobre isso |
+
+### 💡 Resumo em uma frase
+
+> AGENTS.md é a "pele" padrão; os outros três são plug-ins de efeitos especiais — ative-os apenas quando precisar; no dia a dia, deixe-os desligados, economizando Tokens e mantendo tudo limpo.
 
 ## Início Rápido (3 passos)
 

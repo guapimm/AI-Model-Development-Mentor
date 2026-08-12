@@ -23,6 +23,10 @@ Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *
 | 🎨 Interaktionsstil | [style.md](./xiaomi-mimo/style.md) | Alltagsanalogien, Phasen-Tags, erst bestätigen dann handeln, progressive Komplexität |
 | 📋 Entwicklungs-Workflow | [workflow.md](./xiaomi-mimo/workflow.md) | Dokumentationssystem / Frontend-Zuordnungsprotokoll / Deployment & Rollback / Testschleife / Versionsanker |
 
+## 📦 Weitere Dokumente
+
+- [Vollständiger-Mentor-Prompt.md](./Vollständiger-Mentor-Prompt.md) — gebündelter Komplett-Prompt (alle Module vereint)
+
 ### Die 6 eisernen Regeln
 
 1. **Code als Dokumentation** — sämtlicher Code trägt Kommentare, die das „Warum" erklären
@@ -31,6 +35,127 @@ Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *
 4. **Schrittweise Umsetzung** — nie mehr als 300 Zeilen pro Ausgabe, bei jedem Schritt auf Bestätigung warten
 5. **Modulare Isolation** — maximal 500 Zeilen pro Datei, Erweiterungsschnittstellen vorsehen
 6. **Token-Effizienz** — nach jedem Gespräch eine 【Kontextzusammenfassung】 und ein 【Wiederaufnahme-Token】 erzeugen
+
+## 📖 Anleitung (MIMO CLI)
+
+### Befehlsübersicht
+
+| Szenario | Vorgehen |
+|----------|----------|
+| Tägliche Entwicklung | Projekt öffnen → `/skill AGENTS.md` → normal chatten |
+| Langfristige Projekte | Nach dem ersten Laden die Regeln mit `/dream` in MEMORY.md verankern |
+| Versehentliche Unterbrechung | Mit `mimo --continue` wiederherstellen, die Skill-Regeln bleiben erhalten |
+| Neue Sitzung bewusst starten | Nach `/new` nicht vergessen, `/skill AGENTS.md` erneut auszuführen |
+
+### Projektdateistruktur
+
+```
+📁 my-project/
+├── 📄 AGENTS.md          ← Haupt-Prompt
+├── 📄 security.md        ← Sicherheitsvorgaben
+├── 📄 workflow.md        ← Workflow-Vorgaben
+├── 📄 style.md           ← Interaktionsstil
+└── 📁 src/
+```
+
+---
+
+### Konkrete Szenarien im Detail
+
+#### Szenario 1: Tägliches Codieren (nur AGENTS.md laden)
+
+> Du: „Hilf mir, eine API zum Abrufen der Benutzerliste zu schreiben."
+
+Zu laden: AGENTS.md (bereits automatisch geladen, kein Handeln nötig)
+
+Die KI automatisch:
+
+- Code mit deutschen Kommentaren
+- Sicherheits-Checkliste vor der Ausgabe abhaken
+- Schrittweise ausführen (≤300 Zeilen)
+- Einzeldatei ≤500 Zeilen
+
+#### Szenario 2: Login-/Registrierungs-Schnittstelle schreiben (AGENTS.md + security.md laden)
+
+> Du: „Hilf mir, die Benutzer-Login-Funktion zu schreiben, und zwar gemäß den Anforderungen von security.md."
+
+Zu laden:
+
+```bash
+/skill security.md
+```
+
+Die KI zusätzlich:
+
+- Passwörter mit bcrypt-Hash speichern
+- Für JWT-Token eine Ablaufzeit festlegen
+- Vor Brute-Force-Angriffen schützen (Begrenzung fehlgeschlagener Logins)
+- Vor SQL-Injection schützen (parametrisierte Abfragen)
+
+#### Szenario 3: Projekt von null starten (AGENTS.md + workflow.md laden)
+
+> Du: „Ich möchte ein Blog-System erstellen. Hilf mir, das Projektskelett gemäß workflow.md aufzubauen."
+
+Zu laden:
+
+```bash
+/skill workflow.md
+```
+
+Die KI zusätzlich:
+
+- docs/architecture.md erstellen (Technologieauswahl + Architekturdiagramm)
+- docs/dev_log.md erstellen (Entwicklungslog-Vorlage)
+- docs/api_interface.md erstellen (Schnittstellenvertrag-Vorlage)
+- docs/SNAPSHOT.md erstellen (Projektsnapshot)
+- backup.sh- und rollback.sh-Skripte erzeugen
+
+#### Szenario 4: Die KI erklärt zu verklausuliert (style.md laden)
+
+> Du: „Erkläre mir gemäß style.md mit einer Alltagsanalogie, was JWT ist."
+
+Zu laden:
+
+```bash
+/skill style.md
+```
+
+Die KI zusätzlich:
+
+- JWT mit der „Restaurant-Mitgliedskarte" erklären
+- Das Phasen-Tag [📋 Anforderungsanalyse] ergänzen
+- Erst das Fazit, dann die Details
+- 2–3 Lösungsoptionen anbieten
+
+#### Szenario 5: Deployment & Livegang (AGENTS.md + workflow.md laden)
+
+> Du: „Schreibe mir gemäß den Deployment-Vorgaben in workflow.md die Docker-Deployment-Konfiguration."
+
+Zu laden:
+
+```bash
+/skill workflow.md
+```
+
+Die KI zusätzlich:
+
+- Entwicklungs-/Produktionskonfigurationen trennen
+- docker-compose.yml erzeugen
+- health_check.sh erzeugen
+- An Backup- und Rollback-Schritte erinnern
+
+### ⚠️ Wann du nichts laden solltest?
+
+| Nicht zu laden | Grund |
+|----------------|-------|
+| Reine Technikfragen (z. B. „Wie verwendet man React useEffect?") | AGENTS.md reicht aus, zusätzliches workflow würde nur stören |
+| Ein CSS-Style ändern | Keine Sicherheitsvorgaben und kein Deployment-Prozess nötig |
+| Einen Text übersetzen lassen | Überhaupt kein Skill nötig |
+| Vorhandenen Code leicht refaktorieren | Die Sicherheits-Checkliste von AGENTS.md deckt das bereits ab |
+
+### 💡 Zusammenfassung in einem Satz
+
+> AGENTS.md ist die Standard-Skin, die anderen drei sind Effekt-Plugins — nur einschalten, wenn du sie brauchst, sonst ausgeschaltet lassen: das spart Token und hält alles aufgeräumt.
 
 ## Schnellstart (3 Schritte)
 
