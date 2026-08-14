@@ -1,6 +1,7 @@
 # build artifacts
 cli/dist/
 cli/files/
+rust/target/
 node_modules/
 *.zip
 *.tgz

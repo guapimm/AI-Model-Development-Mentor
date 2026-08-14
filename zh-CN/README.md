@@ -16,6 +16,29 @@
 - [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI 工具（MIMO / Claude Code / Codex / Cursor 等）加载说明
 - [开发者导师提示词完整版.md](./prompts/开发者导师提示词完整版.md) — 四模块合并版完整提示词，一次性加载
 
+## ⬇️ 安装与使用 mentor CLI
+
+**方式 A：二进制文件（推荐，零依赖、跨平台）**
+
+从 GitHub Releases 下载对应平台的 `mentor` 可执行文件（v0.1.0，支持 Windows / Linux / macOS；Go 版 `mentor-*` 与 Rust 版 `mentor-rust-*` 功能一致，任选其一），放入 PATH 后：
+
+```bash
+mentor install                        # 交互向导：选语言 → 选模块（默认 agent）→ 自动识别工具
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # 追加模块
+mentor list                           # 查看已安装模块
+mentor detect                         # 检测项目使用的 AI 工具
+mentor pack                           # 生成兼容 skill 目录
+```
+
+`mentor` 会自动按工具写入正确文件名和位置：MIMO/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
+
+**方式 B：手动复制**
+
+按 [COMPATIBILITY.md](./COMPATIBILITY.md) 的说明，把 `prompts/` 下的文件复制到项目对应位置。
+
+> 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：mimo / claude-code / codex / cursor / other。
+
 ## 📖 使用指南（MIMO CLI）
 
 ### 命令速览

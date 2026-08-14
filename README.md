@@ -58,8 +58,8 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 Two ways, same result:
 
 ```bash
-# Option A — Go binary (zero dependencies, cross-platform)
-# download mentor from GitHub Releases, then:
+# Option A — binary (zero dependencies, cross-platform)
+# Go: mentor-*  |  Rust: mentor-rust-*  (both on GitHub Releases), then:
 mentor install
 
 # Option B — manual
@@ -94,7 +94,8 @@ The AI will advance through "Design → Core Logic → UI → Testing", waiting 
 AI_Model_Development_Mentor/
 ├── README.md            # English landing page + language switcher
 ├── LICENSE              # MIT License
-├── cli/                 # mentor CLI (Go, single binary) — one-click install
+├── cli/                 # mentor CLI (Go)
+├── rust/                # mentor CLI (Rust, zero-dependency mirror)
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
 └── <lang>/
     ├── README.md        # language entry + usage guide
@@ -117,7 +118,7 @@ Tag a version to trigger the CI pipeline (`.github/workflows/release.yml`):
 git tag v0.1.0 && git push origin v0.1.0
 ```
 
-The workflow builds the Go binaries (windows/linux/darwin × amd64/arm64) and uploads them to the GitHub Release — no secrets or tokens required.
+The workflow builds both implementations — Go binaries (windows/linux/darwin × amd64/arm64) and Rust binaries (mentor-rust-*) — and uploads them to the GitHub Release. No secrets or tokens required.
 
 ## FAQ
 

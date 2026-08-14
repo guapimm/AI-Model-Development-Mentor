@@ -1,0 +1,14 @@
+[package]
+name = "mentor"
+version = "0.1.0"
+edition = "2021"
+description = "AI Model Mentor CLI - install the mentor prompt framework into any AI coding tool"
+
+[[bin]]
+name = "mentor"
+path = "src/main.rs"
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
