@@ -195,7 +195,7 @@ AI_Model_Development_Mentor/
         └── <completo>.md # prompt consolidado em um único arquivo
 ```
 
-> 📦 Novos builds de produtos são adicionados como diretórios irmãos sob cada diretório de idioma, por exemplo: `zh-CN/claude-code/`, `en-US/cursor/`.
+> 📦 Novas ferramentas são adicionadas como linhas no [COMPATIBILITY.md](./COMPATIBILITY.md); não é mais necessário criar diretórios por produto.
 
 ## FAQ
 

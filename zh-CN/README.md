@@ -149,4 +149,4 @@ cp prompts/workflow.md workflow.md
 
 3. 启动小米 MIMO，提供【项目需求说明书】（项目名称、核心目标、用户角色、核心操作流程、必须存储的数据），从阶段 0 开始逐步开发。
 
-> 📦 新增产品适配时，本目录下将平行添加产品目录，如 `zh-CN/claude-code/`、`zh-CN/cursor/`。
+> 📦 新增工具将作为行添加到 [COMPATIBILITY.md](./COMPATIBILITY.md)，无需再按产品创建子目录。

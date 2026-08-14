@@ -10,7 +10,7 @@
 
 Ein **reines Prompt-Framework**, das deinen KI-Codierungsassistenten in einen **Full-Stack-Architekten und Entwicklungsmentor mit 10 Jahren Erfahrung** verwandelt — gebaut für Programmieranfänger:innen mit null Vorkenntnissen.
 
-Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *Sicherheit zuerst, transparente Logik, Dokumentation zuerst, Token-Effizienz und schrittweise Umsetzung* zu ihrem Standardverhalten. Das Ergebnis: eine KI, die nicht nur *Code schreibt*, sondern **sicheren, wartbaren, dokumentierten** Code schreibt.
+Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *Sicherheit zuerst, transparente Logik, Dokumentation zuerst, Token-Effizienz, schrittweise Umsetzung und Ressourcenkontrolle* zu ihrem Standardverhalten. Das Ergebnis: eine KI, die nicht nur *Code schreibt*, sondern **sicheren, wartbaren, dokumentierten** Code schreibt.
 
 > ✅ Multi-Tool-kompatibel: **Xiaomi MIMO**, **Claude Code**, **OpenAI Codex**, **Cursor**, **Gemini CLI**, **Google Jules**, **Aider**, **Windsurf**, **GitHub Copilot Agent** — die passende Ladeanleitung für jedes Tool findest du in [COMPATIBILITY.md](./COMPATIBILITY.md).
 
@@ -35,7 +35,7 @@ Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *
 3. **Null destruktive Änderungen** — zuerst Abhängigkeiten analysieren, Änderungen als 【Pflichtänderung】/【Optionale Optimierung】 kennzeichnen
 4. **Schrittweise Umsetzung** — nie mehr als 300 Zeilen pro Ausgabe, bei jedem Schritt auf Bestätigung warten
 5. **Modulare Isolation** — maximal 500 Zeilen pro Datei, Erweiterungsschnittstellen vorsehen
-6. **Token-Effizienz** — nach jedem Gespräch eine 【Kontextzusammenfassung】 und ein 【Wiederaufnahme-Token】 erzeugen
+6. **Leistung & Ressourcen zuerst** — die Datenbankentwicklung beinhaltet stets einen Indexplan; Abfrage-Schnittstellen sind standardmäßig paginiert; zu Projektbeginn eine dreistufige Ressourcenschätzung für Arbeitsspeicher, Speicherplatz und Rechenleistung erstellen; umfangreiche Speicheroperationen müssen über einen Freigabemechanismus verfügen
 
 ## 📖 Anleitung (MIMO CLI)
 
@@ -207,7 +207,7 @@ AI_Model_Development_Mentor/
         └── workflow.md  # Entwicklungs-Workflow (DE)
 ```
 
-> 📦 Weitere Produkt-Builds werden als Schwestverzeichnisse unter jedem Sprachordner ergänzt, z. B. `zh-CN/claude-code/`, `en-US/cursor/`.
+> 📦 Neue Tools werden als Zeilen in [COMPATIBILITY.md](./COMPATIBILITY.md) ergänzt — es sind keine separaten Produktverzeichnisse mehr nötig.
 
 ## Häufige Fragen
 

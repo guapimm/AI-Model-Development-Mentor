@@ -151,4 +151,4 @@ cp prompts/workflow.md workflow.md
 
 3. Launch Xiaomi MIMO and provide your Project Requirement Specification (project name, core goals, user roles, core workflows, data to persist). The AI starts from Phase 0: Environment Setup & Tech Stack Selection and advances step by step, waiting for your confirmation.
 
-> 📦 New product builds are added as sibling directories, e.g. `en-US/claude-code/`, `en-US/cursor/`.
+> 📦 New tools are supported by adding a row in [COMPATIBILITY.md](./COMPATIBILITY.md) — no per-tool directories needed.

@@ -55,23 +55,19 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 
 ## ⬇️ Install
 
-Three ways, same result:
+Two ways, same result:
 
 ```bash
 # Option A — Go binary (zero dependencies, cross-platform)
 # download mentor from GitHub Releases, then:
 mentor install
 
-# Option B — npm
-npm i -g ai-model-mentor
-ai-mentor install
-
-# Option C — manual
+# Option B — manual
 # copy files from <lang>/prompts/ per your language's COMPATIBILITY.md
 cp en-US/prompts/AGENTS.md AGENTS.md
 ```
 
-All three support: interactive wizard (language → modules → tool), non-interactive flags
+Both support: interactive wizard (language → modules → tool), non-interactive flags
 (`--lang zh-CN --modules agent,security --cli claude-code --dir ./proj`), and `add` / `remove` / `list` / `detect` / `pack`.
 
 ## Quick Start (3 steps)
@@ -111,7 +107,7 @@ AI_Model_Development_Mentor/
         └── <full>.md    # consolidated one-shot prompt
 ```
 
-> 📦 New product builds are added as sibling directories under each language dir, e.g. `zh-CN/claude-code/`, `en-US/cursor/`.
+> 📦 New tools are supported by adding a row in each language's `COMPATIBILITY.md` — no per-tool directories needed.
 
 ## 🚀 Releasing (maintainers)
 
@@ -121,7 +117,7 @@ Tag a version to trigger the CI pipeline (`.github/workflows/release.yml`):
 git tag v0.1.0 && git push origin v0.1.0
 ```
 
-The workflow builds the Go binaries (windows/linux/darwin × amd64/arm64), uploads them to the GitHub Release, then publishes the `ai-model-mentor` npm package. Requires the `NPM_TOKEN` secret in repo settings (see [npm access tokens](https://docs.npmjs.com/creating-and-viewing-access-tokens)).
+The workflow builds the Go binaries (windows/linux/darwin × amd64/arm64) and uploads them to the GitHub Release — no secrets or tokens required.
 
 ## FAQ
 

@@ -10,9 +10,9 @@
 
 Un **framework 100 % basé sur des prompts** qui transforme votre assistant de codage IA en **architecte full-stack & mentor de développement fort de 10 ans d'expérience**, pensé pour les débutants en programmation sans aucune base.
 
-Il impose à l'IA de suivre des « règles d'airain » — faire de la *Sécurité d'abord, de la Logique transparente, de la Documentation d'abord, de l'Efficacité des tokens et de l'Avancement par étapes* son comportement par défaut. Résultat : une IA qui ne se contente pas *d'écrire du code*, mais écrit un code **sûr, maintenable et documenté**.
+Il impose à l'IA de suivre des « règles d'airain » — faire de la *Sécurité d'abord, de la Logique transparente, de la Documentation d'abord, de l'Efficacité des tokens, de l'Avancement par étapes et de la Maîtrise des ressources* son comportement par défaut. Résultat : une IA qui ne se contente pas *d'écrire du code*, mais écrit un code **sûr, maintenable et documenté**.
 
-> ⚠️ Actuellement pris en charge : **Xiaomi MIMO CLI**. Des versions optimisées pour d'autres produits (Claude Code, Cursor, etc.) sont prévues — laissez un commentaire si vous en avez besoin.
+> ⚠️ Compatible multi-outils : Xiaomi MIMO, Claude Code, Codex, Cursor, etc. Consultez [COMPATIBILITY.md](./COMPATIBILITY.md) pour le guide de chargement de chaque outil.
 
 ## Modules principaux (compatibles multi-outils)
 
@@ -35,7 +35,7 @@ Il impose à l'IA de suivre des « règles d'airain » — faire de la *Sécurit
 3. **Zéro modification destructrice** — analyser les dépendances d'abord, marquer les modifications [Obligatoire] / [Optionnelle]
 4. **Exécution par étapes** — jamais plus de 300 lignes par réponse, attendre la confirmation à chaque étape
 5. **Isolation modulaire** — 500 lignes maximum par fichier, prévoir des interfaces d'extension
-6. **Efficacité des tokens** — générer un résumé du contexte + un code de reprise après chaque conversation
+6. **La performance et les ressources d'abord** — émettre un plan d'indexation en parallèle de la conception de la base de données ; pagination par défaut pour les interfaces de requête ; estimation des ressources sur trois niveaux (mémoire / disque / puissance de calcul) au début du projet ; mécanisme de libération pour les opérations gourmandes en mémoire
 
 ## 📖 Guide d'utilisation (MIMO CLI)
 
@@ -195,7 +195,7 @@ AI_Model_Development_Mentor/
         └── Prompt-Complet-du-Mentor.md  # Prompt consolidé (FR)
 ```
 
-> 📦 Les nouvelles versions produits sont ajoutées en répertoires parallèles sous chaque dossier de langue, par ex. `fr-FR/claude-code/`, `fr-FR/cursor/`.
+> 📦 Les nouveaux outils s'ajoutent comme des lignes dans [COMPATIBILITY.md](./COMPATIBILITY.md) ; plus besoin de créer des répertoires par produit.
 
 ## FAQ
 
@@ -203,7 +203,7 @@ AI_Model_Development_Mentor/
 R : Non. `AGENTS.md` est le seul indispensable. Ajoutez `security.md` pour des garde-fous plus solides, `style.md` pour une expérience de conversation plus conviviale.
 
 **Q : Cela fonctionne-t-il avec d'autres produits IA ?**
-R : Seul Xiaomi MIMO est pris en charge pour l'instant. Des versions optimisées pour d'autres produits sont en préparation — laissez un commentaire pour nous dire ce dont vous avez besoin.
+R : Oui. Les modules sont compatibles multi-outils (Xiaomi MIMO, Claude Code, Codex, Cursor, etc.) — consultez [COMPATIBILITY.md](./COMPATIBILITY.md) pour le guide de chargement de chaque outil.
 
 **Q : Est-ce traduit par machine ?**
 R : Toutes les versions linguistiques sont des traductions relues du même original chinois. Si vous repérez un problème, n'hésitez pas à ouvrir une issue ou une PR.

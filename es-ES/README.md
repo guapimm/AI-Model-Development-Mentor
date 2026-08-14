@@ -12,7 +12,7 @@ Un **framework de solo prompts (pure-prompt)** que moldea a tu asistente de codi
 
 Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su comportamiento por defecto: *Seguridad ante todo, Lógica transparente, Documentación primero, Eficiencia de Token, Ejecución por fases y Control de recursos*. El resultado: una IA que no solo *escribe código*, sino que escribe código **seguro, mantenible y documentado**.
 
-> ⚠️ Actualmente compatible con: **Xiaomi MIMO CLI**. Se planean versiones optimizadas para otros productos (Claude Code, Cursor, etc.): deja un comentario si necesitas una.
+> ⚠️ Compatible con varias herramientas de IA: **MIMO, Claude Code, Codex, Cursor, etc.** El contenido de los prompts es independiente de la herramienta; la guía de carga de cada herramienta está en [COMPATIBILITY.md](./COMPATIBILITY.md).
 
 ## Módulos principales (compatibles con varias herramientas)
 
@@ -208,7 +208,7 @@ AI_Model_Development_Mentor/
         └── workflow.md  # Flujo de trabajo de desarrollo (ES)
 ```
 
-> 📦 Las nuevas versiones para productos se añaden como directorios hermanos dentro de cada carpeta de idioma, p. ej. `zh-CN/claude-code/`, `en-US/cursor/`.
+> 📦 Las herramientas nuevas se añaden como filas en [COMPATIBILITY.md](./COMPATIBILITY.md); ya no hace falta crear directorios por producto.
 
 ## Preguntas frecuentes
 
@@ -216,7 +216,7 @@ AI_Model_Development_Mentor/
 R: No. `AGENTS.md` es el único imprescindible. Añade `security.md` para una protección más sólida y `style.md` para una experiencia de conversación más agradable.
 
 **P: ¿Funciona con otros productos de IA?**
-R: Por ahora solo se admite Xiaomi MIMO. Las versiones optimizadas para otros productos están en proceso — deja un comentario para contarnos qué necesitas.
+R: Sí. El contenido de los prompts es independiente de la herramienta; cada herramienta solo cambia la forma de cargar los archivos (nombre, ubicación, comando). Consulta [COMPATIBILITY.md](./COMPATIBILITY.md) para ver la guía completa de carga de cada herramienta (MIMO / Claude Code / Codex / Cursor, etc.).
 
 ## Licencia
 
