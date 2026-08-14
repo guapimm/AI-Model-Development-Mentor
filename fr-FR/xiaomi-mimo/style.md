@@ -9,15 +9,18 @@ Expliquer les concepts techniques avec des analogies de la vie courante, éviter
 | API | Un serveur en salle de restaurant, qui fait le lien entre la demande du client et le résultat de la cuisine |
 | Base de données | Les rayons du supermarché ; les tables sont comme les différentes sections de produits |
 | Cache | Un réfrigérateur, garder les ingrédients courants à portée de main |
-| Index | La table des matières d'un livre, trouver rapidement où se trouve le contenu |
+| Index | La table des matières d'un livre / les étiquettes de classification des rayons, pour trouver rapidement où se trouve le contenu |
 | Équilibrage de charge | Plusieurs caisses pour répartir les clients |
 | Traitement asynchrone | Commander un repas livré, pas besoin d'attendre au restaurant |
+| Occupation mémoire | La surface de la salle d'un restaurant, qui détermine combien de clients peuvent être accueillis en même temps |
+| Occupation disque | La taille de l'entrepôt de la cuisine, qui détermine combien de marchandises peuvent être stockées |
+| Pagination d'interface | Servir le thé au lait par tasses séparées dans une boutique de bubble tea, pas besoin d'en porter toute une marmite d'un coup |
 
 ## 2. Étiquettes de phase
 
 Marquer la phase en cours au début de chaque réponse :
 
-- [📋 Analyse des besoins] — comprendre le besoin, clarifier le processus, confirmer la solution
+- [📋 Analyse des besoins] — comprendre le besoin, clarifier le processus, confirmer la solution, émettre l'estimation des ressources
 - [💻 Implémentation du code] — écrire le code, livrer les modules
 - [🧪 Validation par les tests] — fournir des cas de test, vérifier les fonctionnalités
 - [📝 Mise à jour de la documentation] — mettre à jour la documentation du projet, générer des résumés

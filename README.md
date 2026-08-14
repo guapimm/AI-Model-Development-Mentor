@@ -13,7 +13,7 @@
 
 A **pure-prompt framework** that shapes your AI coding assistant into a **full-stack architect & development mentor with 10 years of experience**, built for coding beginners with zero foundation.
 
-It forces the AI to follow a set of "iron rules" — making *Security First, Transparent Logic, Documentation First, Token Efficiency, and Phased Implementation* its default behavior. The result: AI that doesn't just *write code*, but writes **safe, maintainable, documented** code.
+It forces the AI to follow a set of "iron rules" — making *Security First, Transparent Logic, Documentation First, Token Efficiency, Phased Implementation, and Resource Control* its default behavior. The result: AI that doesn't just *write code*, but writes **safe, maintainable, documented** code.
 
 > ⚠️ Currently supports: **Xiaomi MIMO CLI**. Optimized builds for other products (Claude Code, Cursor, etc.) are planned — leave a comment if you need one.
 
@@ -21,10 +21,10 @@ It forces the AI to follow a set of "iron rules" — making *Security First, Tra
 
 | Module | File | Purpose |
 |--------|------|---------|
-| 🧑‍🏫 Mentor Role | `AGENTS.md` | Architect-mentor persona + 6 iron rules + security self-check checklist |
-| 🛡️ Security Spec | `security.md` | 8 security domains: secrets / input validation / database / XSS / file system / external requests / error handling / performance |
+| 🧑‍🏫 Mentor Role | `AGENTS.md` | Architect-mentor persona + 6 iron rules + security & performance self-check checklist |
+| 🛡️ Security Spec | `security.md` | 8 security domains: secrets / input validation / database / XSS / file system / external requests / error handling / performance & resource |
 | 🎨 Interaction Style | `style.md` | Life analogies, phase tags, confirm-before-act, progressive complexity |
-| 📋 Dev Workflow | `workflow.md` | Docs system / frontend mapping protocol / deploy & rollback / test loop / version anchors |
+| 📋 Dev Workflow | `workflow.md` | Docs system / resource estimation / database design / frontend mapping protocol / deploy & rollback / test loop / version anchors |
 
 ### The 6 Iron Rules
 
@@ -33,7 +33,7 @@ It forces the AI to follow a set of "iron rules" — making *Security First, Tra
 3. **Zero-Destructive Changes** — analyze dependencies first, tag edits as [Mandatory] / [Optional]
 4. **Phased Execution** — never more than 300 lines per output, wait for confirmation at each step
 5. **Modular Isolation** — max 500 lines per file, reserve extension interfaces
-6. **Token Efficiency** — generate a context summary + resume token after every conversation
+6. **Performance & Resource Upfront** — output index design with database schema, default pagination for list queries, three-tier resource estimation (memory/disk/CPU) at project start, release mechanisms for large memory operations
 
 ## Quick Start (3 steps)
 
@@ -49,7 +49,7 @@ cp en-US/xiaomi-mimo/workflow.md workflow.md
 
 3. Launch Xiaomi MIMO and say:
 
-> "I'm a complete beginner. Here is my Project Requirement Specification: project name ____, core goals ____, user roles ____, core workflows ____, data to persist ____. Start from Phase 0: Environment Setup & Tech Stack Selection and guide me step by step."
+> "I'm a complete beginner. Here is my Project Requirement Specification: project name ____, core goals ____, user roles ____, core workflows ____, data to persist ____. Start from Phase 0: Environment Setup & Tech Stack Selection + Resource Estimation and guide me step by step."
 
 The AI will advance through "Design → Core Logic → UI → Testing", waiting for your confirmation at every stage.
 

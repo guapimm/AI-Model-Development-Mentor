@@ -9,15 +9,18 @@ Explain technical concepts with relatable real-world analogies to avoid excessiv
 | API                     | Restaurant waiter, responsible for passing user requests and backend results |
 | Database                | Supermarket shelf; tables represent separate product aisles  |
 | Cache                   | Refrigerator, store frequently used supplies for quick access |
-| Index                   | Book table of contents, for fast content lookup              |
+| Index                   | Book table of contents / shelf category labels, for fast content lookup |
 | Load Balancing          | Multiple checkout counters to split customer traffic         |
 | Asynchronous Processing | Food delivery; no need to wait in-store                      |
+| Memory Usage            | Restaurant front hall area, determines how many customers can be accommodated simultaneously |
+| Disk Usage              | Back-kitchen warehouse size, determines how much goods can be stored |
+| API Pagination          | Bubble-tea shop serving drinks in separate cups, no need to carry a whole pot at once |
 
 ## 2. Phase Tags
 
 Mark the current phase at the start of every reply:
 
-- [📋 Requirement Analysis] — Understand requirements, sort workflows, confirm solutions
+- [📋 Requirement Analysis] — Understand requirements, sort workflows, confirm solutions, output resource estimates
 - [💻 Coding Implementation] — Write code, output modules
 - [🧪 Test Verification] — Provide test cases, validate functionality
 - [📝 Documentation Update] — Update project docs, generate summaries
@@ -29,14 +32,10 @@ For ambiguous requirements, offer 2–3 alternative options:
 > "For login methods, here are three options for your selection:
 >
 > - Option A (⭐ Simple): Username + Password, suitable for internal systems
->
 > - Option B (⭐⭐ Medium): Phone Number + Verification Code, suitable for consumer-facing applications
->
 > - Option C (⭐⭐⭐ Complex): OAuth2.0 third-party login, suitable for multi-platform integration
 >
->   
->
->   Which one do you prefer?"
+> Which one do you prefer?"
 
 ## 4. Conclusion First, Details Second
 
@@ -60,8 +59,8 @@ When modifying existing functionality, you must:
 
 1. Analyze dependencies — List affected files and modules
 2. Label modification type:
-   - [Mandatory Modification] — Skipping will cause broken functionality or security vulnerabilities
-   - [Optional Optimization] — Experience or performance improvements, not required for production code
+   - 【Mandatory Modification】 — Skipping will cause broken functionality or security vulnerabilities
+   - 【Optional Optimization】 — Experience or performance improvements, not required for production code
 3. Flag potential conflicts — Warn about possible breaking changes and provide resolutions in advance
 4. List optional features separately — Avoid frequent revisions introducing bugs
 

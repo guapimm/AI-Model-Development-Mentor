@@ -20,6 +20,7 @@
 - Interdiction de concaténer des chaînes pour construire du SQL
 - Les champs sensibles (mots de passe) doivent être stockés sous forme de hachage (bcrypt/argon2)
 - Le mot de passe de la chaîne de connexion à la base de données passe par une variable d'environnement
+- Configurer obligatoirement une limite maximale pour le pool de connexions de la base de données, afin d'éviter que l'épuisement des connexions ne fasse planter le service
 
 ## 4. Protection XSS côté front-end
 
@@ -33,6 +34,7 @@
 - Toute opération sur les chemins de fichiers doit être validée pour empêcher les traversées de répertoire (`../`)
 - Restreindre l'accès aux répertoires avec une liste blanche
 - Renommer les fichiers téléversés avec un UUID aléatoire, sans conserver le nom de fichier d'origine
+- Définir une limite maximale stricte pour la taille d'un fichier ; imposer le téléversement par fragments (chunked) pour les fichiers très volumineux
 
 ## 6. Sécurité des requêtes externes
 
@@ -47,9 +49,10 @@
 - Consigner les journaux d'erreurs (horodatage, ID de requête, type d'erreur)
 - Journaliser les opérations sensibles (échecs de connexion, permissions insuffisantes) dans les journaux d'audit
 
-## 8. Sécurité des performances
+## 8. Sécurité des performances et des ressources
 
-- Tenir compte des goulots d'étranglement de performance des interfaces ; ajouter un cache (Redis) si nécessaire
-- Optimiser les requêtes lentes, ajouter des index en base de données
-- Pour les gros fichiers téléversés, utiliser le découpage (chunked) ou le traitement par flux (streaming)
-- Prévenir les attaques par épuisement des ressources (limitation de la fréquence des requêtes)
+- Toutes les interfaces de listes activent la pagination par défaut, avec un nombre maximal de lignes par page (100 par défaut) ; interdiction des requêtes en masse
+- Configurer la limitation de débit des interfaces selon la concurrence estimée (au niveau IP et au niveau utilisateur), afin de prévenir les attaques par épuisement des ressources
+- Traiter les gros fichiers / gros volumes de données par lecture-écriture en flux (streaming), afin d'éviter un chargement complet en mémoire qui provoquerait un débordement
+- Les champs de requête essentiels doivent être indexés ; interdiction des balayages complets de table sans index
+- Nettoyer périodiquement les journaux expirés et les fichiers temporaires, afin d'éviter une croissance illimitée de l'occupation disque

@@ -20,6 +20,7 @@
 - Proibido montar SQL por concatenação de strings
 - Campos sensíveis (senhas) devem ser armazenados como hash (bcrypt/argon2)
 - A senha da string de conexão do banco de dados deve ser armazenada em variável de ambiente
+- Configure obrigatoriamente um limite máximo para o pool de conexões do banco de dados, evitando que o serviço trave quando o número de conexões se esgota
 
 ## 4. Proteção contra XSS no Front-end
 
@@ -33,6 +34,7 @@
 - Todas as operações de caminho de arquivo devem ser validadas para prevenir travessia de diretório (`../`)
 - Use listas de permissão (allowlist) para restringir o alcance dos diretórios acessíveis
 - Renomeie os arquivos enviados para UUIDs aleatórios, sem preservar o nome original do arquivo
+- Defina um limite rígido (hard limit) para o tamanho de cada arquivo; para arquivos muito grandes, exija upload em partes (chunked)
 
 ## 6. Segurança de Requisições Externas
 
@@ -47,9 +49,10 @@
 - Registre logs de erro (com horário, ID da requisição e tipo do erro)
 - Registre logs de auditoria para operações sensíveis (falha de login, permissões insuficientes)
 
-## 8. Segurança e Desempenho
+## 8. Desempenho e Segurança de Recursos
 
-- Considere os gargalos de desempenho das interfaces; adicione cache quando necessário (Redis)
-- Otimize consultas lentas e adicione índices no banco de dados
-- Arquivos grandes devem ser enviados com upload em partes (chunked) ou processamento por fluxo (streaming)
-- Previna ataques de esgotamento de recursos (limite a frequência de requisições)
+- Todas as interfaces de listas devem ter paginação ativada por padrão, com limite máximo de itens por página (padrão: 100), proibindo consultas de dados completos
+- Configure limite de frequência (rate limiting) nas interfaces de acordo com a concorrência estimada (em nível de IP e de usuário), prevenindo ataques de esgotamento de recursos
+- Arquivos grandes/processamento de grandes volumes de dados devem usar leitura e escrita em fluxo (streaming), evitando carregar tudo de uma vez na memória e causar estouro (overflow)
+- Os campos essenciais de consulta devem ter índices criados; é proibida a varredura completa da tabela sem índices
+- Limpe periodicamente logs expirados e arquivos temporários, controlando o crescimento ilimitado do uso do disco

@@ -9,15 +9,18 @@ Usar analogías de la vida cotidiana para explicar los conceptos técnicos, evit
 | API | El camarero del restaurante, encargado de transmitir las peticiones del usuario y los resultados del backend |
 | Base de datos | Los estantes del supermercado; las tablas son como las distintas secciones de productos |
 | Caché | La nevera, que tiene a mano los ingredientes de uso frecuente |
-| Índice | El índice de un libro, para localizar rápidamente el contenido |
+| Índice | El índice de un libro / las etiquetas de clasificación de las estanterías, para localizar rápidamente la posición del contenido |
 | Balanceo de carga | Varias cajas registradoras para repartir a los clientes |
 | Procesamiento asíncrono | Pedir comida a domicilio, sin necesidad de esperar en el local |
+| Uso de memoria | La superficie de la sala del restaurante, que determina cuántos clientes puede atender a la vez |
+| Uso de disco | El tamaño del almacén de la cocina, que determina cuántas mercancías se pueden guardar |
+| Paginación de interfaces | La tienda de té con leche que sirve las bebidas en vasos separados, sin tener que llevar toda la olla de una vez |
 
 ## 2. Etiquetas de fase
 
 Marca la fase actual al inicio de cada respuesta:
 
-- [📋 Análisis de requisitos] — entender los requisitos, ordenar los flujos, confirmar el enfoque
+- [📋 Análisis de requisitos] — entender los requisitos, ordenar los flujos, confirmar el enfoque y emitir la estimación de recursos
 - [💻 Implementación de código] — escribir código, emitir módulos
 - [🧪 Verificación de pruebas] — ofrecer casos de prueba, validar la funcionalidad
 - [📝 Actualización de documentación] — actualizar la documentación del proyecto, generar resúmenes

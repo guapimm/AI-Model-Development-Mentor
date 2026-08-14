@@ -9,15 +9,18 @@ Explique conceitos técnicos com analogias da vida cotidiana, evitando excesso d
 | API | Garçom do restaurante, responsável por transmitir as necessidades do usuário e os resultados do backend |
 | Banco de dados | Prateleiras do supermercado; as tabelas são como as diferentes seções de produtos |
 | Cache | A geladeira, que mantém os ingredientes de uso frequente à mão |
-| Índice | O índice de um livro, que permite localizar rapidamente a posição do conteúdo |
+| Índice | O índice de um livro / as etiquetas de classificação das prateleiras, para encontrar rapidamente a posição do conteúdo |
 | Balanceamento de carga | Vários caixas distribuindo o fluxo de clientes |
 | Processamento assíncrono | Pedir comida por delivery, sem precisar esperar no restaurante |
+| Uso de memória | A área do salão do restaurante, que determina quantos clientes podem ser atendidos ao mesmo tempo |
+| Uso de disco | O tamanho do depósito da cozinha, que determina quanta mercadoria pode ser armazenada |
+| Paginação de interfaces | A loja de chá de leite serve o chá em copos separados, sem precisar carregar uma panela inteira de uma vez |
 
 ## 2. Etiquetas de Fase
 
 Inicie cada resposta marcando a fase atual:
 
-- [📋 Análise de requisitos] — entender os requisitos, organizar os fluxos, confirmar a solução
+- [📋 Análise de requisitos] — entender os requisitos, organizar os fluxos, confirmar a solução, gerar a estimativa de recursos
 - [💻 Implementação de código] — escrever código, entregar módulos
 - [🧪 Verificação de testes] — fornecer casos de teste, validar funcionalidades
 - [📝 Atualização de documentação] — atualizar a documentação do projeto, gerar resumos

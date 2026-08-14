@@ -4,7 +4,7 @@
 
 ### Lightweight Mode (Code Lines < 500)
 
-Only `README.md` is required, including: project overview, tech stack, core table structures, API list, deployment steps.
+Only `README.md` is required, including: project overview, tech stack, core table structures, API list, deployment steps, and a resource estimate mini-table.
 
 ### Standard Mode (Code Lines ≥ 500)
 
@@ -13,14 +13,35 @@ Create the following document structure upon project initialization:
 ```
 📁 /docs/
 ├── architecture.md      # Tech stack selection rationale (with daily analogies), system architecture diagrams (Mermaid), directory structure
+├── resource_estimate.md # Project resource estimate table (three tiers: memory / disk / configuration, scale-up thresholds)
 ├── dev_log.md           # Development log: timestamps, changes, test results, known issues & fixes
 ├── api_interface.md     # Frontend-backend API contracts (URLs, parameters, return values, exception scenarios)
 └── SNAPSHOT.md          # Core snapshot (≤ 200 lines): tech stack versions, table list, API paths, business flow charts
 ```
 
-Token Optimization: Generate a Context Summary after each conversation (progress, variable names, pending tasks, resume token).
+### Phase-0 Mandatory Output: Project Resource Estimate Table
 
-## 2. Front-End Visual Positioning Protocol
+Must be output after requirements are confirmed and before coding; standard format:
+
+| Configuration Tier | Peak Runtime Memory | Initial Disk Usage | Annual Disk Growth Estimate | Minimum CPU | Applicable Scenario |
+| :---------------- | :------------------ | :----------------- | :-------------------------- | :---------- | :------------------ |
+| Low               | XX MB               | XX MB              | XX MB                       | 1 core      | Solo development, low traffic |
+| Recommended       | XX MB               | XX MB              | XX MB                       | 2 cores     | Daily use, access by under 100 users |
+| High              | XX MB               | XX GB              | XX GB                       | 4 cores     | Concurrent access, production environment |
+
+- Scale-up trigger conditions: specify the user/data volume thresholds at which a configuration upgrade is required
+- Token consumption estimate: estimated Token consumption range across the full project lifecycle
+
+Token Optimization: Generate a 【Context Summary】 after each conversation (progress, variable names, pending tasks, resume token); keep each summary within 100 characters.
+
+## 2. Database Design Mandatory Spec
+
+- Output an index design plan alongside table structure design; core query fields must be indexed
+- Estimate per-table data volume; provide sharding/optimization plans in advance when it exceeds 100,000 rows
+- Set field lengths and types as needed to avoid excessive storage consumption
+- Mandatorily configure a database connection pool upper limit to prevent service crashes when connection counts are exhausted
+
+## 3. Front-End Visual Positioning Protocol
 
 Output the following positioning information before writing front-end code:
 
@@ -40,7 +61,7 @@ Define page structure via ASCII wireframes or Mermaid component trees.
 | :----------- | :-------- | :------------------ | :-------------------------------- |
 | Login Button | Click     | POST /api/login     | Redirect to homepage, store Token |
 
-## 3. Deployment & Disaster Recovery Mechanisms
+## 4. Deployment & Disaster Recovery Mechanisms
 
 ### Local Backup
 
@@ -61,16 +82,17 @@ Define page structure via ASCII wireframes or Mermaid component trees.
 - Separate configurations for development and production environments
 - Highlight security configuration items requiring modification for production use in advance
 
-## 4. Requirement Expansion & Suggestions
+## 5. Requirement Expansion & Suggestions
 
 After completing user-specified features, output a Feature Enhancement Suggestion Card:
 
 - ✅ Completed Feature Summary — Clear breakdown of available functionality
 - 🔮 Potential Risk Warnings — Concurrent access, data consistency, third-party dependency risks, etc.
 - 🚀 Recommended Extended Features — Mark priority P0/P1/P2, implementation difficulty star rating, expected benefits
+- ⚡ Performance Optimization Suggestions — Mark priority, e.g., P0: add indexes to core fields, P1: add cache to hot data
 - ⚠️ Beginner Pitfall Guide — Common misunderstandings and operational precautions
 
-## 5. Closed-Loop Testing & Self-Inspection
+## 6. Closed-Loop Testing & Self-Inspection
 
 ### Minimal Verifiable Test Cases
 
@@ -82,17 +104,17 @@ Provide manual validation steps for users, example:
 
 Mandatorily attach this statement after outputting code:
 
-> "Self-inspection completed: ① Correct variable scopes ② Full asynchronous handling ③ Complete exception capture ④ No sensitive data leakage ⑤ No obvious performance bottlenecks"
+> "Self-inspection completed: ① Correct variable scopes ② Full asynchronous handling ③ Complete exception capture ④ No sensitive data leakage ⑤ No obvious performance bottlenecks ⑥ Memory usage under control"
 
-## 6. Version Anchoring
+## 7. Version Anchoring
 
 Output standardized Git Commit messages upon completing each milestone:
 
 ```
 feat: user login module completed
-- Implement JWT Token authentication
-- Add password hash storage
-- Frontend login form validation
+Implement JWT Token authentication
+Add password hash storage
+Frontend login form validation
 Author: AI Assistant
 Date: 2026-08-08
 ```
