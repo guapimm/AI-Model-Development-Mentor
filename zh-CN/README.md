@@ -39,9 +39,9 @@ mentor pack                           # 生成兼容 skill 目录
 
 > 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：mimo / claude-code / codex / cursor / other。
 
-## 📖 使用指南（MIMO CLI）
+## 📖 使用指南
 
-### 命令速览
+### 命令速览 （MIMO CLI举例）
 
 | 场景 | 操作 |
 |------|------|
