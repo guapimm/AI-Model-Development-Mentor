@@ -1,0 +1,6 @@
+# build artifacts
+cli/dist/
+cli/files/
+npm/lib/
+node_modules/
+*.zip

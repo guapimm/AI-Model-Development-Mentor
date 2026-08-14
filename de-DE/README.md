@@ -12,20 +12,21 @@ Ein **reines Prompt-Framework**, das deinen KI-Codierungsassistenten in einen **
 
 Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *Sicherheit zuerst, transparente Logik, Dokumentation zuerst, Token-Effizienz und schrittweise Umsetzung* zu ihrem Standardverhalten. Das Ergebnis: eine KI, die nicht nur *Code schreibt*, sondern **sicheren, wartbaren, dokumentierten** Code schreibt.
 
-> ⚠️ Aktuell unterstützt: **Xiaomi MIMO CLI**. Optimierte Versionen für andere Produkte (Claude Code, Cursor usw.) sind geplant — hinterlasse einen Kommentar, wenn du eine brauchst.
+> ✅ Multi-Tool-kompatibel: **Xiaomi MIMO**, **Claude Code**, **OpenAI Codex**, **Cursor**, **Gemini CLI**, **Google Jules**, **Aider**, **Windsurf**, **GitHub Copilot Agent** — die passende Ladeanleitung für jedes Tool findest du in [COMPATIBILITY.md](./COMPATIBILITY.md).
 
-## Kernmodule (Xiaomi-MIMO-Build)
+## Kernmodule (multi-tool-kompatibel)
 
 | Modul | Datei | Zweck |
 |-------|-------|-------|
-| 🧑‍🏫 Mentorenrolle | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | Architektur-Mentoren-Persona + 6 eiserne Regeln + Sicherheits-Checkliste ★ Kernmodul, Pflicht |
-| 🛡️ Sicherheitsvorgaben | [security.md](./xiaomi-mimo/security.md) | 8 Sicherheitsbereiche: Geheimnisse / Eingabevalidierung / Datenbank / XSS / Dateisystem / externe Anfragen / Fehlerbehandlung / Leistung |
-| 🎨 Interaktionsstil | [style.md](./xiaomi-mimo/style.md) | Alltagsanalogien, Phasen-Tags, erst bestätigen dann handeln, progressive Komplexität |
-| 📋 Entwicklungs-Workflow | [workflow.md](./xiaomi-mimo/workflow.md) | Dokumentationssystem / Frontend-Zuordnungsprotokoll / Deployment & Rollback / Testschleife / Versionsanker |
+| 🧑‍🏫 Mentorenrolle | [AGENTS.md](./prompts/AGENTS.md) | Full-Stack-Architekten-Persona + 6 eiserne Regeln + Sicherheits- & Leistungs-Selbstprüf-Checkliste ★ Kernmodul, Pflicht |
+| 🛡️ Sicherheitsvorgaben | [security.md](./prompts/security.md) | 8 Sicherheitsbereiche: Schlüsselverwaltung / Eingabevalidierung / Datenbank / XSS / Dateisystem / externe Anfragen / Fehlerbehandlung / Leistung & Ressourcen |
+| 🎨 Interaktionsstil | [style.md](./prompts/style.md) | Alltagsanalogien, Phasen-Tags, erst bestätigen dann handeln, progressive Komplexität |
+| 📋 Entwicklungs-Workflow | [workflow.md](./prompts/workflow.md) | Dokumentationssystem / Ressourcenschätzung / Datenbankdesign / Frontend-Positionierungsprotokoll / Deployment & Notfallwiederherstellung / Test- & Selbstprüf-Schleife / Versionsanker |
 
 ## 📦 Weitere Dokumente
 
-- [Vollständiger-Mentor-Prompt.md](./Vollständiger-Mentor-Prompt.md) — gebündelter Komplett-Prompt (alle Module vereint)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — Ladeanleitung für jedes KI-Tool (MIMO / Claude Code / Codex / Cursor usw.)
+- [Vollständiger-Mentor-Prompt.md](./prompts/Vollständiger-Mentor-Prompt.md) — gebündelter Komplett-Prompt (alle Module vereint)
 
 ### Die 6 eisernen Regeln
 
@@ -161,12 +162,12 @@ Die KI zusätzlich:
 
 ```bash
 # 1. Die Mentorenrolle in dein Projekt kopieren (umbenennen)
-cp xiaomi-mimo/AGENTS.md AGENTS.md
+cp prompts/AGENTS.md AGENTS.md
 
 # 2. (Empfohlen) Sicherheits-, Stil- und Workflow-Vorgaben ebenfalls hinzufügen
-cp xiaomi-mimo/security.md security.md
-cp xiaomi-mimo/style.md style.md
-cp xiaomi-mimo/workflow.md workflow.md
+cp prompts/security.md security.md
+cp prompts/style.md style.md
+cp prompts/workflow.md workflow.md
 ```
 
 3. Xiaomi MIMO starten und sagen:
@@ -183,21 +184,23 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # MIT-Lizenz
 ├── zh-CN/               # Chinesisch
 │   ├── README.md        # Chinesischer Einstieg
-│   └── xiaomi-mimo/     # Xiaomi-MIMO-Build
+│   ├── COMPATIBILITY.md # Ladeanleitung für KI-Tools
+│   └── prompts/         # Modul-Prompts (toolübergreifend)
 │       ├── AGENTS.md    # Mentorenrolle (ZH)
 │       ├── security.md  # Sicherheitsvorgaben (ZH)
 │       ├── style.md     # Interaktionsstil (ZH)
 │       └── workflow.md  # Entwicklungs-Workflow (ZH)
 ├── en-US/               # Englisch
 │   ├── README.md        # Englischer Einstieg
-│   └── xiaomi-mimo/     # Xiaomi-MIMO-Build
+│   └── prompts/         # Modul-Prompts (toolübergreifend)
 │       ├── AGENTS.md    # Mentorenrolle (EN)
 │       ├── security.md  # Sicherheitsvorgaben (EN)
 │       ├── style.md     # Interaktionsstil (EN)
 │       └── workflow.md  # Entwicklungs-Workflow (EN)
 └── de-DE/               # Deutsch
     ├── README.md        # Deutscher Einstieg (diese Datei)
-    └── xiaomi-mimo/     # Xiaomi-MIMO-Build
+    ├── COMPATIBILITY.md # Ladeanleitung für KI-Tools
+    └── prompts/         # Modul-Prompts (toolübergreifend)
         ├── AGENTS.md    # Mentorenrolle (DE)
         ├── security.md  # Sicherheitsvorgaben (DE)
         ├── style.md     # Interaktionsstil (DE)
@@ -212,7 +215,7 @@ AI_Model_Development_Mentor/
 A: Nein. Nur `AGENTS.md` ist Pflicht. Füge `security.md` für stärkere Schutzvorkehrungen hinzu und `style.md` für eine freundlichere Gesprächserfahrung.
 
 **F: Funktioniert das auch mit anderen KI-Produkten?**
-A: Derzeit wird nur Xiaomi MIMO unterstützt. Optimierte Versionen für andere Produkte sind in Arbeit — hinterlasse einen Kommentar, um uns mitzuteilen, was du brauchst.
+A: Ja. Das Prompt-Framework ist unabhängig vom KI-Tool — in [COMPATIBILITY.md](./COMPATIBILITY.md) ist für jedes Tool (MIMO, Claude Code, Codex, Cursor usw.) die Ladeanleitung beschrieben.
 
 ## Lizenz
 

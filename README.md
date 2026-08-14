@@ -35,16 +35,55 @@ It forces the AI to follow a set of "iron rules" — making *Security First, Tra
 5. **Modular Isolation** — max 500 lines per file, reserve extension interfaces
 6. **Performance & Resource Upfront** — output index design with database schema, default pagination for list queries, three-tier resource estimation (memory/disk/CPU) at project start, release mechanisms for large memory operations
 
+## 🛠️ Supported AI Tools
+
+The prompt content is **tool-agnostic** — every tool only differs in *how* it loads files (filename, location, command). See [zh-CN/COMPATIBILITY.md](./zh-CN/COMPATIBILITY.md) for the full per-tool guide (also available in all 9 languages).
+
+| Tool | Main file (agent) | Location | Loading |
+|------|------------------|----------|---------|
+| Xiaomi MIMO | `AGENTS.md` | project root | manual `/skill AGENTS.md` |
+| Claude Code | `CLAUDE.md` / `AGENTS.md` | project root | auto |
+| OpenAI Codex | `AGENTS.md` | project root | auto |
+| Cursor | `AGENTS.md` | `.cursor/rules/` | auto |
+| Gemini CLI | `GEMINI.md` | project root | auto |
+| Google Jules | `JULES.md` | project root | auto |
+| Aider | `CONVENTIONS.md` | project root | auto |
+| Windsurf | `.windsurfrules` | project root | auto |
+| GitHub Copilot Agent | `AGENTS.md` | project root | auto |
+
+> 💡 **One-click install:** the `mentor` CLI writes files to the correct name/location for any of these tools automatically (see `cli/`).
+
+## ⬇️ Install
+
+Three ways, same result:
+
+```bash
+# Option A — Go binary (zero dependencies, cross-platform)
+# download mentor from GitHub Releases, then:
+mentor install
+
+# Option B — npm
+npm i -g ai-model-mentor
+ai-mentor install
+
+# Option C — manual
+# copy files from <lang>/prompts/ per your language's COMPATIBILITY.md
+cp en-US/prompts/AGENTS.md AGENTS.md
+```
+
+All three support: interactive wizard (language → modules → tool), non-interactive flags
+(`--lang zh-CN --modules agent,security --cli claude-code --dir ./proj`), and `add` / `remove` / `list` / `detect` / `pack`.
+
 ## Quick Start (3 steps)
 
 ```bash
 # 1. Copy the mentor role into your project (rename it)
-cp en-US/xiaomi-mimo/AGENTS.md AGENTS.md
+cp en-US/prompts/AGENTS.md AGENTS.md
 
 # 2. (Recommended) Add security / style / workflow specs too
-cp en-US/xiaomi-mimo/security.md security.md
-cp en-US/xiaomi-mimo/style.md style.md
-cp en-US/xiaomi-mimo/workflow.md workflow.md
+cp en-US/prompts/security.md security.md
+cp en-US/prompts/style.md style.md
+cp en-US/prompts/workflow.md workflow.md
 ```
 
 3. Launch Xiaomi MIMO and say:
@@ -59,12 +98,17 @@ The AI will advance through "Design → Core Logic → UI → Testing", waiting 
 AI_Model_Development_Mentor/
 ├── README.md            # English landing page + language switcher
 ├── LICENSE              # MIT License
+├── cli/                 # mentor CLI (Go, single binary) — one-click install
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
-└── <lang>/xiaomi-mimo/  # module files per language
-    ├── AGENTS.md        # mentor role ★ required
-    ├── security.md      # security spec
-    ├── style.md         # interaction style
-    └── workflow.md      # dev workflow
+└── <lang>/
+    ├── README.md        # language entry + usage guide
+    ├── COMPATIBILITY.md # per-tool loading instructions (the "one adapter file")
+    └── prompts/         # tool-agnostic content (per language)
+        ├── AGENTS.md    # mentor role ★ required
+        ├── security.md  # security spec
+        ├── style.md     # interaction style
+        ├── workflow.md  # dev workflow
+        └── <full>.md    # consolidated one-shot prompt
 ```
 
 > 📦 New product builds are added as sibling directories under each language dir, e.g. `zh-CN/claude-code/`, `en-US/cursor/`.

@@ -12,20 +12,21 @@
 
 이 프레임워크는 AI가 일련의 "철칙"을 따르도록 강제합니다 — *보안 최우선, 투명한 로직, 문서 우선, Token 효율, 단계적 구현*을 AI의 기본 동작으로 만듭니다. 그 결과, AI는 단순히 *코드를 작성하는 것*을 넘어 **안전하고, 유지보수하기 쉬우며, 문서화된 코드**를 작성하게 됩니다.
 
-> ⚠️ 현재 지원: **Xiaomi MIMO CLI**. 다른 제품(Claude Code, Cursor 등)용 최적화 버전은 계획 중입니다 — 필요하시면 댓글로 남겨 주세요.
+> ⚠️ 다중 도구 호환: 프롬프트는 모든 LLM 기반 코딩 도구(MIMO / Claude Code / Codex / Cursor 등)에서 사용할 수 있습니다. 도구별 로딩 방법은 [COMPATIBILITY.md](./COMPATIBILITY.md)를 참고하세요.
 
-## 핵심 모듈 (Xiaomi MIMO 버전)
+## 핵심 모듈 (다중 도구 호환)
 
 | 모듈 | 파일 | 용도 |
 |------|------|------|
-| 🧑‍🏫 멘토 역할 | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | 아키텍트-멘토 페르소나 + 6대 철칙 + 보안 자가 점검 체크리스트 ★ 핵심, 필수 |
-| 🛡️ 보안 규범 | [security.md](./xiaomi-mimo/security.md) | 8대 보안 영역: 키 관리 / 입력 검증 / 데이터베이스 / XSS / 파일 시스템 / 외부 요청 / 예외 처리 / 성능 |
-| 🎨 상호작용 스타일 | [style.md](./xiaomi-mimo/style.md) | 생활 속 비유, 단계 태그, 먼저 확인 후 실행, 점진적 복잡도 |
-| 📋 개발 워크플로우 | [workflow.md](./xiaomi-mimo/workflow.md) | 문서 체계 / 프론트엔드 매핑 프로토콜 / 배포·롤백 / 테스트 루프 / 버전 앵커 |
+| 🧑‍🏫 멘토 역할 | [AGENTS.md](./prompts/AGENTS.md) | 풀스택 아키텍트 멘토 페르소나 + 6대 철칙 + 보안·성능 자가 점검 체크리스트 ★ 핵심, 필수 |
+| 🛡️ 보안 규범 | [security.md](./prompts/security.md) | 8대 보안 영역 규범: 키 관리 / 입력 검증 / 데이터베이스 / XSS / 파일 시스템 / 외부 요청 / 예외 처리 / 성능·리소스 |
+| 🎨 상호작용 스타일 | [style.md](./prompts/style.md) | 생활 속 비유, 단계 태그, 먼저 확인 후 실행, 점진적 복잡도 |
+| 📋 개발 워크플로우 | [workflow.md](./prompts/workflow.md) | 문서 체계 / 리소스 예측 / 데이터베이스 설계 / 프론트엔드 연동 프로토콜 / 배포·재해 복구 / 테스트 자가 점검 루프 / 버전 앵커 |
 
 ## 📦 추가 문서
 
-- [개발 멘토 완전판 프롬프트.md](./개발 멘토 완전판 프롬프트.md) — 모든 모듈을 통합한 한 번에 로드하는 완전판 프롬프트
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — 각 AI 도구(MIMO / Claude Code / Codex / Cursor 등) 로딩 방법
+- [개발 멘토 완전판 프롬프트.md](./prompts/개발 멘토 완전판 프롬프트.md) — 모든 모듈을 통합한 한 번에 로드하는 완전판 프롬프트
 
 ## 📖 사용 가이드（MIMO CLI）
 
@@ -161,12 +162,12 @@ AI가 추가로 수행하는 작업:
 
 ```bash
 # 1. 멘토 역할을 프로젝트로 복사 (이름을 AGENTS.md로 변경)
-cp xiaomi-mimo/AGENTS.md AGENTS.md
+cp prompts/AGENTS.md AGENTS.md
 
 # 2. (권장) 보안/스타일/워크플로우 규범도 함께 추가
-cp xiaomi-mimo/security.md security.md
-cp xiaomi-mimo/style.md style.md
-cp xiaomi-mimo/workflow.md workflow.md
+cp prompts/security.md security.md
+cp prompts/style.md style.md
+cp prompts/workflow.md workflow.md
 ```
 
 3. Xiaomi MIMO를 실행하고 다음과 같이 말하세요:
@@ -183,21 +184,21 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # MIT License
 ├── zh-CN/               # 중국어
 │   ├── README.md        # 중국어 입구
-│   └── xiaomi-mimo/     # Xiaomi MIMO 버전
+│   └── prompts/         # 프롬프트 모듈 (다중 도구 호환)
 │       ├── AGENTS.md    # 멘토 역할 (ZH)
 │       ├── security.md  # 보안 규범 (ZH)
 │       ├── style.md     # 상호작용 스타일 (ZH)
 │       └── workflow.md  # 개발 워크플로우 (ZH)
 ├── en-US/               # 영어
 │   ├── README.md        # 영어 입구
-│   └── xiaomi-mimo/     # Xiaomi MIMO 버전
+│   └── prompts/         # 프롬프트 모듈 (다중 도구 호환)
 │       ├── AGENTS.md    # 멘토 역할 (EN)
 │       ├── security.md  # 보안 규범 (EN)
 │       ├── style.md     # 상호작용 스타일 (EN)
 │       └── workflow.md  # 개발 워크플로우 (EN)
 └── ko-KR/               # 한국어
     ├── README.md        # 한국어 입구 (이 파일)
-    └── xiaomi-mimo/     # Xiaomi MIMO 버전
+    └── prompts/         # 프롬프트 모듈 (다중 도구 호환)
         ├── AGENTS.md    # 멘토 역할 (KO)
         ├── security.md  # 보안 규범 (KO)
         ├── style.md     # 상호작용 스타일 (KO)
@@ -212,7 +213,7 @@ AI_Model_Development_Mentor/
 A: 아닙니다. `AGENTS.md`만 필수입니다. 더 강한 안전 장치가 필요하면 `security.md`를, 더 친근한 대화 경험이 필요하면 `style.md`를 추가하세요.
 
 **Q: 다른 AI 제품에서도 동작하나요?**
-A: 현재는 Xiaomi MIMO만 지원합니다. 다른 제품용 최적화 버전은 준비 중입니다 — 필요한 것을 댓글로 남겨 주세요.
+A: 네. 프롬프트는 특정 도구에 종속되지 않으므로 모든 LLM 기반 코딩 도구에서 동작합니다. 도구별 로딩 방법은 [COMPATIBILITY.md](./COMPATIBILITY.md)를 참고하세요.
 
 ## 라이선스
 

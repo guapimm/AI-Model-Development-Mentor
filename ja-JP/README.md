@@ -14,18 +14,19 @@ AI に一連の「鉄則」を守らせることで、*セキュリティ最優�
 
 > ⚠️ 現在対応：**Xiaomi MIMO CLI**。他の製品（Claude Code、Cursor など）向けの最適化版は準備中です。必要な場合はコメントをお寄せください。
 
-## 中核モジュール（Xiaomi MIMO 対応版）
+## 中核モジュール（多ツール対応）
 
 | モジュール | ファイル | 役割 |
 |--------|------|------|
-| 🧑‍🏫 メンター役割 | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | アーキテクト兼メンターのペルソナ + 6 大鉄則 + 安全セルフチェックリスト ★ 中核、必須 |
-| 🛡️ セキュリティ仕様 | [security.md](./xiaomi-mimo/security.md) | 8 つのセキュリティ領域：秘密鍵 / 入力検証 / データベース / XSS / ファイルシステム / 外部リクエスト / 例外処理 / パフォーマンス |
-| 🎨 対話スタイル | [style.md](./xiaomi-mimo/style.md) | 生活に即した例え、フェーズタグ、実行前の確認、段階的な複雑度 |
-| 📋 開発ワークフロー | [workflow.md](./xiaomi-mimo/workflow.md) | ドキュメント体系 / フロントエンド配置プロトコル / デプロイとロールバック / テストループ / バージョンアンカー |
+| 🧑‍🏫 メンター役割 | [AGENTS.md](./prompts/AGENTS.md) | フルスタックアーキテクト兼メンターのペルソナ + 6 大鉄則 + セキュリティ・パフォーマンスのセルフチェックリスト ★ 中核、必須 |
+| 🛡️ セキュリティ仕様 | [security.md](./prompts/security.md) | 8 大セキュリティ領域の規範：秘密鍵管理 / 入力検証 / データベース / XSS / ファイルシステム / 外部リクエスト / 例外処理 / パフォーマンスとリソース |
+| 🎨 対話スタイル | [style.md](./prompts/style.md) | 生活に即した例え、フェーズタグ、実行前の確認、段階的な複雑度 |
+| 📋 開発ワークフロー | [workflow.md](./prompts/workflow.md) | ドキュメント体系 / リソース見積もり / データベース設計 / フロントエンド配置プロトコル / デプロイと障害対策 / テストセルフチェックループ / バージョンアンカー |
 
 ## 📦 その他のドキュメント
 
-- [開発メンター完全版プロンプト.md](./開発メンター完全版プロンプト.md) — 全モジュールを統合した一括ロード用の完全版プロンプト
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI ツール（MIMO / Claude Code / Codex / Cursor 等）の読み込み説明
+- [開発メンター完全版プロンプト.md](./prompts/開発メンター完全版プロンプト.md) — 全モジュールを統合した一括ロード用の完全版プロンプト
 
 ## 📖 使い方ガイド（MIMO CLI）
 
@@ -161,12 +162,12 @@ AI がさらに行うこと：
 
 ```bash
 # 1. メンター役割をプロジェクトへコピー（AGENTS.md にリネーム）
-cp xiaomi-mimo/AGENTS.md AGENTS.md
+cp prompts/AGENTS.md AGENTS.md
 
 # 2.（推奨）セキュリティ / スタイル / ワークフロー仕様も追加
-cp xiaomi-mimo/security.md security.md
-cp xiaomi-mimo/style.md style.md
-cp xiaomi-mimo/workflow.md workflow.md
+cp prompts/security.md security.md
+cp prompts/style.md style.md
+cp prompts/workflow.md workflow.md
 ```
 
 3. Xiaomi MIMO を起動して、次のように伝えます：
@@ -183,21 +184,24 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # MIT License
 ├── zh-CN/               # 中国語
 │   ├── README.md        # 中国語エントリ
-│   └── xiaomi-mimo/     # Xiaomi MIMO 対応版
+│   ├── COMPATIBILITY.md # ツール別の読み込み説明（ZH）
+│   └── prompts/         # プロンプトモジュール（ZH）
 │       ├── AGENTS.md    # メンター役割（ZH）
 │       ├── security.md  # セキュリティ仕様（ZH）
 │       ├── style.md     # 対話スタイル（ZH）
 │       └── workflow.md  # 開発ワークフロー（ZH）
 ├── en-US/               # 英語
 │   ├── README.md        # 英語エントリ
-│   └── xiaomi-mimo/     # Xiaomi MIMO 対応版
+│   ├── COMPATIBILITY.md # ツール別の読み込み説明（EN）
+│   └── prompts/         # プロンプトモジュール（EN）
 │       ├── AGENTS.md    # メンター役割（EN）
 │       ├── security.md  # セキュリティ仕様（EN）
 │       ├── style.md     # 対話スタイル（EN）
 │       └── workflow.md  # 開発ワークフロー（EN）
 └── ja-JP/               # 日本語
     ├── README.md        # 日本語エントリ（このファイル）
-    └── xiaomi-mimo/     # Xiaomi MIMO 対応版
+    ├── COMPATIBILITY.md # ツール別の読み込み説明（JA）
+    └── prompts/         # プロンプトモジュール（JA）
         ├── AGENTS.md    # メンター役割（JA）
         ├── security.md  # セキュリティ仕様（JA）
         ├── style.md     # 対話スタイル（JA）

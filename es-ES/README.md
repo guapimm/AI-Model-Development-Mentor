@@ -10,22 +10,23 @@
 
 Un **framework de solo prompts (pure-prompt)** que moldea a tu asistente de codificación con IA en un **arquitecto full-stack y mentor de desarrollo con 10 años de experiencia**, diseñado para quienes empiezan a programar desde cero.
 
-Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su comportamiento por defecto: *Seguridad ante todo, Lógica transparente, Documentación primero, Eficiencia de Token y Ejecución por fases*. El resultado: una IA que no solo *escribe código*, sino que escribe código **seguro, mantenible y documentado**.
+Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su comportamiento por defecto: *Seguridad ante todo, Lógica transparente, Documentación primero, Eficiencia de Token, Ejecución por fases y Control de recursos*. El resultado: una IA que no solo *escribe código*, sino que escribe código **seguro, mantenible y documentado**.
 
 > ⚠️ Actualmente compatible con: **Xiaomi MIMO CLI**. Se planean versiones optimizadas para otros productos (Claude Code, Cursor, etc.): deja un comentario si necesitas una.
 
-## Módulos principales (versión Xiaomi MIMO)
+## Módulos principales (compatibles con varias herramientas)
 
 | Módulo | Archivo | Propósito |
 |--------|---------|-----------|
-| 🧑‍🏫 Rol de mentor | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | Persona de arquitecto-mentor + 6 reglas de hierro + lista de verificación de seguridad ★ núcleo, de uso obligatorio |
-| 🛡️ Especificación de seguridad | [security.md](./xiaomi-mimo/security.md) | 8 dominios de seguridad: secretos / validación de entradas / base de datos / XSS / sistema de archivos / solicitudes externas / manejo de errores / rendimiento |
-| 🎨 Estilo de interacción | [style.md](./xiaomi-mimo/style.md) | Analogías cotidianas, etiquetas de fase, confirmar antes de ejecutar, complejidad progresiva |
-| 📋 Flujo de trabajo de desarrollo | [workflow.md](./xiaomi-mimo/workflow.md) | Sistema de documentación / protocolo de mapeo del frontend / despliegue y reversión / bucle de pruebas / anclas de versión |
+| 🧑‍🏫 Rol de mentor | [AGENTS.md](./prompts/AGENTS.md) | Persona de arquitecto-mentor + 6 reglas de hierro + lista de verificación de seguridad y rendimiento ★ núcleo, de uso obligatorio |
+| 🛡️ Especificación de seguridad | [security.md](./prompts/security.md) | 8 dominios de seguridad: gestión de secretos / validación de entradas / base de datos / XSS / sistema de archivos / solicitudes externas / manejo de errores / rendimiento y recursos |
+| 🎨 Estilo de interacción | [style.md](./prompts/style.md) | Analogías cotidianas, etiquetas de fase, confirmar antes de ejecutar, complejidad progresiva |
+| 📋 Flujo de trabajo de desarrollo | [workflow.md](./prompts/workflow.md) | Sistema de documentación / estimación de recursos / diseño de base de datos / protocolo de localización del frontend / despliegue y recuperación ante desastres / bucle de autocomprobación de pruebas / anclas de versión |
 
 ## 📦 Más documentos
 
-- [Prompt-Completo-del-Mentor.md](./Prompt-Completo-del-Mentor.md) — prompt completo consolidado (todos los módulos fusionados)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — guía de carga para cada herramienta de IA (MIMO / Claude Code / Codex / Cursor, etc.)
+- [Prompt-Completo-del-Mentor.md](./prompts/Prompt-Completo-del-Mentor.md) — prompt completo consolidado (todos los módulos fusionados)
 
 ## 📖 Guía de uso (MIMO CLI)
 
@@ -155,18 +156,18 @@ La IA hará además:
 3. **Cambios sin efectos destructivos** — analizar primero las dependencias, etiquetar las ediciones como 【Modificación obligatoria】 / 【Optimización opcional】
 4. **Ejecución por fases** — nunca más de 300 líneas por salida, esperar confirmación en cada paso
 5. **Aislamiento modular** — máximo 500 líneas por archivo, reservar interfaces de extensión
-6. **Eficiencia de Token** — generar un resumen de contexto y una contraseña de reanudación después de cada conversación
+6. **Rendimiento y recursos por adelantado** — el diseño de la base de datos debe emitir a la vez el plan de índices; las consultas de listas llevan paginación por defecto; al iniciar el proyecto se hace la estimación de recursos en tres niveles (memoria/disco/CPU); las operaciones con gran consumo de memoria disponen de un mecanismo de liberación
 
 ## Inicio rápido (3 pasos)
 
 ```bash
 # 1. Copia el rol de mentor a tu proyecto (cámbiale el nombre)
-cp xiaomi-mimo/AGENTS.md AGENTS.md
+cp prompts/AGENTS.md AGENTS.md
 
 # 2. (Recomendado) Añade también las especificaciones de seguridad, estilo y flujo de trabajo
-cp xiaomi-mimo/security.md security.md
-cp xiaomi-mimo/style.md style.md
-cp xiaomi-mimo/workflow.md workflow.md
+cp prompts/security.md security.md
+cp prompts/style.md style.md
+cp prompts/workflow.md workflow.md
 ```
 
 3. Inicia Xiaomi MIMO y di:
@@ -183,21 +184,24 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # Licencia MIT
 ├── zh-CN/               # Chino
 │   ├── README.md        # Entrada en chino
-│   └── xiaomi-mimo/     # Versión Xiaomi MIMO
+│   ├── COMPATIBILITY.md # Guía de carga por herramienta
+│   └── prompts/         # Contenido independiente de la herramienta
 │       ├── AGENTS.md    # Rol de mentor (ZH)
 │       ├── security.md  # Especificación de seguridad (ZH)
 │       ├── style.md     # Estilo de interacción (ZH)
 │       └── workflow.md  # Flujo de trabajo de desarrollo (ZH)
 ├── en-US/               # Inglés
 │   ├── README.md        # Entrada en inglés
-│   └── xiaomi-mimo/     # Versión Xiaomi MIMO
+│   ├── COMPATIBILITY.md # Guía de carga por herramienta
+│   └── prompts/         # Contenido independiente de la herramienta
 │       ├── AGENTS.md    # Rol de mentor (EN)
 │       ├── security.md  # Especificación de seguridad (EN)
 │       ├── style.md     # Estilo de interacción (EN)
 │       └── workflow.md  # Flujo de trabajo de desarrollo (EN)
 └── es-ES/               # Español
     ├── README.md        # Entrada en español (este archivo)
-    └── xiaomi-mimo/     # Versión Xiaomi MIMO
+    ├── COMPATIBILITY.md # Guía de carga por herramienta
+    └── prompts/         # Contenido independiente de la herramienta
         ├── AGENTS.md    # Rol de mentor (ES)
         ├── security.md  # Especificación de seguridad (ES)
         ├── style.md     # Estilo de interacción (ES)

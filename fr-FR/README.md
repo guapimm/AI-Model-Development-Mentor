@@ -14,18 +14,19 @@ Il impose à l'IA de suivre des « règles d'airain » — faire de la *Sécurit
 
 > ⚠️ Actuellement pris en charge : **Xiaomi MIMO CLI**. Des versions optimisées pour d'autres produits (Claude Code, Cursor, etc.) sont prévues — laissez un commentaire si vous en avez besoin.
 
-## Modules principaux (version Xiaomi MIMO)
+## Modules principaux (compatibles multi-outils)
 
 | Module | Fichier | Rôle |
 |--------|---------|------|
-| 🧑‍🏫 Rôle de mentor | [AGENTS.md](./xiaomi-mimo/AGENTS.md) | Persona d'architecte-mentor + 6 règles d'airain + liste de contrôle de sécurité ★ indispensable |
-| 🛡️ Normes de sécurité | [security.md](./xiaomi-mimo/security.md) | 8 domaines de sécurité : clés secrètes / validation des entrées / base de données / XSS / système de fichiers / requêtes externes / gestion des erreurs / performances |
-| 🎨 Style d'interaction | [style.md](./xiaomi-mimo/style.md) | Analogies de la vie courante, étiquettes de phase, confirmer avant d'agir, complexité progressive |
-| 📋 Flux de développement | [workflow.md](./xiaomi-mimo/workflow.md) | Système documentaire / protocole de positionnement front-end / déploiement et retour arrière / boucle de test / ancrage de version |
+| 🧑‍🏫 Rôle de mentor | [AGENTS.md](./prompts/AGENTS.md) | Persona d'architecte-mentor full-stack + 6 règles d'airain + liste de contrôle de sécurité et de performances ★ indispensable |
+| 🛡️ Normes de sécurité | [security.md](./prompts/security.md) | 8 domaines de sécurité : gestion des clés secrètes / validation des entrées / base de données / XSS / système de fichiers / requêtes externes / gestion des exceptions / performances et ressources |
+| 🎨 Style d'interaction | [style.md](./prompts/style.md) | Analogies de la vie courante, étiquettes de phase, confirmer avant d'agir, complexité progressive |
+| 📋 Flux de développement | [workflow.md](./prompts/workflow.md) | Système documentaire / estimation des ressources / conception de la base de données / protocole de positionnement front-end / déploiement et reprise après sinistre / boucle de test et d'autocontrôle / ancrage de version |
 
 ## 📦 Plus de documents
 
-- [Prompt-Complet-du-Mentor.md](./Prompt-Complet-du-Mentor.md) — prompt consolidé tout-en-un (tous les modules fusionnés)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — guide de chargement pour chaque outil d'IA (MIMO / Claude Code / Codex / Cursor, etc.)
+- [Prompt-Complet-du-Mentor.md](./prompts/Prompt-Complet-du-Mentor.md) — prompt consolidé tout-en-un (tous les modules fusionnés)
 
 ### Les 6 règles d'airain
 
@@ -161,12 +162,12 @@ En plus, l'IA :
 
 ```bash
 # 1. Copiez le rôle de mentor dans votre projet (renommez-le)
-cp xiaomi-mimo/AGENTS.md AGENTS.md
+cp prompts/AGENTS.md AGENTS.md
 
 # 2. (Recommandé) Ajoutez aussi les normes sécurité / style / workflow
-cp xiaomi-mimo/security.md security.md
-cp xiaomi-mimo/style.md style.md
-cp xiaomi-mimo/workflow.md workflow.md
+cp prompts/security.md security.md
+cp prompts/style.md style.md
+cp prompts/workflow.md workflow.md
 ```
 
 3. Lancez Xiaomi MIMO et dites :
@@ -184,11 +185,14 @@ AI_Model_Development_Mentor/
 ├── zh-CN/               # Chinois
 ├── en-US/               # Anglais
 └── fr-FR/               # Français (cette page)
-    └── xiaomi-mimo/     # Version Xiaomi MIMO
-        ├── AGENTS.md    # Rôle de mentor (FR)
+    ├── README.md        # Page d'accueil + guide d'utilisation
+    ├── COMPATIBILITY.md # Guide de chargement par outil
+    └── prompts/         # Contenu indépendant des outils
+        ├── AGENTS.md    # Rôle de mentor (FR) ★ indispensable
         ├── security.md  # Normes de sécurité (FR)
         ├── style.md     # Style d'interaction (FR)
-        └── workflow.md  # Flux de développement (FR)
+        ├── workflow.md  # Flux de développement (FR)
+        └── Prompt-Complet-du-Mentor.md  # Prompt consolidé (FR)
 ```
 
 > 📦 Les nouvelles versions produits sont ajoutées en répertoires parallèles sous chaque dossier de langue, par ex. `fr-FR/claude-code/`, `fr-FR/cursor/`.
