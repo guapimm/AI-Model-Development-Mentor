@@ -37,6 +37,29 @@ Il impose à l'IA de suivre des « règles d'airain » — faire de la *Sécurit
 5. **Isolation modulaire** — 500 lignes maximum par fichier, prévoir des interfaces d'extension
 6. **La performance et les ressources d'abord** — émettre un plan d'indexation en parallèle de la conception de la base de données ; pagination par défaut pour les interfaces de requête ; estimation des ressources sur trois niveaux (mémoire / disque / puissance de calcul) au début du projet ; mécanisme de libération pour les opérations gourmandes en mémoire
 
+## ⬇️ Installation et utilisation de mentor CLI
+
+**Option A : binaire Go (recommandé, zéro dépendance, multiplateforme)**
+
+Téléchargez l'exécutable `mentor` correspondant à votre plateforme depuis GitHub Releases (v0.1.0, prend en charge Windows / Linux / macOS), puis placez-le dans votre PATH :
+
+```bash
+mentor install                        # Assistant interactif : choisir la langue → choisir le module (agent par défaut) → détection automatique de l'outil
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # Ajouter un module
+mentor list                           # Afficher les modules installés
+mentor detect                         # Détecter l'outil d'IA utilisé par le projet
+mentor pack                           # Générer un répertoire de skill compatible
+```
+
+`mentor` écrit automatiquement le bon nom de fichier et le bon emplacement selon l'outil : MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**Option B : copie manuelle**
+
+Suivez les instructions de [COMPATIBILITY.md](./COMPATIBILITY.md) pour copier les fichiers de `prompts/` vers les emplacements correspondants de votre projet.
+
+> Commandes prises en charge : `install` / `add` / `remove` / `list` / `detect` / `pack` ; modules : agent (par défaut) / security / style / workflow / complete ; outils : mimo / claude-code / codex / cursor / other.
+
 ## 📖 Guide d'utilisation (MIMO CLI)
 
 ### Aperçu des commandes

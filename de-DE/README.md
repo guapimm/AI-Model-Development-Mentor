@@ -37,6 +37,29 @@ Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *
 5. **Modulare Isolation** — maximal 500 Zeilen pro Datei, Erweiterungsschnittstellen vorsehen
 6. **Leistung & Ressourcen zuerst** — die Datenbankentwicklung beinhaltet stets einen Indexplan; Abfrage-Schnittstellen sind standardmäßig paginiert; zu Projektbeginn eine dreistufige Ressourcenschätzung für Arbeitsspeicher, Speicherplatz und Rechenleistung erstellen; umfangreiche Speicheroperationen müssen über einen Freigabemechanismus verfügen
 
+## ⬇️ Installation und Verwendung von mentor CLI
+
+**Variante A: Go-Binary (empfohlen, null Abhängigkeiten, plattformübergreifend)**
+
+Lade die ausführbare Datei `mentor` für deine Plattform von den GitHub Releases herunter (v0.1.0, unterstützt Windows / Linux / macOS), lege sie in den PATH und:
+
+```bash
+mentor install                        # Interaktiver Assistent: Sprache wählen → Module (Standard: agent) → Tool automatisch erkennen
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # Modul hinzufügen
+mentor list                           # Installierte Module anzeigen
+mentor detect                         # Erkennen, welches KI-Tool das Projekt verwendet
+mentor pack                           # Kompatibles Skill-Verzeichnis erzeugen
+```
+
+`mentor` schreibt automatisch den korrekten Dateinamen und Speicherort je nach Tool: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**Variante B: Manuelles Kopieren**
+
+Kopiere die Dateien aus `prompts/` gemäß den Anweisungen in [COMPATIBILITY.md](./COMPATIBILITY.md) an die entsprechenden Stellen im Projekt.
+
+> Unterstützte Befehle: `install` / `add` / `remove` / `list` / `detect` / `pack`; Module: agent (Standard) / security / style / workflow / complete; Tools: mimo / claude-code / codex / cursor / other.
+
 ## 📖 Anleitung (MIMO CLI)
 
 ### Befehlsübersicht

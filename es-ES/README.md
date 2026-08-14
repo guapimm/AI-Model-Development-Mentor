@@ -28,6 +28,29 @@ Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su com
 - [COMPATIBILITY.md](./COMPATIBILITY.md) — guía de carga para cada herramienta de IA (MIMO / Claude Code / Codex / Cursor, etc.)
 - [Prompt-Completo-del-Mentor.md](./prompts/Prompt-Completo-del-Mentor.md) — prompt completo consolidado (todos los módulos fusionados)
 
+## ⬇️ Instalación y uso de mentor CLI
+
+**Opción A: binario de Go (recomendado, cero dependencias, multiplataforma)**
+
+Descarga el ejecutable `mentor` de tu plataforma desde las Releases de GitHub (v0.1.0, compatible con Windows / Linux / macOS), colócalo en el PATH y ejecuta:
+
+```bash
+mentor install                        # asistente interactivo: elige idioma → elige módulos (agent por defecto) → detecta la herramienta automáticamente
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # añade un módulo
+mentor list                           # consulta los módulos instalados
+mentor detect                         # detecta la herramienta de IA que usa el proyecto
+mentor pack                           # genera un directorio de skills compatible
+```
+
+`mentor` escribe automáticamente el nombre y la ubicación de archivo correctos según la herramienta: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**Opción B: copia manual**
+
+Según las instrucciones de [COMPATIBILITY.md](./COMPATIBILITY.md), copia los archivos de `prompts/` a las ubicaciones correspondientes del proyecto.
+
+> Comandos soportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (por defecto) / security / style / workflow / complete; herramientas: mimo / claude-code / codex / cursor / other.
+
 ## 📖 Guía de uso (MIMO CLI)
 
 ### Comandos de un vistazo

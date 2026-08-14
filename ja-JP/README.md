@@ -28,6 +28,29 @@ AI に一連の「鉄則」を守らせることで、*セキュリティ最優�
 - [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI ツール（MIMO / Claude Code / Codex / Cursor 等）の読み込み説明
 - [開発メンター完全版プロンプト.md](./prompts/開発メンター完全版プロンプト.md) — 全モジュールを統合した一括ロード用の完全版プロンプト
 
+## ⬇️ mentor CLI のインストールと使い方
+
+**方法 A：Go バイナリ（推奨、依存ゼロ・クロスプラットフォーム）**
+
+GitHub Releases から対応プラットフォームの `mentor` 実行ファイル（v0.1.0、Windows / Linux / macOS 対応）をダウンロードして PATH に追加します：
+
+```bash
+mentor install                        # 対話ウィザード：言語選択 → モジュール選択（デフォルトは agent）→ ツールの自動検出
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # モジュールを追加
+mentor list                           # インストール済みモジュールを確認
+mentor detect                         # プロジェクトが使用している AI ツールを検出
+mentor pack                           # 互換性のある skill ディレクトリを生成
+```
+
+`mentor` はツールに応じて正しいファイル名と保存場所を自動で書き込みます：MIMO/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
+
+**方法 B：手動コピー**
+
+[COMPATIBILITY.md](./COMPATIBILITY.md) の説明に従って、`prompts/` 配下のファイルをプロジェクトの該当する場所にコピーしてください。
+
+> 対応コマンド：`install` / `add` / `remove` / `list` / `detect` / `pack`；モジュール：agent（デフォルト）/ security / style / workflow / complete；ツール：mimo / claude-code / codex / cursor / other。
+
 ## 📖 使い方ガイド（MIMO CLI）
 
 ### コマンド速覧

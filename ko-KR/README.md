@@ -28,6 +28,29 @@
 - [COMPATIBILITY.md](./COMPATIBILITY.md) — 각 AI 도구(MIMO / Claude Code / Codex / Cursor 등) 로딩 방법
 - [개발 멘토 완전판 프롬프트.md](./prompts/개발 멘토 완전판 프롬프트.md) — 모든 모듈을 통합한 한 번에 로드하는 완전판 프롬프트
 
+## ⬇️ mentor CLI 설치 및 사용법
+
+**방식 A: Go 바이너리 (권장, 제로 의존성, 크로스 플랫폼)**
+
+GitHub Releases에서 해당 플랫폼의 `mentor` 실행 파일(v0.1.0, Windows / Linux / macOS 지원)을 다운로드하여 PATH에 추가한 후:
+
+```bash
+mentor install                        # 대화형 가이드: 언어 선택 → 모듈 선택(기본값 agent) → 도구 자동 감지
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # 모듈 추가
+mentor list                           # 설치된 모듈 확인
+mentor detect                         # 프로젝트에서 사용 중인 AI 도구 감지
+mentor pack                           # 호환 가능한 skill 디렉터리 생성
+```
+
+`mentor`는 도구에 따라 올바른 파일 이름과 위치를 자동으로 기록합니다: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**방식 B: 수동 복사**
+
+[COMPATIBILITY.md](./COMPATIBILITY.md)의 안내에 따라 `prompts/` 아래의 파일을 프로젝트의 해당 위치에 복사하세요.
+
+> 지원 명령어: `install` / `add` / `remove` / `list` / `detect` / `pack`; 모듈: agent(기본값) / security / style / workflow / complete; 도구: mimo / claude-code / codex / cursor / other.
+
 ## 📖 사용 가이드（MIMO CLI）
 
 ### 명령어 빠른 요약

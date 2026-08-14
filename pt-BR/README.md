@@ -37,6 +37,29 @@ Ele obriga a IA a seguir um conjunto de "regras de ferro" — tornando *Seguran�
 5. **Isolamento modular** — máximo de 500 linhas por arquivo, reserve interfaces de extensão
 6. **Desempenho e recursos em primeiro lugar** — design de banco de dados com plano de índices, paginação por padrão nas consultas de listas, estimativa de recursos em três níveis (memória/disco/CPU) no início do projeto e mecanismo de liberação para operações com alto consumo de memória
 
+## ⬇️ Instalação e uso do mentor CLI
+
+**Opção A: binário Go (recomendado, zero dependências, multiplataforma)**
+
+Baixe o executável `mentor` para a sua plataforma nos GitHub Releases (v0.1.0, compatível com Windows / Linux / macOS) e coloque-o no PATH:
+
+```bash
+mentor install                        # assistente interativo: escolha o idioma → escolha os módulos (padrão: agent) → detecta a ferramenta automaticamente
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # adiciona módulos
+mentor list                           # lista os módulos instalados
+mentor detect                         # detecta as ferramentas de IA usadas no projeto
+mentor pack                           # gera um diretório de skill compatível
+```
+
+O `mentor` grava automaticamente o nome e a localização corretos do arquivo conforme a ferramenta: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**Opção B: cópia manual**
+
+Siga as instruções do [COMPATIBILITY.md](./COMPATIBILITY.md) e copie os arquivos de `prompts/` para as localizações correspondentes no projeto.
+
+> Comandos suportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (padrão) / security / style / workflow / complete; ferramentas: mimo / claude-code / codex / cursor / other.
+
 ## 📖 Guia de uso (MIMO CLI)
 
 ### Comandos rápidos

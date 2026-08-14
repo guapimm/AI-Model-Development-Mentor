@@ -16,6 +16,29 @@ English entry page. The full English version lives at the repo root [README.md](
 - [COMPATIBILITY.md](./COMPATIBILITY.md) — per-tool loading guide (MIMO / Claude Code / Codex / Cursor, etc.)
 - [Complete-Mentor-Prompt.md](./prompts/Complete-Mentor-Prompt.md) — one-shot consolidated mentor prompt (all modules merged)
 
+## ⬇️ Install & Use the mentor CLI
+
+**Option A: Go binary (recommended — zero dependencies, cross-platform)**
+
+Download the `mentor` executable for your platform from GitHub Releases (v0.1.0, supports Windows / Linux / macOS), put it on your PATH, then:
+
+```bash
+mentor install                        # Interactive wizard: pick a language → pick modules (agent by default) → auto-detect the tool
+mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
+mentor add workflow                   # Append a module
+mentor list                           # List installed modules
+mentor detect                         # Detect which AI tool the project uses
+mentor pack                           # Generate a compatible skill directory
+```
+
+`mentor` automatically writes the correct file name and location for each tool: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+
+**Option B: Manual copy**
+
+Following the instructions in [COMPATIBILITY.md](./COMPATIBILITY.md), copy the files under `prompts/` to the corresponding locations in your project.
+
+> Supported commands: `install` / `add` / `remove` / `list` / `detect` / `pack`; modules: agent (default) / security / style / workflow / complete; tools: mimo / claude-code / codex / cursor / other.
+
 ## 📖 Usage Guide (MIMO CLI)
 
 ### Command Cheat-Sheet
