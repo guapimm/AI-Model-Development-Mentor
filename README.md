@@ -113,6 +113,16 @@ AI_Model_Development_Mentor/
 
 > 📦 New product builds are added as sibling directories under each language dir, e.g. `zh-CN/claude-code/`, `en-US/cursor/`.
 
+## 🚀 Releasing (maintainers)
+
+Tag a version to trigger the CI pipeline (`.github/workflows/release.yml`):
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The workflow builds the Go binaries (windows/linux/darwin × amd64/arm64), uploads them to the GitHub Release, then publishes the `ai-model-mentor` npm package. Requires the `NPM_TOKEN` secret in repo settings (see [npm access tokens](https://docs.npmjs.com/creating-and-viewing-access-tokens)).
+
 ## FAQ
 
 **Q: Do I need all 4 modules?**

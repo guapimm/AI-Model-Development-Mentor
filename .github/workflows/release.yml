@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Go binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Sync embed content
+        run: pwsh -File cli/scripts/sync-embed.ps1
+
+      - name: Build binaries
+        run: |
+          mkdir -p dist
+          cd cli
+          go build -trimpath -ldflags "-s -w" -o ../dist/mentor-windows-amd64.exe .
+          GOOS=linux   GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ../dist/mentor-linux-amd64 .
+          GOOS=darwin  GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ../dist/mentor-darwin-amd64 .
+          GOOS=darwin  GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o ../dist/mentor-darwin-arm64 .
+
+      - name: Upload binaries to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+
+  npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Sync npm lib content
+        run: node npm/scripts/sync.mjs
+
+      - name: Set version from git tag
+        working-directory: npm
+        run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
+
+      - name: Publish to npm
+        working-directory: npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
