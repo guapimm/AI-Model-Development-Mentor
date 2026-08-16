@@ -212,4 +212,4 @@ AI будет продвигаться по схеме «Дизайн → Осн
 
 ## Лицензия
 
-[MIT License](../LICENSE) © 2026 guapimm
+[Apache-2.0 License](../LICENSE) © 2026 guapimm

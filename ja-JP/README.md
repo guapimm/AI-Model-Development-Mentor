@@ -204,7 +204,7 @@ AI は「設計 → 中核ロジック → UI → テスト」の順で進み、
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # 多言語ランディングページ
-├── LICENSE              # MIT License
+├── LICENSE              # Apache-2.0 License
 ├── zh-CN/               # 中国語
 │   ├── README.md        # 中国語エントリ
 │   ├── COMPATIBILITY.md # ツール別の読み込み説明（ZH）
@@ -241,4 +241,4 @@ A：はい。プロンプトは特定のツールに依存しないため、あ�
 
 ## ライセンス
 
-[MIT License](../LICENSE) © 2026 guapimm
+[Apache-2.0 License](../LICENSE) © 2026 guapimm

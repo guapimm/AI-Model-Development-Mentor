@@ -204,7 +204,7 @@ AI는 "설계 → 핵심 로직 → 화면 → 테스트" 순서로 진행하며
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # 다국어 랜딩 페이지
-├── LICENSE              # MIT License
+├── LICENSE              # Apache-2.0 License
 ├── zh-CN/               # 중국어
 │   ├── README.md        # 중국어 입구
 │   └── prompts/         # 프롬프트 모듈 (다중 도구 호환)
@@ -240,4 +240,4 @@ A: 네. 프롬프트는 특정 도구에 종속되지 않으므로 모든 LLM �
 
 ## 라이선스
 
-[MIT License](../LICENSE) © 2026 guapimm
+[Apache-2.0 License](../LICENSE) © 2026 guapimm

@@ -8,7 +8,7 @@
     "build": "tsc",
     "sync": "pwsh -File scripts/sync.ps1"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=18"
   },

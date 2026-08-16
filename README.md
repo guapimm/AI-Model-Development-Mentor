@@ -3,9 +3,10 @@
 > **Turn your AI coding assistant into a cautious 10-year full-stack mentor — pure prompts, zero dependencies.**
 > Load this framework at the early stage of your project to make your AI act more cautiously and produce code that is easier to maintain. Pure prompt implementation, no dependencies.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/guapimm/AI-Model-Development-Mentor?include_prereleases)](https://github.com/guapimm/AI-Model-Development-Mentor/releases)
 [![Languages](https://img.shields.io/badge/languages-9-green.svg)](#-language--语言)
+[![Stars](https://img.shields.io/github/stars/guapimm/AI-Model-Development-Mentor?style=social)](https://github.com/guapimm/AI-Model-Development-Mentor/stargazers)
 
 > **中文一句话介绍**：一个「纯提示词」框架，把你的 AI 编程助手变成一个有 10 年经验、谨慎靠谱的全栈导师，专为编程零基础小白设计。加载后 AI 会默认遵守 6 条铁律（代码即文档、安全前置、零破坏性改动、分步执行、模块化隔离、性能与资源前置），产出安全、可维护、带文档的代码。
 
@@ -125,7 +126,7 @@ Pre-made tables referenced by the workflow module, ready to copy into your proje
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # English landing page + language switcher
-├── LICENSE              # MIT License
+├── LICENSE              # Apache-2.0 License
 ├── cli/                 # mentor CLI (Go)
 ├── rust/                # mentor CLI (Rust, zero-dependency mirror)
 ├── mcp/                 # mentor-mcp server (TypeScript, MCP resources + tools)
@@ -167,4 +168,4 @@ A: All language versions are reviewed translations of the same Chinese original.
 
 ## License
 
-[MIT License](./LICENSE) © 2026 guapimm
+[Apache-2.0](./LICENSE) © 2026 guapimm

@@ -204,7 +204,7 @@ Die KI arbeitet sich durch „Design → Kernlogik → Oberfläche → Tests" vo
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # Mehrsprachige Einstiegsseite
-├── LICENSE              # MIT-Lizenz
+├── LICENSE              # Apache-2.0-Lizenz
 ├── zh-CN/               # Chinesisch
 │   ├── README.md        # Chinesischer Einstieg
 │   ├── COMPATIBILITY.md # Ladeanleitung für KI-Tools
@@ -242,4 +242,4 @@ A: Ja. Das Prompt-Framework ist unabhängig vom KI-Tool — in [COMPATIBILITY.md
 
 ## Lizenz
 
-[MIT-Lizenz](../LICENSE) © 2026 guapimm
+[Apache-2.0-Lizenz](../LICENSE) © 2026 guapimm

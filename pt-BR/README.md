@@ -204,7 +204,7 @@ A IA avançará por "Design → Lógica Principal → UI → Testes", aguardando
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # Página de entrada em inglês + seletor de idiomas
-├── LICENSE              # Licença MIT
+├── LICENSE              # Licença Apache-2.0
 ├── cli/                 # CLI mentor (Go, binário único) — instalação em um clique
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
 └── <idioma>/
@@ -230,4 +230,4 @@ R: Sim. O conteúdo dos prompts é independente da ferramenta — a diferença e
 
 ## Licença
 
-[Licença MIT](../LICENSE) © 2026 guapimm
+[Licença Apache-2.0](../LICENSE) © 2026 guapimm

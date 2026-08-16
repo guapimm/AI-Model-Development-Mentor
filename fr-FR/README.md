@@ -204,7 +204,7 @@ L'IA avancera selon « Conception → Logique principale → Interface → Tests
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # Page d'accueil + sélecteur de langue
-├── LICENSE              # Licence MIT
+├── LICENSE              # Licence Apache-2.0
 ├── zh-CN/               # Chinois
 ├── en-US/               # Anglais
 └── fr-FR/               # Français (cette page)
@@ -233,4 +233,4 @@ R : Toutes les versions linguistiques sont des traductions relues du même origi
 
 ## Licence
 
-[Licence MIT](../LICENSE) © 2026 guapimm
+[Licence Apache-2.0](../LICENSE) © 2026 guapimm

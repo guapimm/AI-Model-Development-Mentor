@@ -204,7 +204,7 @@ La IA avanzará a través de "Diseño → Lógica principal → Interfaz → Pru
 ```
 AI_Model_Development_Mentor/
 ├── README.md            # Página de entrada bilingüe
-├── LICENSE              # Licencia MIT
+├── LICENSE              # Licencia Apache-2.0
 ├── zh-CN/               # Chino
 │   ├── README.md        # Entrada en chino
 │   ├── COMPATIBILITY.md # Guía de carga por herramienta
@@ -243,4 +243,4 @@ R: Sí. El contenido de los prompts es independiente de la herramienta; cada her
 
 ## Licencia
 
-[Licencia MIT](../LICENSE) © 2026 guapimm
+[Licencia Apache-2.0](../LICENSE) © 2026 guapimm
