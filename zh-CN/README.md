@@ -39,7 +39,7 @@ mentor pack                           # 生成兼容 skill 目录
 
 > 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：opencode / claude-code / codex / cursor / other。
 
-## 📖 使用指南（opencode）
+## 📖 使用指南
 
 ### 命令速览
 
