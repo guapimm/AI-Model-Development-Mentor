@@ -12,7 +12,7 @@ Um **framework baseado apenas em prompts** que molda o seu assistente de codific
 
 Ele obriga a IA a seguir um conjunto de "regras de ferro" — tornando *Segurança em Primeiro Lugar, Lógica Transparente, Documentação em Primeiro Lugar, Eficiência de Tokens, Implementação em Etapas e Controle de Recursos* o seu comportamento padrão. O resultado: uma IA que não apenas *escreve código*, mas escreve código **seguro, fácil de manter e documentado**.
 
-> 📦 O conteúdo dos prompts é independente da ferramenta de IA — consulte o [COMPATIBILITY.md](./COMPATIBILITY.md) para o guia de carregamento de cada ferramenta (MIMO / Claude Code / Codex / Cursor, etc.).
+> 📦 O conteúdo dos prompts é independente da ferramenta de IA — consulte o [COMPATIBILITY.md](./COMPATIBILITY.md) para o guia de carregamento de cada ferramenta (opencode / Claude Code / Codex / Cursor, etc.).
 
 ## Módulos Principais (compatível com várias ferramentas)
 
@@ -25,7 +25,7 @@ Ele obriga a IA a seguir um conjunto de "regras de ferro" — tornando *Seguran�
 
 ## 📦 Mais documentos
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — guia de carregamento para cada ferramenta de IA (MIMO / Claude Code / Codex / Cursor, etc.)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — guia de carregamento para cada ferramenta de IA (opencode / Claude Code / Codex / Cursor, etc.)
 - [Prompt-Completo-do-Mentor.md](./prompts/Prompt-Completo-do-Mentor.md) — prompt completo consolidado (todos os módulos unificados)
 
 ### As 6 Regras de Ferro
@@ -52,24 +52,24 @@ mentor detect                         # detecta as ferramentas de IA usadas no p
 mentor pack                           # gera um diretório de skill compatível
 ```
 
-O `mentor` grava automaticamente o nome e a localização corretos do arquivo conforme a ferramenta: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+O `mentor` grava automaticamente o nome e a localização corretos do arquivo conforme a ferramenta: opencode/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
 
 **Opção B: cópia manual**
 
 Siga as instruções do [COMPATIBILITY.md](./COMPATIBILITY.md) e copie os arquivos de `prompts/` para as localizações correspondentes no projeto.
 
-> Comandos suportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (padrão) / security / style / workflow / complete; ferramentas: mimo / claude-code / codex / cursor / other.
+> Comandos suportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (padrão) / security / style / workflow / complete; ferramentas: opencode / claude-code / codex / cursor / other.
 
-## 📖 Guia de uso (MIMO CLI)
+## 📖 Guia de uso (opencode)
 
 ### Comandos rápidos
 
 | Cenário | Ação |
 |------|------|
-| Desenvolvimento diário | Entre no projeto → `/skill AGENTS.md` → converse normalmente |
-| Projeto de longo prazo | Após o primeiro carregamento, use `/dream` para consolidar as regras no MEMORY.md |
-| Conexão inesperadamente perdida | Recupere com `mimo --continue`; as regras do skill continuam lá |
-| Abrir uma nova sessão por conta própria | Após executar `/new`, lembre-se de carregar `/skill AGENTS.md` novamente |
+| Desenvolvimento diário | Entre no projeto → o opencode carrega AGENTS.md automaticamente → converse normalmente |
+| Projeto de longo prazo | Mantenha as regras no AGENTS.md (atualize com `/init`) |
+| Conexão inesperadamente perdida | Recupere com `opencode --continue`; as regras continuam lá |
+| Abrir uma nova sessão por conta própria | Basta iniciar o `opencode` — o AGENTS.md é carregado automaticamente |
 
 ### Estrutura de arquivos do projeto
 
@@ -106,7 +106,7 @@ A IA fará automaticamente:
 A carregar:
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 A IA também fará:
@@ -123,7 +123,7 @@ A IA também fará:
 A carregar:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 A IA também fará:
@@ -141,7 +141,7 @@ A IA também fará:
 A carregar:
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 A IA também fará:
@@ -158,7 +158,7 @@ A IA também fará:
 A carregar:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 A IA também fará:
@@ -174,7 +174,7 @@ A IA também fará:
 |---------------|------|
 | Fazer perguntas puramente técnicas (como "como usar React useEffect") | AGENTS.md já é suficiente; adicionar o workflow só atrapalha |
 | Alterar um estilo CSS | Não precisa das normas de segurança nem do fluxo de implantação |
-| Pedir para a IA traduzir um texto | Não precisa de nenhum skill |
+| Pedir para a IA traduzir um texto | Não precisa de nenhum módulo |
 | Refatorar levemente código existente | A lista de segurança do AGENTS.md já cobre isso |
 
 ### 💡 Resumo em uma frase
@@ -193,7 +193,7 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Inicie o Xiaomi MIMO e diga:
+3. Inicie o opencode e diga:
 
 > "Sou um iniciante completo. Aqui está a minha Especificação de Requisitos do Projeto: nome do projeto ____, objetivos principais ____, papéis dos usuários ____, fluxos de trabalho principais ____, dados a persistir ____. Comece pela Fase 0: Preparação do Ambiente e Seleção da Stack Tecnológica e me guie passo a passo."
 
@@ -226,7 +226,7 @@ AI_Model_Development_Mentor/
 R: Não. `AGENTS.md` é o único indispensável. Adicione `security.md` para proteções mais rigorosas e `style.md` para uma experiência de conversa mais amigável.
 
 **P: Funciona com outros produtos de IA?**
-R: Sim. O conteúdo dos prompts é independente da ferramenta — a diferença está apenas na forma de carregamento. Veja o [COMPATIBILITY.md](./COMPATIBILITY.md) para o guia de cada ferramenta (MIMO / Claude Code / Codex / Cursor, etc.).
+R: Sim. O conteúdo dos prompts é independente da ferramenta — a diferença está apenas na forma de carregamento. Veja o [COMPATIBILITY.md](./COMPATIBILITY.md) para o guia de cada ferramenta (opencode / Claude Code / Codex / Cursor, etc.).
 
 ## Licença
 

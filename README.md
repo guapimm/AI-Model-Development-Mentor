@@ -21,7 +21,7 @@ A **pure-prompt framework** that shapes your AI coding assistant into a **full-s
 
 It forces the AI to follow a set of "iron rules" — making *Security First, Transparent Logic, Documentation First, Token Efficiency, Phased Implementation, and Resource Control* its default behavior. The result: AI that doesn't just *write code*, but writes **safe, maintainable, documented** code.
 
-> ⚠️ Currently supports: **Xiaomi MIMO CLI**. Optimized builds for other products (Claude Code, Cursor, etc.) are planned — leave a comment if you need one.
+> ✅ **Tool-agnostic**: works with opencode, Claude Code, Codex, Cursor, Gemini CLI, Google Jules, Aider, Windsurf, GitHub Copilot Agent — only the loading method differs (see the table below).
 
 ## Core Modules
 
@@ -47,7 +47,7 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 
 | Tool | Main file (agent) | Location | Loading |
 |------|------------------|----------|---------|
-| Xiaomi MIMO | `AGENTS.md` | project root | manual `/skill AGENTS.md` |
+| opencode | `AGENTS.md` | project root | auto |
 | Claude Code | `CLAUDE.md` / `AGENTS.md` | project root | auto |
 | OpenAI Codex | `AGENTS.md` | project root | auto |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | auto |
@@ -160,7 +160,7 @@ The workflow builds both implementations — Go binaries (windows/linux/darwin �
 A: No. `AGENTS.md` is the only must-have. Add `security.md` for stronger guardrails, `style.md` for a friendlier conversation experience.
 
 **Q: Does this work with other AI products?**
-A: Only Xiaomi MIMO is supported for now. Optimized versions for other products are in progress — leave a comment to tell us what you need.
+A: Yes. The prompt content is tool-agnostic — every tool just loads it differently. See the table above or `COMPATIBILITY.md` for each tool's loading guide.
 
 **Q: Is this translated by machine?**
 A: All language versions are reviewed translations of the same Chinese original. If you spot an issue, feel free to open an issue or PR.

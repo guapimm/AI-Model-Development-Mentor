@@ -8,7 +8,7 @@ Le contenu des prompts du répertoire `prompts/` est **indépendant** de l'outil
 
 | Outil | Fichier principal (rôle d'agent) | Emplacement | Mode de chargement | Autres modules (security/style/workflow) |
 |------|----------------------------------|-------------|--------------------|------------------------------------------|
-| Xiaomi MIMO | `AGENTS.md` | Racine du projet | Manuel : `/skill AGENTS.md` | À charger un par un avec `/skill security.md`, etc. |
+| opencode | `AGENTS.md` | Racine du projet | Chargement automatique | À charger un par un avec `@security.md`, etc. |
 | Claude Code | `CLAUDE.md` ou `AGENTS.md` | Racine du projet | Chargement automatique | Référencé via `@security.md` dans le fichier principal, ou placé dans un sous-répertoire et chargé à la demande |
 | OpenAI Codex | `AGENTS.md` | Racine du projet | Chargement automatique | Référencé via `@security.md` dans le fichier principal |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | Chargement automatique (les rules peuvent porter un glob pour limiter la portée) | Placer les fichiers homonymes dans le même répertoire |
@@ -21,11 +21,11 @@ Le contenu des prompts du répertoire `prompts/` est **indépendant** de l'outil
 
 ## Détails par outil
 
-### Xiaomi MIMO
+### opencode
 1. Copiez `prompts/AGENTS.md` à la racine du projet
-2. Dans une session MIMO, tapez `/skill AGENTS.md` pour charger le rôle de mentor
-3. Si vous avez besoin des normes de sécurité / style / workflow, chargez-les à la demande : `/skill security.md`, `/skill style.md`, `/skill workflow.md`
-4. Projets à long terme : utilisez `/dream` pour consolider les règles dans MEMORY.md ; en cas de déconnexion, reprenez la session avec `mimo --continue`
+2. opencode charge AGENTS.md automatiquement à chaque session — aucune étape manuelle
+3. Si vous avez besoin des normes de sécurité / style / workflow, chargez-les à la demande : `@security.md`, `@style.md`, `@workflow.md`
+4. Projets à long terme : conservez les règles dans AGENTS.md ; en cas de déconnexion, reprenez la session avec `opencode --continue`
 
 ### Claude Code
 1. Copiez `prompts/AGENTS.md` → renommez-le en `CLAUDE.md` (ou conservez `AGENTS.md`, les nouvelles versions le reconnaissent automatiquement)

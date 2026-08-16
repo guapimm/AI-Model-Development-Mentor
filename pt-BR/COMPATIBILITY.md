@@ -8,7 +8,7 @@ O conteúdo dos prompts no diretório `prompts/` é **independente da ferramenta
 
 | Ferramenta | Arquivo principal (papel do agente) | Local de armazenamento | Como carregar | Outros módulos (security/style/workflow) |
 |------|---------------------|---------|---------|-----------------------------------|
-| Xiaomi MIMO | `AGENTS.md` | Raiz do projeto | Manual: `/skill AGENTS.md` | Carregue um a um com `/skill security.md`, etc. |
+| opencode | `AGENTS.md` | Raiz do projeto | Carregamento automático | Carregue um a um com `@security.md`, etc. |
 | Claude Code | `CLAUDE.md` ou `AGENTS.md` | Raiz do projeto | Carregamento automático | Referencie com `@security.md` no arquivo principal, ou coloque em um subdiretório para carregar sob demanda |
 | OpenAI Codex | `AGENTS.md` | Raiz do projeto | Carregamento automático | Referencie com `@security.md` no arquivo principal |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | Carregamento automático (as rules podem usar glob para definir o escopo dos arquivos) | Coloque os arquivos de mesmo nome no mesmo diretório |
@@ -21,11 +21,11 @@ O conteúdo dos prompts no diretório `prompts/` é **independente da ferramenta
 
 ## Detalhes por Ferramenta
 
-### Xiaomi MIMO
+### opencode
 1. Copie `prompts/AGENTS.md` para a raiz do projeto
-2. Em uma sessão do MIMO, digite `/skill AGENTS.md` para carregar o papel de mentor
-3. Quando precisar de segurança/estilo/workflow, carregue sob demanda com `/skill security.md`, `/skill style.md`, `/skill workflow.md`
-4. Projetos de longo prazo: use `/dream` para consolidar as regras no MEMORY.md; em caso de desconexão, retome com `mimo --continue`
+2. O opencode carrega AGENTS.md automaticamente em cada sessão — nenhum passo manual é necessário
+3. Quando precisar de segurança/estilo/workflow, carregue sob demanda com `@security.md`, `@style.md`, `@workflow.md`
+4. Projetos de longo prazo: mantenha as regras no AGENTS.md; em caso de desconexão, retome com `opencode --continue`
 
 ### Claude Code
 1. Copie `prompts/AGENTS.md` → renomeie para `CLAUDE.md` (ou mantenha como `AGENTS.md`; as versões novas o detectam automaticamente)

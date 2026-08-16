@@ -46,7 +46,7 @@ type cliInfo struct {
 }
 
 var clis = []cliInfo{
-	{"mimo", "小米 MIMO", "AGENTS.md", ""},
+	{"opencode", "opencode", "AGENTS.md", ""},
 	{"claude-code", "Claude Code", "CLAUDE.md", ""},
 	{"codex", "OpenAI Codex", "AGENTS.md", ""},
 	{"cursor", "Cursor", "AGENTS.md", ".cursor/rules"},
@@ -110,5 +110,5 @@ func usage() {
 
 模块: agent(默认), security, style, workflow, complete
 语言: zh-CN en-US ja-JP ko-KR es-ES fr-FR de-DE pt-BR ru-RU
-工具: mimo claude-code codex cursor other`)
+工具: opencode claude-code codex cursor other`)
 }

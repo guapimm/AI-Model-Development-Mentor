@@ -8,7 +8,7 @@
 
 | 工具 | 主文件（agent 角色） | 存放位置 | 加载方式 | 其他模块（security/style/workflow） |
 |------|---------------------|---------|---------|-----------------------------------|
-| 小米 MIMO | `AGENTS.md` | 项目根目录 | 手动：`/skill AGENTS.md` | 同样用 `/skill security.md` 等逐个加载 |
+| opencode | `AGENTS.md` | 项目根目录 | 自动加载 | 同样用 `@security.md` 等逐个引用 |
 | Claude Code | `CLAUDE.md` 或 `AGENTS.md` | 项目根目录 | 自动加载 | 主文件里用 `@security.md` 引用，或放入子目录按需加载 |
 | OpenAI Codex | `AGENTS.md` | 项目根目录 | 自动加载 | 主文件里用 `@security.md` 引用 |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | 自动加载（rules 可带 glob 匹配范围） | 同名文件放入同一目录 |
@@ -21,11 +21,11 @@
 
 ## 各工具详细说明
 
-### 小米 MIMO
+### opencode
 1. 复制 `prompts/AGENTS.md` 到项目根目录
-2. 在 MIMO 会话中输入 `/skill AGENTS.md` 加载导师角色
-3. 需要安全/风格/工作流时，`/skill security.md`、`/skill style.md`、`/skill workflow.md` 按需加载
-4. 长周期项目：`/dream` 沉淀规则到 MEMORY.md；断线用 `mimo --continue` 恢复
+2. opencode 每次会话自动加载 AGENTS.md，无需手动操作
+3. 需要安全/风格/工作流时，`@security.md`、`@style.md`、`@workflow.md` 按需加载
+4. 长周期项目：规则沉淀在 AGENTS.md 中；断线用 `opencode --continue` 恢复
 
 ### Claude Code
 1. 复制 `prompts/AGENTS.md` → 重命名为 `CLAUDE.md`（或保留 `AGENTS.md`，新版自动识别）

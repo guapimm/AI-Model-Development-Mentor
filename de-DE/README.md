@@ -12,7 +12,7 @@ Ein **reines Prompt-Framework**, das deinen KI-Codierungsassistenten in einen **
 
 Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *Sicherheit zuerst, transparente Logik, Dokumentation zuerst, Token-Effizienz, schrittweise Umsetzung und Ressourcenkontrolle* zu ihrem Standardverhalten. Das Ergebnis: eine KI, die nicht nur *Code schreibt*, sondern **sicheren, wartbaren, dokumentierten** Code schreibt.
 
-> ✅ Multi-Tool-kompatibel: **Xiaomi MIMO**, **Claude Code**, **OpenAI Codex**, **Cursor**, **Gemini CLI**, **Google Jules**, **Aider**, **Windsurf**, **GitHub Copilot Agent** — die passende Ladeanleitung für jedes Tool findest du in [COMPATIBILITY.md](./COMPATIBILITY.md).
+> ✅ Multi-Tool-kompatibel: **opencode**, **Claude Code**, **OpenAI Codex**, **Cursor**, **Gemini CLI**, **Google Jules**, **Aider**, **Windsurf**, **GitHub Copilot Agent** — die passende Ladeanleitung für jedes Tool findest du in [COMPATIBILITY.md](./COMPATIBILITY.md).
 
 ## Kernmodule (multi-tool-kompatibel)
 
@@ -25,7 +25,7 @@ Es zwingt die KI, eine Reihe von „eisernen Regeln" zu befolgen — und macht *
 
 ## 📦 Weitere Dokumente
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — Ladeanleitung für jedes KI-Tool (MIMO / Claude Code / Codex / Cursor usw.)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — Ladeanleitung für jedes KI-Tool (opencode / Claude Code / Codex / Cursor usw.)
 - [Vollständiger-Mentor-Prompt.md](./prompts/Vollständiger-Mentor-Prompt.md) — gebündelter Komplett-Prompt (alle Module vereint)
 
 ### Die 6 eisernen Regeln
@@ -52,24 +52,24 @@ mentor detect                         # Erkennen, welches KI-Tool das Projekt ve
 mentor pack                           # Kompatibles Skill-Verzeichnis erzeugen
 ```
 
-`mentor` schreibt automatisch den korrekten Dateinamen und Speicherort je nach Tool: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+`mentor` schreibt automatisch den korrekten Dateinamen und Speicherort je nach Tool: opencode/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
 
 **Variante B: Manuelles Kopieren**
 
 Kopiere die Dateien aus `prompts/` gemäß den Anweisungen in [COMPATIBILITY.md](./COMPATIBILITY.md) an die entsprechenden Stellen im Projekt.
 
-> Unterstützte Befehle: `install` / `add` / `remove` / `list` / `detect` / `pack`; Module: agent (Standard) / security / style / workflow / complete; Tools: mimo / claude-code / codex / cursor / other.
+> Unterstützte Befehle: `install` / `add` / `remove` / `list` / `detect` / `pack`; Module: agent (Standard) / security / style / workflow / complete; Tools: opencode / claude-code / codex / cursor / other.
 
-## 📖 Anleitung (MIMO CLI)
+## 📖 Anleitung (opencode)
 
 ### Befehlsübersicht
 
 | Szenario | Vorgehen |
 |----------|----------|
-| Tägliche Entwicklung | Projekt öffnen → `/skill AGENTS.md` → normal chatten |
-| Langfristige Projekte | Nach dem ersten Laden die Regeln mit `/dream` in MEMORY.md verankern |
-| Versehentliche Unterbrechung | Mit `mimo --continue` wiederherstellen, die Skill-Regeln bleiben erhalten |
-| Neue Sitzung bewusst starten | Nach `/new` nicht vergessen, `/skill AGENTS.md` erneut auszuführen |
+| Tägliche Entwicklung | Projekt öffnen → opencode lädt AGENTS.md automatisch → normal chatten |
+| Langfristige Projekte | Regeln in AGENTS.md verankern (mit `/init` aktualisieren) |
+| Versehentliche Unterbrechung | Mit `opencode --continue` wiederherstellen, die Regeln bleiben erhalten |
+| Neue Sitzung bewusst starten | Einfach `opencode` starten — AGENTS.md wird automatisch geladen |
 
 ### Projektdateistruktur
 
@@ -106,7 +106,7 @@ Die KI automatisch:
 Zu laden:
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 Die KI zusätzlich:
@@ -123,7 +123,7 @@ Die KI zusätzlich:
 Zu laden:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 Die KI zusätzlich:
@@ -141,7 +141,7 @@ Die KI zusätzlich:
 Zu laden:
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 Die KI zusätzlich:
@@ -158,7 +158,7 @@ Die KI zusätzlich:
 Zu laden:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 Die KI zusätzlich:
@@ -174,7 +174,7 @@ Die KI zusätzlich:
 |----------------|-------|
 | Reine Technikfragen (z. B. „Wie verwendet man React useEffect?") | AGENTS.md reicht aus, zusätzliches workflow würde nur stören |
 | Ein CSS-Style ändern | Keine Sicherheitsvorgaben und kein Deployment-Prozess nötig |
-| Einen Text übersetzen lassen | Überhaupt kein Skill nötig |
+| Einen Text übersetzen lassen | Überhaupt kein Modul nötig |
 | Vorhandenen Code leicht refaktorieren | Die Sicherheits-Checkliste von AGENTS.md deckt das bereits ab |
 
 ### 💡 Zusammenfassung in einem Satz
@@ -193,7 +193,7 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Xiaomi MIMO starten und sagen:
+3. opencode starten und sagen:
 
 > „Ich bin ein kompletter Anfänger. Hier ist meine Projektanforderungsspezifikation: Projektname ____, Kernziele ____, Benutzerrollen ____, Kernarbeitsabläufe ____, zu speichernde Daten ____. Beginne mit Phase 0: Umgebungseinrichtung & Technologie-Stack-Auswahl und führe mich Schritt für Schritt."
 
@@ -238,7 +238,7 @@ AI_Model_Development_Mentor/
 A: Nein. Nur `AGENTS.md` ist Pflicht. Füge `security.md` für stärkere Schutzvorkehrungen hinzu und `style.md` für eine freundlichere Gesprächserfahrung.
 
 **F: Funktioniert das auch mit anderen KI-Produkten?**
-A: Ja. Das Prompt-Framework ist unabhängig vom KI-Tool — in [COMPATIBILITY.md](./COMPATIBILITY.md) ist für jedes Tool (MIMO, Claude Code, Codex, Cursor usw.) die Ladeanleitung beschrieben.
+A: Ja. Das Prompt-Framework ist unabhängig vom KI-Tool — in [COMPATIBILITY.md](./COMPATIBILITY.md) ist für jedes Tool (opencode, Claude Code, Codex, Cursor usw.) die Ladeanleitung beschrieben.
 
 ## Lizenz
 

@@ -83,7 +83,7 @@ struct Cli {
 }
 
 const CLIS: &[Cli] = &[
-    Cli { id: "mimo", name: "小米 MIMO", agent_file: "AGENTS.md", dir: "" },
+    Cli { id: "opencode", name: "opencode", agent_file: "AGENTS.md", dir: "" },
     Cli { id: "claude-code", name: "Claude Code", agent_file: "CLAUDE.md", dir: "" },
     Cli { id: "codex", name: "OpenAI Codex", agent_file: "AGENTS.md", dir: "" },
     Cli { id: "cursor", name: "Cursor", agent_file: "AGENTS.md", dir: ".cursor/rules" },
@@ -221,8 +221,14 @@ fn pick_modules(flag: &Option<String>) -> io::Result<Vec<&'static Mod>> {
 
 fn detect_cli(dir: &str) -> Option<&'static str> {
     let probe = |p: &str| Path::new(p).exists();
-    if probe(&format!("{}/.mimocode", dir)) {
-        return Some("mimo");
+    if probe(&format!("{}/.opencode", dir)) {
+        return Some("opencode");
+    }
+    if probe(&format!("{}/opencode.json", dir)) {
+        return Some("opencode");
+    }
+    if probe(&format!("{}/opencode.jsonc", dir)) {
+        return Some("opencode");
     }
     if probe(&format!("{}/CLAUDE.md", dir)) {
         return Some("claude-code");
@@ -374,7 +380,7 @@ fn cmd_detect(argv: &[String]) -> io::Result<()> {
             let c = CLIS.iter().find(|c| c.id == d);
             println!("检测到: {}", c.map(|c| c.name).unwrap_or(d));
         }
-        None => println!("未检测到已知工具（可手动指定: mimo / claude-code / codex / cursor / other）"),
+        None => println!("未检测到已知工具（可手动指定: opencode / claude-code / codex / cursor / other）"),
     }
     Ok(())
 }
@@ -477,7 +483,7 @@ fn usage() {
 
 模块: agent(默认), security, style, workflow, complete
 语言: zh-CN en-US ja-JP ko-KR es-ES fr-FR de-DE pt-BR ru-RU
-工具: mimo claude-code codex cursor other",
+工具: opencode claude-code codex cursor other",
         VERSION
     );
 }

@@ -8,7 +8,7 @@
 
 | ツール | メインファイル（エージェントの役割） | 配置場所 | 読み込み方法 | その他のモジュール（security/style/workflow） |
 |------|---------------------|---------|---------|-----------------------------------|
-| 小米 MIMO | `AGENTS.md` | プロジェクトルート | 手動：`/skill AGENTS.md` | 同様に `/skill security.md` などで 1 つずつ読み込む |
+| opencode | `AGENTS.md` | プロジェクトルート | 自動読み込み | 同様に `@security.md` などで 1 つずつ読み込む |
 | Claude Code | `CLAUDE.md` または `AGENTS.md` | プロジェクトルート | 自動読み込み | メインファイル内で `@security.md` で参照するか、サブディレクトリに配置して必要に応じて読み込む |
 | OpenAI Codex | `AGENTS.md` | プロジェクトルート | 自動読み込み | メインファイル内で `@security.md` で参照 |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | 自動読み込み（rules は glob で適用範囲のマッチングが可能） | 同名のファイルを同じディレクトリに配置 |
@@ -21,11 +21,11 @@
 
 ## 各ツールの詳細説明
 
-### 小米 MIMO
+### opencode
 1. `prompts/AGENTS.md` をプロジェクトルートにコピーする
-2. MIMO のセッションで `/skill AGENTS.md` と入力し、メンター役割を読み込む
-3. セキュリティ / スタイル / ワークフローが必要な場合は、`/skill security.md`、`/skill style.md`、`/skill workflow.md` を必要に応じて読み込む
-4. 長期プロジェクト：`/dream` でルールを MEMORY.md に定着させる。接続が切れた場合は `mimo --continue` で復旧する
+2. opencode は毎回のセッションで AGENTS.md を自動読み込みします。手動操作は不要です
+3. セキュリティ / スタイル / ワークフローが必要な場合は、`@security.md`、`@style.md`、`@workflow.md` を必要に応じて読み込む
+4. 長期プロジェクト：ルールは AGENTS.md に定着させます。接続が切れた場合は `opencode --continue` で復旧します
 
 ### Claude Code
 1. `prompts/AGENTS.md` をコピー → `CLAUDE.md` にリネームする（または `AGENTS.md` のままでも可。新しいバージョンは自動認識する）

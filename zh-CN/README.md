@@ -13,7 +13,7 @@
 
 ## 📦 更多文档
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI 工具（MIMO / Claude Code / Codex / Cursor 等）加载说明
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI 工具（opencode / Claude Code / Codex / Cursor 等）加载说明
 - [开发者导师提示词完整版.md](./prompts/开发者导师提示词完整版.md) — 四模块合并版完整提示词，一次性加载
 
 ## ⬇️ 安装与使用 mentor CLI
@@ -31,24 +31,24 @@ mentor detect                         # 检测项目使用的 AI 工具
 mentor pack                           # 生成兼容 skill 目录
 ```
 
-`mentor` 会自动按工具写入正确文件名和位置：MIMO/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
+`mentor` 会自动按工具写入正确文件名和位置：opencode/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
 
 **方式 B：手动复制**
 
 按 [COMPATIBILITY.md](./COMPATIBILITY.md) 的说明，把 `prompts/` 下的文件复制到项目对应位置。
 
-> 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：mimo / claude-code / codex / cursor / other。
+> 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：opencode / claude-code / codex / cursor / other。
 
-## 📖 使用指南（MIMO CLI）
+## 📖 使用指南（opencode）
 
 ### 命令速览
 
 | 场景 | 操作 |
 |------|------|
-| 日常开发 | 进入项目 → `/skill AGENTS.md` → 正常对话 |
-| 长周期项目 | 第一次加载后，用 `/dream` 把规则沉淀到 MEMORY.md |
-| 意外断线 | 用 `mimo --continue` 恢复，skill 规则还在 |
-| 主动新开会话 | 执行 `/new` 后，记得重新 `/skill AGENTS.md` |
+| 日常开发 | 进入项目 → opencode 自动加载 AGENTS.md → 正常对话 |
+| 长周期项目 | 规则沉淀在 AGENTS.md 中（用 `/init` 更新） |
+| 意外断线 | 用 `opencode --continue` 恢复，规则还在 |
+| 主动新开会话 | 直接启动 `opencode`，AGENTS.md 自动加载 |
 
 ### 项目文件结构
 
@@ -83,7 +83,7 @@ AI 会自动：
 需要加载：
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 AI 会额外：
@@ -100,7 +100,7 @@ AI 会额外：
 需要加载：
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI 会额外：
@@ -118,7 +118,7 @@ AI 会额外：
 需要加载：
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 AI 会额外：
@@ -135,7 +135,7 @@ AI 会额外：
 需要加载：
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI 会额外：
@@ -151,7 +151,7 @@ AI 会额外：
 |---------------|------|
 | 问纯技术问题（如"React useEffect 怎么用"） | AGENTS.md 已足够，加 workflow 反而干扰 |
 | 修改一个 CSS 样式 | 不需要安全规范和部署流程 |
-| 让 AI 翻译一段文字 | 完全不需要任何 skill |
+| 让 AI 翻译一段文字 | 完全不需要任何模块 |
 | 已有代码做简单重构 | AGENTS.md 的安全清单已覆盖 |
 
 ### 💡 一句话总结
@@ -170,6 +170,6 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. 启动小米 MIMO，提供【项目需求说明书】（项目名称、核心目标、用户角色、核心操作流程、必须存储的数据），从阶段 0 开始逐步开发。
+3. 启动opencode，提供【项目需求说明书】（项目名称、核心目标、用户角色、核心操作流程、必须存储的数据），从阶段 0 开始逐步开发。
 
 > 📦 新增工具将作为行添加到 [COMPATIBILITY.md](./COMPATIBILITY.md)，无需再按产品创建子目录。

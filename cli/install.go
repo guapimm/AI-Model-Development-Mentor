@@ -273,7 +273,7 @@ func cmdDetect(args []string) error {
 	}
 	d := detectCLI(*dirFlag)
 	if d == "" {
-		fmt.Println("未检测到已知工具（可手动指定: mimo / claude-code / codex / cursor / other）")
+		fmt.Println("未检测到已知工具（可手动指定: opencode / claude-code / codex / cursor / other）")
 		return nil
 	}
 	for _, c := range clis {

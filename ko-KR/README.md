@@ -12,7 +12,7 @@
 
 이 프레임워크는 AI가 일련의 "철칙"을 따르도록 강제합니다 — *보안 최우선, 투명한 로직, 문서 우선, Token 효율, 단계적 구현, 자원 통제*를 AI의 기본 동작으로 만듭니다. 그 결과, AI는 단순히 *코드를 작성하는 것*을 넘어 **안전하고, 유지보수하기 쉬우며, 문서화된 코드**를 작성하게 됩니다.
 
-> ⚠️ 다중 도구 호환: 프롬프트는 모든 LLM 기반 코딩 도구(MIMO / Claude Code / Codex / Cursor 등)에서 사용할 수 있습니다. 도구별 로딩 방법은 [COMPATIBILITY.md](./COMPATIBILITY.md)를 참고하세요.
+> ⚠️ 다중 도구 호환: 프롬프트는 모든 LLM 기반 코딩 도구(opencode / Claude Code / Codex / Cursor 등)에서 사용할 수 있습니다. 도구별 로딩 방법은 [COMPATIBILITY.md](./COMPATIBILITY.md)를 참고하세요.
 
 ## 핵심 모듈 (다중 도구 호환)
 
@@ -25,7 +25,7 @@
 
 ## 📦 추가 문서
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — 각 AI 도구(MIMO / Claude Code / Codex / Cursor 등) 로딩 방법
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — 각 AI 도구(opencode / Claude Code / Codex / Cursor 등) 로딩 방법
 - [개발 멘토 완전판 프롬프트.md](./prompts/개발 멘토 완전판 프롬프트.md) — 모든 모듈을 통합한 한 번에 로드하는 완전판 프롬프트
 
 ## ⬇️ mentor CLI 설치 및 사용법
@@ -43,24 +43,24 @@ mentor detect                         # 프로젝트에서 사용 중인 AI 도�
 mentor pack                           # 호환 가능한 skill 디렉터리 생성
 ```
 
-`mentor`는 도구에 따라 올바른 파일 이름과 위치를 자동으로 기록합니다: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+`mentor`는 도구에 따라 올바른 파일 이름과 위치를 자동으로 기록합니다: opencode/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
 
 **방식 B: 수동 복사**
 
 [COMPATIBILITY.md](./COMPATIBILITY.md)의 안내에 따라 `prompts/` 아래의 파일을 프로젝트의 해당 위치에 복사하세요.
 
-> 지원 명령어: `install` / `add` / `remove` / `list` / `detect` / `pack`; 모듈: agent(기본값) / security / style / workflow / complete; 도구: mimo / claude-code / codex / cursor / other.
+> 지원 명령어: `install` / `add` / `remove` / `list` / `detect` / `pack`; 모듈: agent(기본값) / security / style / workflow / complete; 도구: opencode / claude-code / codex / cursor / other.
 
-## 📖 사용 가이드（MIMO CLI）
+## 📖 사용 가이드（opencode）
 
 ### 명령어 빠른 요약
 
 | 시나리오 | 조작 |
 |------|------|
-| 일상 개발 | 프로젝트 진입 → `/skill AGENTS.md` → 일반 대화 |
-| 장기 프로젝트 | 처음 로드한 후 `/dream`으로 규칙을 MEMORY.md에 정착 |
-| 예기치 못한 연결 끊김 | `mimo --continue`로 복구, skill 규칙은 그대로 유지 |
-| 새 세션 직접 시작 | `/new` 실행 후, `/skill AGENTS.md`를 다시 실행해야 함 |
+| 일상 개발 | 프로젝트 진입 → opencode가 AGENTS.md 자동 로드 → 일반 대화 |
+| 장기 프로젝트 | 규칙을 AGENTS.md에 정착(`/init`으로 업데이트) |
+| 예기치 못한 연결 끊김 | `opencode --continue`로 복구, 규칙은 그대로 유지 |
+| 새 세션 직접 시작 | `opencode`만 실행하면 AGENTS.md 자동 로드 |
 
 ### 프로젝트 파일 구조
 
@@ -97,7 +97,7 @@ AI가 자동으로 수행하는 작업:
 로드 필요:
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 AI가 추가로 수행하는 작업:
@@ -114,7 +114,7 @@ AI가 추가로 수행하는 작업:
 로드 필요:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI가 추가로 수행하는 작업:
@@ -132,7 +132,7 @@ AI가 추가로 수행하는 작업:
 로드 필요:
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 AI가 추가로 수행하는 작업:
@@ -149,7 +149,7 @@ AI가 추가로 수행하는 작업:
 로드 필요:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI가 추가로 수행하는 작업:
@@ -165,7 +165,7 @@ AI가 추가로 수행하는 작업:
 |---------------|------|
 | 순수 기술 질문(예: "React useEffect는 어떻게 쓰나요") | AGENTS.md로 충분하며, workflow를 추가하면 오히려 방해 |
 | CSS 스타일 하나 수정 | 보안 규범과 배포 절차가 필요 없음 |
-| AI에게 문장 번역 요청 | 어떤 skill도 전혀 필요 없음 |
+| AI에게 문장 번역 요청 | 어떤 모듈도 전혀 필요 없음 |
 | 기존 코드의 간단한 리팩터링 | AGENTS.md의 안전 체크리스트로 충분 |
 
 ### 💡 한 문장 요약
@@ -193,7 +193,7 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Xiaomi MIMO를 실행하고 다음과 같이 말하세요:
+3. opencode를 실행하고 다음과 같이 말하세요:
 
 > "저는 완전한 초보입니다. 제【프로젝트 요구사항 명세서】는 다음과 같습니다: 프로젝트 이름 ____, 핵심 목표 ____, 사용자 역할 ____, 핵심 운영 절차 ____, 반드시 저장할 데이터 ____. 단계 0: 환경 준비 및 기술 스택 선정부터 시작해 한 단계씩 안내해 주세요."
 

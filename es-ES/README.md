@@ -12,7 +12,7 @@ Un **framework de solo prompts (pure-prompt)** que moldea a tu asistente de codi
 
 Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su comportamiento por defecto: *Seguridad ante todo, Lógica transparente, Documentación primero, Eficiencia de Token, Ejecución por fases y Control de recursos*. El resultado: una IA que no solo *escribe código*, sino que escribe código **seguro, mantenible y documentado**.
 
-> ⚠️ Compatible con varias herramientas de IA: **MIMO, Claude Code, Codex, Cursor, etc.** El contenido de los prompts es independiente de la herramienta; la guía de carga de cada herramienta está en [COMPATIBILITY.md](./COMPATIBILITY.md).
+> ⚠️ Compatible con varias herramientas de IA: **opencode, Claude Code, Codex, Cursor, etc.** El contenido de los prompts es independiente de la herramienta; la guía de carga de cada herramienta está en [COMPATIBILITY.md](./COMPATIBILITY.md).
 
 ## Módulos principales (compatibles con varias herramientas)
 
@@ -25,7 +25,7 @@ Obliga a la IA a seguir una serie de "reglas de hierro" que convierten en su com
 
 ## 📦 Más documentos
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — guía de carga para cada herramienta de IA (MIMO / Claude Code / Codex / Cursor, etc.)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — guía de carga para cada herramienta de IA (opencode / Claude Code / Codex / Cursor, etc.)
 - [Prompt-Completo-del-Mentor.md](./prompts/Prompt-Completo-del-Mentor.md) — prompt completo consolidado (todos los módulos fusionados)
 
 ## ⬇️ Instalación y uso de mentor CLI
@@ -43,24 +43,24 @@ mentor detect                         # detecta la herramienta de IA que usa el 
 mentor pack                           # genera un directorio de skills compatible
 ```
 
-`mentor` escribe automáticamente el nombre y la ubicación de archivo correctos según la herramienta: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+`mentor` escribe automáticamente el nombre y la ubicación de archivo correctos según la herramienta: opencode/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
 
 **Opción B: copia manual**
 
 Según las instrucciones de [COMPATIBILITY.md](./COMPATIBILITY.md), copia los archivos de `prompts/` a las ubicaciones correspondientes del proyecto.
 
-> Comandos soportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (por defecto) / security / style / workflow / complete; herramientas: mimo / claude-code / codex / cursor / other.
+> Comandos soportados: `install` / `add` / `remove` / `list` / `detect` / `pack`; módulos: agent (por defecto) / security / style / workflow / complete; herramientas: opencode / claude-code / codex / cursor / other.
 
-## 📖 Guía de uso (MIMO CLI)
+## 📖 Guía de uso (opencode)
 
 ### Comandos de un vistazo
 
 | Escenario | Operación |
 |------|------|
-| Desarrollo diario | Entra en el proyecto → `/skill AGENTS.md` → conversa con normalidad |
-| Proyectos de ciclo largo | Después de la primera carga, usa `/dream` para asentar las reglas en MEMORY.md |
-| Desconexión inesperada | Recupera la sesión con `mimo --continue`; las reglas del skill siguen ahí |
-| Abrir una sesión nueva a propósito | Después de ejecutar `/new`, recuerda volver a cargar `/skill AGENTS.md` |
+| Desarrollo diario | Entra en el proyecto → opencode carga AGENTS.md automáticamente → conversa con normalidad |
+| Proyectos de ciclo largo | Mantén las reglas en AGENTS.md (actualízalas con `/init`) |
+| Desconexión inesperada | Recupera la sesión con `opencode --continue`; las reglas siguen ahí |
+| Abrir una sesión nueva a propósito | Solo inicia `opencode` — AGENTS.md se carga automáticamente |
 
 ### Estructura de archivos del proyecto
 
@@ -97,7 +97,7 @@ La IA hará automáticamente:
 Hay que cargar:
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 La IA hará además:
@@ -114,7 +114,7 @@ La IA hará además:
 Hay que cargar:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 La IA hará además:
@@ -132,7 +132,7 @@ La IA hará además:
 Hay que cargar:
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 La IA hará además:
@@ -149,7 +149,7 @@ La IA hará además:
 Hay que cargar:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 La IA hará además:
@@ -165,7 +165,7 @@ La IA hará además:
 |---------------|------|
 | Hacer una pregunta puramente técnica (por ejemplo, "¿cómo se usa useEffect en React?") | AGENTS.md ya es suficiente; añadir workflow solo estorba |
 | Modificar un estilo CSS | No se necesitan las normas de seguridad ni el proceso de despliegue |
-| Pedir a la IA que traduzca un texto | No se necesita ningún skill |
+| Pedir a la IA que traduzca un texto | No se necesita ningún módulo |
 | Refactorizar de forma sencilla el código existente | La lista de seguridad de AGENTS.md ya lo cubre |
 
 ### 💡 Resumen en una frase
@@ -193,7 +193,7 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Inicia Xiaomi MIMO y di:
+3. Inicia opencode y di:
 
 > "Soy un completo principiante. Esta es mi Especificación de Requisitos del Proyecto: nombre del proyecto ____, objetivos principales ____, roles de usuario ____, flujos de trabajo principales ____, datos que deben persistirse ____. Empieza desde la Fase 0: Preparación del Entorno y Selección de la Pila Tecnológica y guíame paso a paso."
 
@@ -239,7 +239,7 @@ AI_Model_Development_Mentor/
 R: No. `AGENTS.md` es el único imprescindible. Añade `security.md` para una protección más sólida y `style.md` para una experiencia de conversación más agradable.
 
 **P: ¿Funciona con otros productos de IA?**
-R: Sí. El contenido de los prompts es independiente de la herramienta; cada herramienta solo cambia la forma de cargar los archivos (nombre, ubicación, comando). Consulta [COMPATIBILITY.md](./COMPATIBILITY.md) para ver la guía completa de carga de cada herramienta (MIMO / Claude Code / Codex / Cursor, etc.).
+R: Sí. El contenido de los prompts es independiente de la herramienta; cada herramienta solo cambia la forma de cargar los archivos (nombre, ubicación, comando). Consulta [COMPATIBILITY.md](./COMPATIBILITY.md) para ver la guía completa de carga de cada herramienta (opencode / Claude Code / Codex / Cursor, etc.).
 
 ## Licencia
 

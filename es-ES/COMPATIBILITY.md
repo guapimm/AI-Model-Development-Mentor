@@ -8,7 +8,7 @@ El contenido de los prompts de `prompts/` es **independiente de la herramienta d
 
 | Herramienta | Archivo principal (rol de agente) | Ubicación | Forma de carga | Otros módulos (security/style/workflow) |
 |------|---------------------|---------|---------|-----------------------------------|
-| Xiaomi MIMO | `AGENTS.md` | Raíz del proyecto | Manual: `/skill AGENTS.md` | Igual: cárgalos uno a uno con `/skill security.md`, etc. |
+| opencode | `AGENTS.md` | Raíz del proyecto | Carga automática | Igual: cárgalos uno a uno con `@security.md`, etc. |
 | Claude Code | `CLAUDE.md` o `AGENTS.md` | Raíz del proyecto | Carga automática | Referéncialos con `@security.md` dentro del archivo principal, o ponlos en un subdirectorio y cárgalos según necesidad |
 | OpenAI Codex | `AGENTS.md` | Raíz del proyecto | Carga automática | Referéncialos con `@security.md` dentro del archivo principal |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | Carga automática (las rules admiten coincidencia por rango con glob) | Pon los archivos con el mismo nombre en el mismo directorio |
@@ -21,12 +21,12 @@ El contenido de los prompts de `prompts/` es **independiente de la herramienta d
 
 ## Explicación detallada de cada herramienta
 
-### Xiaomi MIMO
+### opencode
 
 1. Copia `prompts/AGENTS.md` a la raíz del proyecto.
-2. En una sesión de MIMO, escribe `/skill AGENTS.md` para cargar el rol de mentor.
-3. Cuando necesites seguridad/estilo/workflow, carga `/skill security.md`, `/skill style.md` y `/skill workflow.md` según necesites.
-4. Proyectos de ciclo largo: usa `/dream` para asentar las reglas en MEMORY.md; si se corta la conexión, retoma con `mimo --continue`.
+2. opencode carga AGENTS.md automáticamente en cada sesión; no se necesita ningún paso manual.
+3. Cuando necesites seguridad/estilo/workflow, carga `@security.md`, `@style.md` y `@workflow.md` según necesites.
+4. Proyectos de ciclo largo: mantén las reglas en AGENTS.md; si se corta la conexión, retoma con `opencode --continue`.
 
 ### Claude Code
 

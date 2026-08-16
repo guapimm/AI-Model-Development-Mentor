@@ -4,7 +4,7 @@
 
 ## 是什么
 
-本项目是一个「纯提示词」框架。原方案是手动把 `<lang>/prompts/` 下的文件复制到项目里。`mentor-mcp` 让这一过程标准化：任何支持 MCP 的工具（Claude Code、Cursor、Windsurf、MIMO 等）都能通过协议读取导师提示词、一键安装、检测工具。
+本项目是一个「纯提示词」框架。原方案是手动把 `<lang>/prompts/` 下的文件复制到项目里。`mentor-mcp` 让这一过程标准化：任何支持 MCP 的工具（Claude Code、Cursor、Windsurf、opencode 等）都能通过协议读取导师提示词、一键安装、检测工具。
 
 ## 能力一览
 

@@ -13,7 +13,7 @@ English entry page. The full English version lives at the repo root [README.md](
 
 ## 📦 More Docs
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — per-tool loading guide (MIMO / Claude Code / Codex / Cursor, etc.)
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — per-tool loading guide (opencode / Claude Code / Codex / Cursor, etc.)
 - [Complete-Mentor-Prompt.md](./prompts/Complete-Mentor-Prompt.md) — one-shot consolidated mentor prompt (all modules merged)
 
 ## ⬇️ Install & Use the mentor CLI
@@ -31,24 +31,24 @@ mentor detect                         # Detect which AI tool the project uses
 mentor pack                           # Generate a compatible skill directory
 ```
 
-`mentor` automatically writes the correct file name and location for each tool: MIMO/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
+`mentor` automatically writes the correct file name and location for each tool: opencode/Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, Cursor → `.cursor/rules/`.
 
 **Option B: Manual copy**
 
 Following the instructions in [COMPATIBILITY.md](./COMPATIBILITY.md), copy the files under `prompts/` to the corresponding locations in your project.
 
-> Supported commands: `install` / `add` / `remove` / `list` / `detect` / `pack`; modules: agent (default) / security / style / workflow / complete; tools: mimo / claude-code / codex / cursor / other.
+> Supported commands: `install` / `add` / `remove` / `list` / `detect` / `pack`; modules: agent (default) / security / style / workflow / complete; tools: opencode / claude-code / codex / cursor / other.
 
-## 📖 Usage Guide (MIMO CLI)
+## 📖 Usage Guide (opencode)
 
 ### Command Cheat-Sheet
 
 | Scenario | Action |
 |------|------|
-| Everyday development | Enter the project → `/skill AGENTS.md` → talk normally |
-| Long-running project | After the first load, use `/dream` to distill the rules into MEMORY.md |
-| Unexpected disconnect | Recover with `mimo --continue`; the skill rules are still there |
-| Starting a new session on purpose | After running `/new`, remember to `/skill AGENTS.md` again |
+| Everyday development | Enter the project → opencode auto-loads AGENTS.md → talk normally |
+| Long-running project | Keep the rules in AGENTS.md (update with `/init`) |
+| Unexpected disconnect | Recover with `opencode --continue`; the rules are still there |
+| Starting a new session on purpose | Just launch `opencode` — AGENTS.md is auto-loaded |
 
 ### Project File Structure
 
@@ -85,7 +85,7 @@ AI will automatically:
 Needs loaded:
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 AI will additionally:
@@ -102,7 +102,7 @@ AI will additionally:
 Needs loaded:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI will additionally:
@@ -120,7 +120,7 @@ AI will additionally:
 Needs loaded:
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 AI will additionally:
@@ -137,7 +137,7 @@ AI will additionally:
 Needs loaded:
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI will additionally:
@@ -153,7 +153,7 @@ AI will additionally:
 |---------------|------|
 | A pure technical question (e.g., "how do I use React useEffect") | AGENTS.md is enough; adding workflow only interferes |
 | Tweaking a single CSS style | No need for the security spec or the deployment flow |
-| Asking the AI to translate a piece of text | No skill is needed at all |
+| Asking the AI to translate a piece of text | No module is needed at all |
 | Simple refactoring of existing code | AGENTS.md's security checklist already covers it |
 
 ### 💡 One-Line Summary
@@ -172,6 +172,6 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Launch Xiaomi MIMO and provide your Project Requirement Specification (project name, core goals, user roles, core workflows, data to persist). The AI starts from Phase 0: Environment Setup & Tech Stack Selection and advances step by step, waiting for your confirmation.
+3. Launch opencode and provide your Project Requirement Specification (project name, core goals, user roles, core workflows, data to persist). The AI starts from Phase 0: Environment Setup & Tech Stack Selection and advances step by step, waiting for your confirmation.
 
 > 📦 New tools are supported by adding a row in [COMPATIBILITY.md](./COMPATIBILITY.md) — no per-tool directories needed.

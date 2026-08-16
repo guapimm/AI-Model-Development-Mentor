@@ -8,7 +8,7 @@
 
 | 도구 | 메인 파일(에이전트 역할) | 저장 위치 | 로딩 방식 | 기타 모듈(security/style/workflow) |
 |------|------------------------|---------|---------|-----------------------------------|
-| 샤오미 MIMO | `AGENTS.md` | 프로젝트 루트 | 수동: `/skill AGENTS.md` | `/skill security.md` 등으로 하나씩 로드 |
+| opencode | `AGENTS.md` | 프로젝트 루트 | 자동 로드 | `@security.md` 등으로 하나씩 로드 |
 | Claude Code | `CLAUDE.md` 또는 `AGENTS.md` | 프로젝트 루트 | 자동 로드 | 메인 파일에서 `@security.md`로 참조하거나 하위 디렉터리에 넣어 필요 시 로드 |
 | OpenAI Codex | `AGENTS.md` | 프로젝트 루트 | 자동 로드 | 메인 파일에서 `@security.md`로 참조 |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | 자동 로드(rules는 glob 매칭으로 적용 범위 지정 가능) | 같은 이름의 파일을 같은 디렉터리에 함께 배치 |
@@ -21,11 +21,11 @@
 
 ## 도구별 상세 설명
 
-### 샤오미 MIMO
+### opencode
 1. `prompts/AGENTS.md`를 프로젝트 루트에 복사합니다.
-2. MIMO 세션에서 `/skill AGENTS.md`를 입력해 멘토 역할을 로드합니다.
-3. 보안/스타일/워크플로우가 필요할 때 `/skill security.md`, `/skill style.md`, `/skill workflow.md`를 필요 시 로드합니다.
-4. 장기 프로젝트: `/dream`으로 규칙을 MEMORY.md에 정착시킵니다. 연결이 끊기면 `mimo --continue`로 복구합니다.
+2. opencode는 매 세션 AGENTS.md를 자동으로 로드하므로 수동 조작이 필요 없습니다.
+3. 보안/스타일/워크플로우가 필요할 때 `@security.md`, `@style.md`, `@workflow.md`를 필요 시 로드합니다.
+4. 장기 프로젝트: 규칙은 AGENTS.md에 정착시킵니다. 연결이 끊기면 `opencode --continue`로 복구합니다.
 
 ### Claude Code
 1. `prompts/AGENTS.md`를 복사해 `CLAUDE.md`로 이름을 바꿉니다(또는 `AGENTS.md` 그대로 유지 — 최신 버전은 자동으로 인식합니다).

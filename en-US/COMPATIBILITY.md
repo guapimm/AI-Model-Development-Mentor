@@ -8,7 +8,7 @@ The prompts under the `prompts/` directory are **tool-agnostic** — any LLM-bas
 
 | Tool | Main file (agent role) | Location | How to load | Other modules (security/style/workflow) |
 |------|---------------------|---------|---------|-----------------------------------|
-| Xiaomi MIMO | `AGENTS.md` | Project root | Manual: `/skill AGENTS.md` | Load them one by one with `/skill security.md`, etc. |
+| opencode | `AGENTS.md` | Project root | Auto | Load them one by one with `@security.md`, etc. |
 | Claude Code | `CLAUDE.md` or `AGENTS.md` | Project root | Auto-loaded | Reference with `@security.md` in the main file, or put them in a subdirectory to load on demand |
 | OpenAI Codex | `AGENTS.md` | Project root | Auto-loaded | Reference with `@security.md` in the main file |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | Auto-loaded (rules can use glob matching to scope which files they apply to) | Put same-name files in the same directory |
@@ -21,11 +21,11 @@ The prompts under the `prompts/` directory are **tool-agnostic** — any LLM-bas
 
 ## Per-Tool Details
 
-### Xiaomi MIMO
+### opencode
 1. Copy `prompts/AGENTS.md` to the project root
-2. In a MIMO session, enter `/skill AGENTS.md` to load the mentor role
-3. When you need security/style/workflow, load them on demand with `/skill security.md`, `/skill style.md`, `/skill workflow.md`
-4. For long-running projects: use `/dream` to distill the rules into MEMORY.md; recover from a disconnect with `mimo --continue`
+2. opencode auto-loads AGENTS.md in every session — no manual step needed
+3. When you need security/style/workflow, load them on demand with `@security.md`, `@style.md`, `@workflow.md`
+4. For long-running projects: keep the rules in AGENTS.md; recover from a disconnect with `opencode --continue`
 
 ### Claude Code
 1. Copy `prompts/AGENTS.md` → rename it to `CLAUDE.md` (or keep it as `AGENTS.md`; newer versions detect it automatically)

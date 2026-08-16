@@ -12,7 +12,7 @@
 
 AI に一連の「鉄則」を守らせることで、*セキュリティ最優先・ロジックの透明性・ドキュメントファースト・Token 効率・段階的実装・リソース管理*をデフォルトの行動にします。その結果、AI はただコードを「書く」だけでなく、**安全で保守しやすく、ドキュメント化されたコード**を書けるようになります。
 
-> ⚠️ 多ツール対応：プロンプトはすべての LLM ベースのコーディングツール（MIMO / Claude Code / Codex / Cursor など）で利用できます。ツール別の読み込み方法は [COMPATIBILITY.md](./COMPATIBILITY.md) を参照してください。
+> ⚠️ 多ツール対応：プロンプトはすべての LLM ベースのコーディングツール（opencode / Claude Code / Codex / Cursor など）で利用できます。ツール別の読み込み方法は [COMPATIBILITY.md](./COMPATIBILITY.md) を参照してください。
 
 ## 中核モジュール（多ツール対応）
 
@@ -25,7 +25,7 @@ AI に一連の「鉄則」を守らせることで、*セキュリティ最優�
 
 ## 📦 その他のドキュメント
 
-- [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI ツール（MIMO / Claude Code / Codex / Cursor 等）の読み込み説明
+- [COMPATIBILITY.md](./COMPATIBILITY.md) — 各 AI ツール（opencode / Claude Code / Codex / Cursor 等）の読み込み説明
 - [開発メンター完全版プロンプト.md](./prompts/開発メンター完全版プロンプト.md) — 全モジュールを統合した一括ロード用の完全版プロンプト
 
 ## ⬇️ mentor CLI のインストールと使い方
@@ -43,24 +43,24 @@ mentor detect                         # プロジェクトが使用している 
 mentor pack                           # 互換性のある skill ディレクトリを生成
 ```
 
-`mentor` はツールに応じて正しいファイル名と保存場所を自動で書き込みます：MIMO/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
+`mentor` はツールに応じて正しいファイル名と保存場所を自動で書き込みます：opencode/Codex → `AGENTS.md`、Claude Code → `CLAUDE.md`、Cursor → `.cursor/rules/`。
 
 **方法 B：手動コピー**
 
 [COMPATIBILITY.md](./COMPATIBILITY.md) の説明に従って、`prompts/` 配下のファイルをプロジェクトの該当する場所にコピーしてください。
 
-> 対応コマンド：`install` / `add` / `remove` / `list` / `detect` / `pack`；モジュール：agent（デフォルト）/ security / style / workflow / complete；ツール：mimo / claude-code / codex / cursor / other。
+> 対応コマンド：`install` / `add` / `remove` / `list` / `detect` / `pack`；モジュール：agent（デフォルト）/ security / style / workflow / complete；ツール：opencode / claude-code / codex / cursor / other。
 
-## 📖 使い方ガイド（MIMO CLI）
+## 📖 使い方ガイド（opencode）
 
 ### コマンド速覧
 
 | シナリオ | 操作 |
 |------|------|
-| 日常開発 | プロジェクトに入る → `/skill AGENTS.md` → 通常の会話 |
-| 長期プロジェクト | 初回ロード後に、`/dream` でルールを MEMORY.md に定着させる |
-| 予期せぬ切断 | `mimo --continue` で復旧。skill のルールはそのまま残っている |
-| 新しいセッションを自発的に開始 | `/new` を実行したら、忘れずに `/skill AGENTS.md` を再実行する |
+| 日常開発 | プロジェクトに入る → opencode が AGENTS.md を自動読み込み → 通常の会話 |
+| 長期プロジェクト | ルールを AGENTS.md に定着させる（`/init` で更新） |
+| 予期せぬ切断 | `opencode --continue` で復旧。ルールはそのまま残っている |
+| 新しいセッションを自発的に開始 | `opencode` を起動するだけ。AGENTS.md は自動読み込み |
 
 ### プロジェクトのファイル構成
 
@@ -97,7 +97,7 @@ AI が自動で行うこと：
 必要なロード：
 
 ```bash
-/skill security.md
+@security.md
 ```
 
 AI がさらに行うこと：
@@ -114,7 +114,7 @@ AI がさらに行うこと：
 必要なロード：
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI がさらに行うこと：
@@ -132,7 +132,7 @@ AI がさらに行うこと：
 必要なロード：
 
 ```bash
-/skill style.md
+@style.md
 ```
 
 AI がさらに行うこと：
@@ -149,7 +149,7 @@ AI がさらに行うこと：
 必要なロード：
 
 ```bash
-/skill workflow.md
+@workflow.md
 ```
 
 AI がさらに行うこと：
@@ -165,7 +165,7 @@ AI がさらに行うこと：
 |---------------|------|
 | 純粋な技術的な質問（例：「React の useEffect の使い方」） | AGENTS.md で十分。workflow を追加すると逆に邪魔になる |
 | CSS スタイルを 1 つ変更する | セキュリティ規範やデプロイの手順は不要 |
-| AI に文章を翻訳させる | どの skill もまったく不要 |
+| AI に文章を翻訳させる | どのモジュールもまったく不要 |
 | 既存コードを簡単にリファクタリングする | AGENTS.md の安全チェックリストでカバーされている |
 
 ### 💡 ひとことまとめ
@@ -193,7 +193,7 @@ cp prompts/style.md style.md
 cp prompts/workflow.md workflow.md
 ```
 
-3. Xiaomi MIMO を起動して、次のように伝えます：
+3. opencode を起動して、次のように伝えます：
 
 > 「私は完全な初心者です。これが私の【プロジェクト要件仕様書】です：プロジェクト名 ____、中核目標 ____、ユーザー役割 ____、中核操作フロー ____、保存が必要なデータ ____。フェーズ 0：環境準備と技術スタック選定から始めて、段階的に案内してください。」
 

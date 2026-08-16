@@ -38,7 +38,7 @@ const MODULES: Mod[] = [
 ];
 
 const CLIS: Cli[] = [
-  { id: "mimo", name: "小米 MIMO", agentFile: "AGENTS.md", dir: "" },
+  { id: "opencode", name: "opencode", agentFile: "AGENTS.md", dir: "" },
   { id: "claude-code", name: "Claude Code", agentFile: "CLAUDE.md", dir: "" },
   { id: "codex", name: "OpenAI Codex", agentFile: "AGENTS.md", dir: "" },
   { id: "cursor", name: "Cursor", agentFile: "AGENTS.md", dir: ".cursor/rules" },
@@ -103,7 +103,9 @@ function targetFileName(module: string, cli: Cli): string {
 
 function detectTool(dir: string): Cli | null {
   const probe = (p: string) => fs.existsSync(path.join(dir, p));
-  if (probe(".mimocode")) return CLIS.find((c) => c.id === "mimo")!;
+  if (probe(".opencode")) return CLIS.find((c) => c.id === "opencode")!;
+  if (probe("opencode.json")) return CLIS.find((c) => c.id === "opencode")!;
+  if (probe("opencode.jsonc")) return CLIS.find((c) => c.id === "opencode")!;
   if (probe("CLAUDE.md")) return CLIS.find((c) => c.id === "claude-code")!;
   if (probe(".cursor")) return CLIS.find((c) => c.id === "cursor")!;
   if (probe(".codex")) return CLIS.find((c) => c.id === "codex")!;
@@ -181,7 +183,7 @@ function toolsList() {
             },
             cli: {
               type: "string",
-              description: "目标工具：mimo / claude-code / codex / cursor / other",
+              description: "目标工具：opencode / claude-code / codex / cursor / other",
             },
             dir: { type: "string", description: "安装目录，默认当前目录" },
           },

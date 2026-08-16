@@ -8,7 +8,7 @@ Die Prompts im Verzeichnis `prompts/` sind **unabhängig** vom jeweiligen KI-Too
 
 | Tool | Hauptdatei (Agent-Rolle) | Ablageort | Ladeweise | Weitere Module (security/style/workflow) |
 |------|--------------------------|-----------|-----------|-------------------------------------------|
-| Xiaomi MIMO | `AGENTS.md` | Projektstammverzeichnis | Manuell: `/skill AGENTS.md` | Ebenso einzeln laden, z. B. `/skill security.md` |
+| opencode | `AGENTS.md` | Projektstammverzeichnis | Automatisch geladen | Ebenso einzeln laden, z. B. `@security.md` |
 | Claude Code | `CLAUDE.md` oder `AGENTS.md` | Projektstammverzeichnis | Automatisch geladen | Im Haupt-Prompt mit `@security.md` referenzieren oder in einem Unterverzeichnis ablegen und bei Bedarf laden |
 | OpenAI Codex | `AGENTS.md` | Projektstammverzeichnis | Automatisch geladen | Im Haupt-Prompt mit `@security.md` referenzieren |
 | Cursor | `AGENTS.md` | `.cursor/rules/` | Automatisch geladen (Regeln können per glob-Muster einen Dateibereich abdecken) | Gleichnamige Dateien in dasselbe Verzeichnis legen |
@@ -21,11 +21,11 @@ Die Prompts im Verzeichnis `prompts/` sind **unabhängig** vom jeweiligen KI-Too
 
 ## Ausführliche Anleitungen je Tool
 
-### Xiaomi MIMO
+### opencode
 1. `prompts/AGENTS.md` in das Projektstammverzeichnis kopieren
-2. In der MIMO-Sitzung `/skill AGENTS.md` eingeben, um die Mentorenrolle zu laden
-3. Bei Bedarf Sicherheits-/Stil-/Workflow-Vorgaben laden: `/skill security.md`, `/skill style.md`, `/skill workflow.md`
-4. Bei langlaufenden Projekten: `/dream` verankert die Regeln in MEMORY.md; nach einer Unterbrechung mit `mimo --continue` fortfahren
+2. opencode lädt AGENTS.md in jeder Sitzung automatisch — kein manueller Schritt nötig
+3. Bei Bedarf Sicherheits-/Stil-/Workflow-Vorgaben laden: `@security.md`, `@style.md`, `@workflow.md`
+4. Bei langlaufenden Projekten: Regeln in AGENTS.md verankern; nach einer Unterbrechung mit `opencode --continue` fortfahren
 
 ### Claude Code
 1. `prompts/AGENTS.md` kopieren → in `CLAUDE.md` umbenennen (oder als `AGENTS.md` belassen, neuere Versionen erkennen es automatisch)
