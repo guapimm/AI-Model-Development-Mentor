@@ -17,6 +17,7 @@
 | Aider | `CONVENTIONS.md` | 项目根目录 | 自动加载 | 合并内容或分文件引用 |
 | Windsurf | `.windsurfrules` | 项目根目录 | 自动加载 | 同上 |
 | GitHub Copilot Agent | `AGENTS.md` | 项目根目录 | 自动加载 | 用 `@security.md` 引用 |
+| 任意 MCP 客户端 | 通过 `mentor-mcp` | stdio（`node mcp/dist/index.js`） | 自动（resources + tools） | 所有模块以 MCP 资源 `mentor://prompts/{lang}/{module}` 暴露 |
 
 ## 各工具详细说明
 
@@ -57,6 +58,12 @@
 
 ### GitHub Copilot Agent
 1. 复制 `prompts/AGENTS.md` 到项目根目录，自动加载；其他模块用 `@security.md` 引用
+
+### MCP（Model Context Protocol）
+1. 构建服务：`cd mcp && npm install && npm run build`
+2. 将 MCP 客户端指向 `node <repo>/mcp/dist/index.js`
+3. 服务以资源（`mentor://prompts/{lang}/{module}`）和工具（`install`、`detect_tool`、`list_languages`、`list_modules`、`generate_resource_estimate`）形式暴露提示词
+4. 详见 `mcp/README.md`
 
 ## 用 mentor CLI 一键安装
 

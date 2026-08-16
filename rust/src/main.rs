@@ -11,6 +11,39 @@ include!(concat!(env!("OUT_DIR"), "/embed_gen.rs"));
 
 const VERSION: &str = "0.1.0";
 
+const SNAPSHOT_TEMPLATE: &str = r#"# 项目快照（断点续传）
+
+> 由 AI 导师在每次对话结束时更新，用于断点续传与上下文恢复。控制在 200 行以内。
+
+## 技术栈版本
+
+| 技术 | 版本 |
+|------|------|
+| （待填） | |
+
+## 数据库表清单
+
+| 表名 | 用途 |
+|------|------|
+| | |
+
+## 已完成的 API 接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| | | |
+
+## 当前进度与待办
+
+- 当前阶段：
+- 下一步：
+- 待确认事项：
+
+## 续传暗号
+
+（此处填入本次对话结束时的续传暗号）
+"#;
+
 struct Lang {
     code: &'static str,
     name: &'static str,
@@ -63,6 +96,9 @@ struct Args {
     cli: Option<String>,
     dir: String,
     out: Option<String>,
+    name: Option<String>,
+    goal: Option<String>,
+    show: bool,
     positional: Vec<String>,
 }
 
@@ -73,6 +109,9 @@ fn parse_args(argv: &[String]) -> Args {
         cli: None,
         dir: ".".to_string(),
         out: None,
+        name: None,
+        goal: None,
+        show: false,
         positional: Vec::new(),
     };
     let mut i = 0;
@@ -99,6 +138,15 @@ fn parse_args(argv: &[String]) -> Args {
                 out.out = argv.get(i + 1).cloned();
                 i += 1;
             }
+            "--name" => {
+                out.name = argv.get(i + 1).cloned();
+                i += 1;
+            }
+            "--goal" => {
+                out.goal = argv.get(i + 1).cloned();
+                i += 1;
+            }
+            "--show" => out.show = true,
             _ => out.positional.push(a.clone()),
         }
         i += 1;
@@ -356,17 +404,73 @@ fn cmd_pack(argv: &[String]) -> io::Result<()> {
     Ok(())
 }
 
+fn cmd_init(argv: &[String]) -> io::Result<()> {
+    let a = parse_args(argv);
+    let name = match a.name {
+        Some(n) => n,
+        None => read_line("📛 项目名称（如：记账小助手）> ")?,
+    };
+    let goal = match a.goal {
+        Some(g) => g,
+        None => read_line("🎯 项目核心目标（一句话）> ")?,
+    };
+
+    fs::create_dir_all(&a.dir)?;
+    let req = format!("# 项目需求说明书：{}\n\n## 核心目标\n{}\n\n## 用户角色\n（待补充，请与导师确认）\n\n## 核心操作流程\n（待补充）\n\n## 必须存储的数据\n（待补充）\n", name, goal);
+    fs::write(Path::new(&a.dir).join("REQUIREMENTS.md"), req)?;
+    println!("✓ {}", Path::new(&a.dir).join("REQUIREMENTS.md").display());
+
+    let env = "# 环境变量示例：复制为 .env 并填入真实值，切勿把 .env 提交到仓库\n# 数据库连接串\nDATABASE_URL=\n# 密钥（示例）\nSECRET_KEY=\n";
+    fs::write(Path::new(&a.dir).join(".env.example"), env)?;
+    println!("✓ {}", Path::new(&a.dir).join(".env.example").display());
+
+    let docs_dir = Path::new(&a.dir).join("docs");
+    fs::create_dir_all(&docs_dir)?;
+    fs::write(docs_dir.join("SNAPSHOT.md"), SNAPSHOT_TEMPLATE)?;
+    println!("✓ {}", docs_dir.join("SNAPSHOT.md").display());
+
+    println!("\n下一步：运行 `mentor install` 安装导师提示词，然后在你的 AI 工具中把本目录作为项目启动。");
+    Ok(())
+}
+
+fn cmd_snapshot(argv: &[String]) -> io::Result<()> {
+    let a = parse_args(argv);
+    let p = Path::new(&a.dir).join("docs").join("SNAPSHOT.md");
+    if a.show {
+        if !p.exists() {
+            println!("（未找到 {}，可先运行 `mentor snapshot` 生成）", p.display());
+            return Ok(());
+        }
+        let b = fs::read_to_string(&p)?;
+        print!("{}", b);
+        return Ok(());
+    }
+    if let Some(parent) = p.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    if p.exists() {
+        println!("已存在快照，不覆盖。查看请用 `mentor snapshot --show`");
+        return Ok(());
+    }
+    fs::write(&p, SNAPSHOT_TEMPLATE)?;
+    println!("✓ {}", p.display());
+    Ok(())
+}
+
 fn usage() {
     println!(
         "AI 模型导师 mentor v{}
 
 用法:
+  mentor init               初始化项目：生成需求说明书 + .env.example + 文档骨架
+  mentor init --name foo --goal \"做记账\" --dir ./proj
   mentor install             交互式安装向导（选语言 → 选模块 → 选工具）
   mentor install --lang zh-CN --modules agent,security --cli claude-code --dir ./proj
   mentor add <模块>...        追加模块，如: mentor add security --lang zh-CN
   mentor remove <模块>...     移除模块
   mentor list                列出当前项目已安装的模块
   mentor detect              检测项目使用的 AI 工具
+  mentor snapshot            生成/查看项目快照（断点续传），--show 查看现有快照
   mentor pack                生成兼容 skill 目录 + zip
   mentor version             版本号
   mentor help                帮助
@@ -385,12 +489,14 @@ fn main() {
         Ok(())
     } else {
         match argv[0].as_str() {
+            "init" => cmd_init(&argv[1..]),
             "install" => cmd_install(&argv[1..]),
             "add" => cmd_add(&argv[1..]),
             "remove" => cmd_remove(&argv[1..]),
             "list" => cmd_list(&argv[1..]),
             "detect" => cmd_detect(&argv[1..]),
             "pack" => cmd_pack(&argv[1..]),
+            "snapshot" => cmd_snapshot(&argv[1..]),
             "version" | "-v" | "--version" => {
                 println!("mentor {}", VERSION);
                 Ok(())

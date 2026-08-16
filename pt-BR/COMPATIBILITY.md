@@ -17,6 +17,7 @@ O conteúdo dos prompts no diretório `prompts/` é **independente da ferramenta
 | Aider | `CONVENTIONS.md` | Raiz do projeto | Carregamento automático | Mescle o conteúdo ou referencie a partir de arquivos separados |
 | Windsurf | `.windsurfrules` | Raiz do projeto | Carregamento automático | Igual ao anterior |
 | GitHub Copilot Agent | `AGENTS.md` | Raiz do projeto | Carregamento automático | Referencie com `@security.md` |
+| Qualquer cliente MCP | via `mentor-mcp` | stdio (`node mcp/dist/index.js`) | Automático (resources + tools) | Todos os módulos expostos como recursos MCP `mentor://prompts/{lang}/{module}` |
 
 ## Detalhes por Ferramenta
 
@@ -57,6 +58,12 @@ O conteúdo dos prompts no diretório `prompts/` é **independente da ferramenta
 
 ### GitHub Copilot Agent
 1. Copie `prompts/AGENTS.md` para a raiz do projeto; é carregado automaticamente. Referencie os outros módulos com `@security.md`
+
+### MCP (Model Context Protocol)
+1. Compile o servidor: `cd mcp && npm install && npm run build`
+2. Aponte seu cliente MCP para `node <repo>/mcp/dist/index.js`
+3. O servidor expõe os prompts como recursos (`mentor://prompts/{lang}/{module}`) e ferramentas (`install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`)
+4. Consulte `mcp/README.md` para detalhes
 
 ## Instalação com a CLI mentor (um comando)
 

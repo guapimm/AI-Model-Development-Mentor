@@ -3,6 +3,12 @@
 > **Turn your AI coding assistant into a cautious 10-year full-stack mentor — pure prompts, zero dependencies.**
 > Load this framework at the early stage of your project to make your AI act more cautiously and produce code that is easier to maintain. Pure prompt implementation, no dependencies.
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/guapimm/AI-Model-Development-Mentor?include_prereleases)](https://github.com/guapimm/AI-Model-Development-Mentor/releases)
+[![Languages](https://img.shields.io/badge/languages-9-green.svg)](#-language--语言)
+
+> **中文一句话介绍**：一个「纯提示词」框架，把你的 AI 编程助手变成一个有 10 年经验、谨慎靠谱的全栈导师，专为编程零基础小白设计。加载后 AI 会默认遵守 6 条铁律（代码即文档、安全前置、零破坏性改动、分步执行、模块化隔离、性能与资源前置），产出安全、可维护、带文档的代码。
+
 ## 🌍 Language / 语言
 
 [English](./README.md) · [中文](./zh-CN/README.md) · [日本語](./ja-JP/README.md) · [한국어](./ko-KR/README.md) · [Español](./es-ES/README.md) · [Français](./fr-FR/README.md) · [Deutsch](./de-DE/README.md) · [Português](./pt-BR/README.md) · [Русский](./ru-RU/README.md)
@@ -50,8 +56,24 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 | Aider | `CONVENTIONS.md` | project root | auto |
 | Windsurf | `.windsurfrules` | project root | auto |
 | GitHub Copilot Agent | `AGENTS.md` | project root | auto |
+| **Any MCP client** | via `mentor-mcp` | stdio (`node mcp/dist/index.js`) | auto (resources + tools) |
 
 > 💡 **One-click install:** the `mentor` CLI writes files to the correct name/location for any of these tools automatically (see `cli/`).
+
+## 🧩 MCP Server
+
+For tools that speak **MCP (Model Context Protocol)**, a TypeScript server (`mcp/`) exposes the mentor framework as standard resources and tools — no manual file copying:
+
+- **Resources** `mentor://prompts/{lang}/{module}` — read any prompt (9 languages × 5 modules) on demand.
+- **Tools** — `install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`.
+
+Run it locally (clone the repo, then):
+
+```bash
+cd mcp && npm install && npm run build && node dist/index.js
+```
+
+Then point your MCP client at `node <repo>/mcp/dist/index.js`. See [mcp/README.md](./mcp/README.md) for details.
 
 ## ⬇️ Install
 
@@ -73,20 +95,30 @@ Both support: interactive wizard (language → modules → tool), non-interactiv
 ## Quick Start (3 steps)
 
 ```bash
-# 1. Copy the mentor role into your project (rename it)
+# 1. (Optional) Bootstrap a new project scaffold: requirements doc + .env.example + docs/
+mentor init --name "my-app" --goal "a personal finance tracker"
+
+# 2. Copy the mentor role into your project (rename it)
 cp en-US/prompts/AGENTS.md AGENTS.md
 
-# 2. (Recommended) Add security / style / workflow specs too
+# 3. (Recommended) Add security / style / workflow specs too
 cp en-US/prompts/security.md security.md
 cp en-US/prompts/style.md style.md
 cp en-US/prompts/workflow.md workflow.md
 ```
 
-3. Launch Xiaomi MIMO and say:
+4. Launch your AI tool and say:
 
 > "I'm a complete beginner. Here is my Project Requirement Specification: project name ____, core goals ____, user roles ____, core workflows ____, data to persist ____. Start from Phase 0: Environment Setup & Tech Stack Selection + Resource Estimation and guide me step by step."
 
 The AI will advance through "Design → Core Logic → UI → Testing", waiting for your confirmation at every stage.
+
+## 📐 Fill-in Templates
+
+Pre-made tables referenced by the workflow module, ready to copy into your project:
+
+- `templates/{lang}/resource_estimate_template.md` — the Phase 0 《Project Resource Estimate》 table.
+- `templates/{lang}/ui_mapping_template.md` — the frontend UI/element + event mapping table.
 
 ## File Structure
 
@@ -96,6 +128,8 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # MIT License
 ├── cli/                 # mentor CLI (Go)
 ├── rust/                # mentor CLI (Rust, zero-dependency mirror)
+├── mcp/                 # mentor-mcp server (TypeScript, MCP resources + tools)
+├── templates/           # fill-in templates (resource estimate / UI mapping)
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
 └── <lang>/
     ├── README.md        # language entry + usage guide

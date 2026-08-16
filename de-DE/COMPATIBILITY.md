@@ -17,6 +17,7 @@ Die Prompts im Verzeichnis `prompts/` sind **unabhängig** vom jeweiligen KI-Too
 | Aider | `CONVENTIONS.md` | Projektstammverzeichnis | Automatisch geladen | Inhalte zusammenführen oder in Einzeldateien referenzieren |
 | Windsurf | `.windsurfrules` | Projektstammverzeichnis | Automatisch geladen | Wie oben |
 | GitHub Copilot Agent | `AGENTS.md` | Projektstammverzeichnis | Automatisch geladen | Mit `@security.md` referenzieren |
+| Jeder MCP-Client | über `mentor-mcp` | stdio (`node mcp/dist/index.js`) | Automatisch (resources + tools) | Alle Module werden als MCP-Ressourcen `mentor://prompts/{lang}/{module}` bereitgestellt |
 
 ## Ausführliche Anleitungen je Tool
 
@@ -57,6 +58,12 @@ Die Prompts im Verzeichnis `prompts/` sind **unabhängig** vom jeweiligen KI-Too
 
 ### GitHub Copilot Agent
 1. `prompts/AGENTS.md` in das Projektstammverzeichnis kopieren; wird automatisch geladen; weitere Module mit `@security.md` referenzieren
+
+### MCP (Model Context Protocol)
+1. Server bauen: `cd mcp && npm install && npm run build`
+2. MCP-Client auf `node <repo>/mcp/dist/index.js` verweisen
+3. Der Server stellt die Prompts als Ressourcen (`mentor://prompts/{lang}/{module}`) und Tools (`install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`) bereit
+4. Details siehe `mcp/README.md`
 
 ## Mit der mentor CLI in einem Schritt installieren
 

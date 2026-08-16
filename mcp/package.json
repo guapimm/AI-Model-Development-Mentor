@@ -1,0 +1,22 @@
+{
+  "name": "@guapimm/mentor-mcp",
+  "version": "0.1.0",
+  "description": "AI Model Mentor MCP server - expose the mentor prompt framework as MCP resources & tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "sync": "pwsh -File scripts/sync.ps1"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

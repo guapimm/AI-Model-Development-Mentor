@@ -17,6 +17,7 @@
 | Aider | `CONVENTIONS.md` | プロジェクトルート | 自動読み込み | 内容をマージするか、ファイルを分けて参照 |
 | Windsurf | `.windsurfrules` | プロジェクトルート | 自動読み込み | 同上 |
 | GitHub Copilot Agent | `AGENTS.md` | プロジェクトルート | 自動読み込み | `@security.md` で参照 |
+| 任意の MCP クライアント | `mentor-mcp` 経由 | stdio（`node mcp/dist/index.js`） | 自動（resources + tools） | 全モジュールを MCP リソース `mentor://prompts/{lang}/{module}` として公開 |
 
 ## 各ツールの詳細説明
 
@@ -57,6 +58,12 @@
 
 ### GitHub Copilot Agent
 1. `prompts/AGENTS.md` をプロジェクトルートにコピーすれば自動読み込みされる。その他のモジュールは `@security.md` で参照する
+
+### MCP（Model Context Protocol）
+1. サーバーをビルド：`cd mcp && npm install && npm run build`
+2. MCP クライアントを `node <repo>/mcp/dist/index.js` に向ける
+3. サーバーはプロンプトをリソース（`mentor://prompts/{lang}/{module}`）とツール（`install`、`detect_tool`、`list_languages`、`list_modules`、`generate_resource_estimate`）として公開する
+4. 詳細は `mcp/README.md` を参照
 
 ## mentor CLI でワンクリックインストール
 

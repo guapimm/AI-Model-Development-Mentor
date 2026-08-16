@@ -17,6 +17,7 @@
 | Aider | `CONVENTIONS.md` | 프로젝트 루트 | 자동 로드 | 내용을 병합하거나 파일로 나눠 참조 |
 | Windsurf | `.windsurfrules` | 프로젝트 루트 | 자동 로드 | 위와 동일 |
 | GitHub Copilot Agent | `AGENTS.md` | 프로젝트 루트 | 자동 로드 | `@security.md`로 참조 |
+| 모든 MCP 클라이언트 | `mentor-mcp` 경유 | stdio(`node mcp/dist/index.js`) | 자동(resources + tools) | 모든 모듈을 MCP 리소스 `mentor://prompts/{lang}/{module}`로 노출 |
 
 ## 도구별 상세 설명
 
@@ -57,6 +58,12 @@
 
 ### GitHub Copilot Agent
 1. `prompts/AGENTS.md`를 프로젝트 루트에 복사하면 자동으로 로드됩니다. 기타 모듈은 `@security.md`로 참조합니다.
+
+### MCP(Model Context Protocol)
+1. 서버 빌드: `cd mcp && npm install && npm run build`
+2. MCP 클라이언트를 `node <repo>/mcp/dist/index.js`로 지정
+3. 서버는 프롬프트를 리소스(`mentor://prompts/{lang}/{module}`)와 도구(`install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`)로 노출
+4. 자세한 내용은 `mcp/README.md` 참조
 
 ## mentor CLI로 한 번에 설치
 

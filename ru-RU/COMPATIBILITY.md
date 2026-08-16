@@ -17,6 +17,7 @@
 | Aider | `CONVENTIONS.md` | корень проекта | автоматическая загрузка | объединить содержимое или ссылаться на отдельные файлы |
 | Windsurf | `.windsurfrules` | корень проекта | автоматическая загрузка | то же самое |
 | GitHub Copilot Agent | `AGENTS.md` | корень проекта | автоматическая загрузка | ссылка `@security.md` |
+| Любой MCP-клиент | через `mentor-mcp` | stdio (`node mcp/dist/index.js`) | Автоматически (resources + tools) | Все модули доступны как MCP-ресурсы `mentor://prompts/{lang}/{module}` |
 
 ## Подробности по каждому инструменту
 
@@ -57,6 +58,12 @@
 
 ### GitHub Copilot Agent
 1. Скопируйте `prompts/AGENTS.md` в корень проекта — загружается автоматически; остальные модули указывайте через ссылку `@security.md`
+
+### MCP (Model Context Protocol)
+1. Соберите сервер: `cd mcp && npm install && npm run build`
+2. Укажите MCP-клиенту `node <repo>/mcp/dist/index.js`
+3. Сервер предоставляет промпты как ресурсы (`mentor://prompts/{lang}/{module}`) и инструменты (`install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`)
+4. Подробнее см. `mcp/README.md`
 
 ## Установка одной командой через CLI mentor
 

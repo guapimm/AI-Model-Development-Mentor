@@ -3,5 +3,7 @@ cli/dist/
 cli/files/
 rust/target/
 node_modules/
+mcp/dist/
+mcp/prompts/
 *.zip
 *.tgz
