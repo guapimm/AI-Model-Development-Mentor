@@ -87,3 +87,35 @@ jobs:
         with:
           files: rust/${{ matrix.asset }}
           fail_on_unmatched_files: false
+
+  mcp:
+    name: Pack mentor-mcp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: npm
+          cache-dependency-path: mcp/package-lock.json
+
+      - name: Install, sync prompts, pack
+        working-directory: mcp
+        run: |
+          npm ci
+          node scripts/sync.mjs
+          npm run build
+          npm pack
+
+      - name: Upload tarball to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mcp/guapimm-mentor-mcp-*.tgz
+          generate_release_notes: true
+
+      - name: Docker build (verify only, no push)
+        working-directory: mcp
+        run: docker build -t mentor-mcp:ci .

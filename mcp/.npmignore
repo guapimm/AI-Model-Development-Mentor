@@ -1,0 +1,7 @@
+src
+scripts
+tsconfig.json
+*.test.js
+**/*.test.js
+examples
+node_modules

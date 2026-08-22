@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mentor": {
+      "command": "npx",
+      "args": ["-y", "file:/absolute/path/to/guapimm-mentor-mcp-0.1.0.tgz"]
+    }
+  }
+}

@@ -1,13 +1,23 @@
 {
   "name": "@guapimm/mentor-mcp",
   "version": "0.1.0",
-  "description": "AI Model Mentor MCP server - expose the mentor prompt framework as MCP resources & tools",
+  "description": "AI Model Mentor MCP server - on-demand policy fragments and sandboxed workspace tools",
   "private": true,
   "type": "module",
+  "bin": {
+    "mentor-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "policy",
+    "prompts",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
-    "test": "tsc && node --test dist/*.test.js",
-    "sync": "pwsh -File scripts/sync.ps1"
+    "test": "tsc -p tsconfig.test.json && node --test dist/*.test.js",
+    "sync": "node scripts/sync.mjs",
+    "prepack": "node scripts/sync.mjs && node --input-type=module -e \"import fs from 'node:fs'; fs.rmSync('dist',{recursive:true,force:true})\" && tsc"
   },
   "license": "Apache-2.0",
   "engines": {

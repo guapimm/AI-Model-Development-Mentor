@@ -41,7 +41,10 @@ mentor pack                           # 生成兼容 skill 目录
 
 ## 🧩 用 MCP 接入 IDE（按需加载）
 
-完整步骤、规则和注意事项见 [mcp/README.md](../mcp/README.md)。**没有 npm 包**，必须 clone 后本地构建。
+完整步骤见 [mcp/README.md](../mcp/README.md)。**没有 npmjs 包。**
+
+- **推荐：** 从 [Releases](https://github.com/guapimm/AI-Model-Development-Mentor/releases) 下载 `guapimm-mentor-mcp-*.tgz`（自带编译结果，不用 `tsc`），配置见 [mcp/examples/mcp.release.json](../mcp/examples/mcp.release.json)。
+- **源码：** clone 后本地构建：
 
 ```bash
 git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
@@ -50,7 +53,7 @@ npm install          # 仅装本仓库依赖，不是往 npm 发包
 npm run build
 ```
 
-把 [mcp/examples/mcp.json](../mcp/examples/mcp.json) 的占位路径改成你本机的**绝对路径**，放入 Cursor / Claude Code / VS Code。对话里第一件事：让 Agent 调用 `session_start`。
+把 [mcp/examples/mcp.json](../mcp/examples/mcp.json) 的占位路径改成绝对路径。对话里先 `session_start`。
 
 ## 使用规则
 
@@ -62,7 +65,7 @@ npm run build
 
 ## 注意事项
 
-- **两条安装路径：** GitHub Releases 的 `mentor` 二进制（只要提示词，不用 Node）**或** clone 后本地编译 `mcp/`（IDE MCP）。没有 `npx @guapimm/mentor-mcp`。
+- **安装路径：** GitHub Releases 的 `mentor` 二进制（只要提示词，不用 Node）；Release 里的 `guapimm-mentor-mcp-*.tgz`（IDE MCP，需要 Node ≥ 18，不用自己 `tsc`）；或 clone 后编译 `mcp/`。没有 npmjs 上的 `npx @guapimm/mentor-mcp`。
 - **MCP 配置必须写绝对路径**，改完要重载。Windows 可用 `E:/path/to/repo`。
 - **沙箱是路径监狱，不是虚拟机。** 默认只限制在项目目录内，并禁止写 `.env` / `.git`；Docker 仅可选用于 `run_command`。
 - **只有 MCP 需要 Node ≥ 18。** 纯提示词用户可以忽略 `mcp/`。

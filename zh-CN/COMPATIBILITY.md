@@ -60,8 +60,8 @@
 1. 复制 `prompts/AGENTS.md` 到项目根目录，自动加载；其他模块用 `@security.md` 引用
 
 ### MCP（Model Context Protocol）
-1. 构建服务：`cd mcp && npm install && npm run build`
-2. 将 MCP 客户端指向 `node <repo>/mcp/dist/index.js`（样例见 `mcp/examples/mcp.json`）
+1. **推荐：** 从 GitHub Releases 下载 `guapimm-mentor-mcp-*.tgz`（未发布到 npmjs），配置见 `mcp/examples/mcp.release.json`
+2. **源码：** `cd mcp && npm install && npm run build`，指向 `node <repo>/mcp/dist/index.js`（`mcp/examples/mcp.json`，绝对路径）
 3. **按需加载**：先 `session_start` 拿到 L0 目录，需要某条规则再 `policy_load`；不要每轮塞入完整 security/style/workflow
 4. 读写项目文件请走 `fs_write` / `run_command`（路径监狱；可选 Docker）
 5. 资源：`mentor://prompts/{lang}/{module}`（全文）与 `mentor://policy/{lang}/{fragmentId}`（切片）

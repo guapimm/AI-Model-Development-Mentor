@@ -41,7 +41,10 @@ Following the instructions in [COMPATIBILITY.md](./COMPATIBILITY.md), copy the f
 
 ## 🧩 Connect an IDE via MCP (on-demand prompts)
 
-Full tutorial, rules, and caveats: [mcp/README.md](../mcp/README.md). **Not on npm** — clone and build locally.
+Full tutorial: [mcp/README.md](../mcp/README.md). **Not on npmjs.**
+
+- **Recommended:** download `guapimm-mentor-mcp-*.tgz` from [Releases](https://github.com/guapimm/AI-Model-Development-Mentor/releases) (self-contained, no `tsc`). Config: [mcp/examples/mcp.release.json](../mcp/examples/mcp.release.json).
+- **From source:**
 
 ```bash
 git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
@@ -50,7 +53,7 @@ npm install          # local deps only, not a registry publish
 npm run build
 ```
 
-Copy [mcp/examples/mcp.json](../mcp/examples/mcp.json), replace the placeholder with **your absolute path**, and add it to Cursor / Claude Code / VS Code. First tool call: `session_start`.
+Copy [mcp/examples/mcp.json](../mcp/examples/mcp.json) and use an **absolute path**. First tool call: `session_start`.
 
 ## Usage rules
 
@@ -62,7 +65,7 @@ Copy [mcp/examples/mcp.json](../mcp/examples/mcp.json), replace the placeholder 
 
 ## Notes / caveats
 
-- **Two install paths:** GitHub Release `mentor` binary (prompts only, no Node) **or** clone + local `mcp/` build (IDE MCP). There is no `npx @guapimm/mentor-mcp`.
+- **Install paths:** GitHub Release `mentor` binary (prompts only, no Node); Release `guapimm-mentor-mcp-*.tgz` (IDE MCP, Node ≥ 18, no local `tsc`); or clone + build `mcp/`. There is no `npx @guapimm/mentor-mcp` on npmjs.
 - **MCP config needs absolute paths** and a reload after edits. Windows: `E:/path/to/repo` is fine.
 - **Sandbox is a path jail, not a VM.** I/O stays in the workspace; `.env` / `.git` writes are blocked. Docker is optional for `run_command` only.
 - **Node ≥ 18** is required only for MCP.

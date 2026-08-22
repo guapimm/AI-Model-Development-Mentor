@@ -63,9 +63,11 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 
 ## 🧩 MCP Server (IDE)
 
-`mcp/` is an **on-demand policy + sandbox** MCP server. The IDE is the coding agent; this process does **not** run an LLM and is **not published to npm**.
+`mcp/` is an **on-demand policy + sandbox** MCP server. The IDE is the coding agent; this process does **not** run an LLM and is **not on npmjs**.
 
-Full tutorial, rules, and caveats: [mcp/README.md](./mcp/README.md).
+**Users:** download `guapimm-mentor-mcp-*.tgz` from [GitHub Releases](https://github.com/guapimm/AI-Model-Development-Mentor/releases) (self-contained; no `tsc`). Config: [mcp/examples/mcp.release.json](./mcp/examples/mcp.release.json).
+
+**From source:**
 
 ```bash
 git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
@@ -74,7 +76,7 @@ npm install          # local deps only — not a registry publish
 npm run build
 ```
 
-Copy [mcp/examples/mcp.json](./mcp/examples/mcp.json), replace the placeholder with **your absolute path**, then add it to Cursor / Claude Code / VS Code. First tool call in a chat: `session_start`.
+Copy [mcp/examples/mcp.json](./mcp/examples/mcp.json), replace the placeholder with **your absolute path**. First tool call: `session_start`. Full tutorial: [mcp/README.md](./mcp/README.md).
 
 ## Usage rules
 
@@ -86,7 +88,7 @@ Copy [mcp/examples/mcp.json](./mcp/examples/mcp.json), replace the placeholder w
 
 ## Notes / caveats
 
-- **Two install paths:** GitHub Release `mentor` binary (prompts only, no Node) **or** clone + local `mcp/` build (IDE MCP). There is no `npx @guapimm/mentor-mcp`.
+- **Install paths:** GitHub Release `mentor` binary (prompts only, no Node); GitHub Release `guapimm-mentor-mcp-*.tgz` (IDE MCP, Node ≥ 18, no local `tsc`); or clone + build `mcp/`. There is no `npx @guapimm/mentor-mcp` on npmjs.
 - **MCP config needs absolute paths** and a reload after edits. Windows: `E:/path/to/repo` is fine.
 - **Sandbox is a path jail, not a VM.** It keeps I/O inside the workspace and blocks `.env` / `.git`; Docker is optional for `run_command` only.
 - **Node ≥ 18** is required only for MCP. Prompt-file users can ignore `mcp/`.
@@ -145,8 +147,9 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # Apache-2.0 License
 ├── cli/                 # mentor CLI (Go)
 ├── rust/                # mentor CLI (Rust, zero-dependency mirror)
-├── mcp/                 # mentor-mcp (local stdio server; not on npm)
+├── mcp/                 # mentor-mcp (stdio; GitHub Release .tgz, not npmjs)
 │   ├── examples/mcp.json
+│   ├── examples/mcp.release.json
 │   └── policy/fragments.json   # on-demand prompt slices
 ├── templates/           # fill-in templates (resource estimate / UI mapping)
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
@@ -179,7 +182,7 @@ The workflow builds both implementations — Go binaries (windows/linux/darwin �
 A: No. `AGENTS.md` is the only must-have. Add `security.md` for stronger guardrails, `style.md` for a friendlier conversation experience.
 
 **Q: Is mentor-mcp on npm?**
-A: No. Clone the GitHub repo and build `mcp/` locally. See [mcp/README.md](./mcp/README.md).
+A: Not on npmjs. Get `guapimm-mentor-mcp-*.tgz` from GitHub Releases, or clone and build `mcp/`. See [mcp/README.md](./mcp/README.md).
 
 **Q: Does this work with other AI products?**
 A: Yes. The prompt content is tool-agnostic — every tool just loads it differently. See the table above or `COMPATIBILITY.md` for each tool's loading guide.
