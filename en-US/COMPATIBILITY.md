@@ -60,10 +60,12 @@ The prompts under the `prompts/` directory are **tool-agnostic** — any LLM-bas
 1. Copy `prompts/AGENTS.md` to the project root; it is auto-loaded. Reference the other modules with `@security.md`
 
 ### MCP (Model Context Protocol)
-1. Build the server: `cd mcp && npm install && npm run build`
-2. Point your MCP client at `node <repo>/mcp/dist/index.js`
-3. The server exposes the prompts as resources (`mentor://prompts/{lang}/{module}`) and tools (`install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`)
-4. See `mcp/README.md` for details
+1. Clone this repo (the package is **not** on npm). Build locally: `cd mcp && npm install && npm run build`
+2. Point your MCP client at `node <repo>/mcp/dist/index.js` (see `mcp/examples/mcp.json`; use absolute paths)
+3. **On-demand loading:** call `session_start` for the L0 catalog, then `policy_load` for a single rule — do not paste full security/style/workflow every turn
+4. Project file I/O should go through `fs_write` / `run_command` (path jail; optional Docker)
+5. Resources: `mentor://prompts/{lang}/{module}` (full file) and `mentor://policy/{lang}/{fragmentId}` (slice)
+6. See `mcp/README.md` for the full tutorial, rules, and caveats
 
 ## Install with the mentor CLI (one command)
 

@@ -39,6 +39,35 @@ mentor pack                           # 生成兼容 skill 目录
 
 > 支持的命令：`install` / `add` / `remove` / `list` / `detect` / `pack`；模块：agent（默认）/ security / style / workflow / complete；工具：opencode / claude-code / codex / cursor / other。
 
+## 🧩 用 MCP 接入 IDE（按需加载）
+
+完整步骤、规则和注意事项见 [mcp/README.md](../mcp/README.md)。**没有 npm 包**，必须 clone 后本地构建。
+
+```bash
+git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
+cd AI-Model-Development-Mentor/mcp
+npm install          # 仅装本仓库依赖，不是往 npm 发包
+npm run build
+```
+
+把 [mcp/examples/mcp.json](../mcp/examples/mcp.json) 的占位路径改成你本机的**绝对路径**，放入 Cursor / Claude Code / VS Code。对话里第一件事：让 Agent 调用 `session_start`。
+
+## 使用规则
+
+1. **能少加载就少加载。** 日常写代码只需 `AGENTS.md`。安全/登录才加 `security.md`，从零搭项目才加 `workflow.md`。走 MCP 时用 `session_start` + `policy_load(id)`，不要每轮粘贴四份全文。
+2. **阶段 0 完成前不写业务代码。** 先需求说明书和资源预估，再设计 → 逻辑 → 界面 → 测试，每步等你确认。
+3. **接了 MCP 就走沙箱工具。** `fs_write` / `run_command` 才会执行 300/500 行、禁止 `.env`、阶段闸门。IDE 自带 Write/Bash 会绕过。
+4. **不要把「完整版」当源。** `开发者导师提示词完整版.md` 是旧合并稿，缺较新的资源前置铁律；以拆开的四模块为准。
+5. **密钥只进环境变量。** 仓库里只保留 `.env.example`（变量名，无真实值）。
+
+## 注意事项
+
+- **两条安装路径：** GitHub Releases 的 `mentor` 二进制（只要提示词，不用 Node）**或** clone 后本地编译 `mcp/`（IDE MCP）。没有 `npx @guapimm/mentor-mcp`。
+- **MCP 配置必须写绝对路径**，改完要重载。Windows 可用 `E:/path/to/repo`。
+- **沙箱是路径监狱，不是虚拟机。** 默认只限制在项目目录内，并禁止写 `.env` / `.git`；Docker 仅可选用于 `run_command`。
+- **只有 MCP 需要 Node ≥ 18。** 纯提示词用户可以忽略 `mcp/`。
+- `git pull` 之后请重新 `cd mcp && npm install && npm run build`。
+
 ## 📖 使用指南
 
 ### 命令速览

@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "fragments": [
+    {
+      "id": "agent.rules",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "铁律（无条件遵守）",
+        "en-US": "Iron Rules (Must Be Unconditionally Followed)"
+      },
+      "hint": { "zh": "6 条铁律细则", "en": "six iron rules in full" },
+      "triggers": { "phase": ["logic", "ui", "test"] }
+    },
+    {
+      "id": "agent.checklist",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "安全与性能自检清单（输出代码前必须逐项勾选）",
+        "en-US": "Security & Performance Self-Check Checklist (Must Check All Items Before Outputting Code)"
+      },
+      "hint": { "zh": "写代码前的 9 项清单", "en": "9-item checklist before code" },
+      "triggers": { "event": ["fs_write_code"] }
+    },
+    {
+      "id": "agent.output",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "输出格式（每次回复固定四层）",
+        "en-US": "Fixed 4-Tier Output Format for Every Reply"
+      },
+      "hint": { "zh": "四层回复格式", "en": "4-tier reply format" },
+      "triggers": { "phase": ["logic", "ui", "test"] }
+    },
+    {
+      "id": "agent.style",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "交互风格",
+        "en-US": "Interaction Style"
+      },
+      "hint": { "zh": "人设内交互风格（短）", "en": "persona interaction style" },
+      "triggers": {}
+    },
+    {
+      "id": "agent.token",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "Token 保障",
+        "en-US": "Token Optimization Mechanism"
+      },
+      "hint": { "zh": "摘要、续传暗号、熔断", "en": "summary, resume token, circuit breaker" },
+      "triggers": { "event": ["snapshot"] }
+    },
+    {
+      "id": "agent.startup",
+      "module": "agent",
+      "headings": {
+        "zh-CN": "启动指令",
+        "en-US": "Startup Instruction"
+      },
+      "hint": { "zh": "要用户提供需求说明书", "en": "ask for requirement spec" },
+      "triggers": { "phase": ["need_requirements"] }
+    },
+    {
+      "id": "security.secrets",
+      "module": "security",
+      "headings": {
+        "zh-CN": "一、密钥与配置管理",
+        "en-US": "1. Secret Key & Configuration Management"
+      },
+      "hint": { "zh": "密钥、.env、Token", "en": "secrets, .env, tokens" },
+      "triggers": {
+        "path": [".env"],
+        "intent": ["password", "secret", "token", "api_key", "apikey", "jwt"]
+      }
+    },
+    {
+      "id": "security.input",
+      "module": "security",
+      "headings": {
+        "zh-CN": "二、用户输入校验",
+        "en-US": "2. User Input Validation"
+      },
+      "hint": { "zh": "用户输入校验", "en": "user input validation" },
+      "triggers": { "intent": ["login", "register", "upload", "form", "validate"] }
+    },
+    {
+      "id": "security.db",
+      "module": "security",
+      "headings": {
+        "zh-CN": "三、数据库安全",
+        "en-US": "3. Database Security"
+      },
+      "hint": { "zh": "SQL / ORM / 连接池", "en": "SQL / ORM / pool" },
+      "triggers": {
+        "ext": [".sql"],
+        "path": ["repository", "model", "schema", "migration"],
+        "intent": ["sql", "query", "orm", "database"]
+      }
+    },
+    {
+      "id": "security.xss",
+      "module": "security",
+      "headings": {
+        "zh-CN": "四、前端 XSS 防护",
+        "en-US": "4. Front-End XSS Protection"
+      },
+      "hint": { "zh": "前端 XSS", "en": "front-end XSS" },
+      "triggers": {
+        "ext": [".tsx", ".jsx", ".vue", ".html", ".svelte"],
+        "intent": ["innerhtml", "v-html", "xss"]
+      }
+    },
+    {
+      "id": "security.fs",
+      "module": "security",
+      "headings": {
+        "zh-CN": "五、文件系统安全",
+        "en-US": "5. File System Security"
+      },
+      "hint": { "zh": "路径穿越、上传", "en": "path traversal, uploads" },
+      "triggers": { "intent": ["upload", "filepath", "multer", "path.join"] }
+    },
+    {
+      "id": "security.http",
+      "module": "security",
+      "headings": {
+        "zh-CN": "六、外部请求安全",
+        "en-US": "6. External Request Security"
+      },
+      "hint": { "zh": "外部请求超时重试", "en": "HTTP timeout and retry" },
+      "triggers": { "intent": ["fetch", "axios", "http.request", "got("] }
+    },
+    {
+      "id": "security.errors",
+      "module": "security",
+      "headings": {
+        "zh-CN": "七、异常处理",
+        "en-US": "7. Exception Handling"
+      },
+      "hint": { "zh": "异常与审计日志", "en": "exceptions and audit logs" },
+      "triggers": { "intent": ["try", "catch", "logger"] }
+    },
+    {
+      "id": "security.perf",
+      "module": "security",
+      "headings": {
+        "zh-CN": "八、性能与资源安全",
+        "en-US": "8. Performance & Resource Security"
+      },
+      "hint": { "zh": "分页、限流、流式", "en": "pagination, rate limit, streaming" },
+      "triggers": { "intent": ["pagination", "limit", "page", "stream"] }
+    },
+    {
+      "id": "style.analogies",
+      "module": "style",
+      "headings": {
+        "zh-CN": "一、生活化类比",
+        "en-US": "1. Daily-Life Analogies"
+      },
+      "hint": { "zh": "生活化类比", "en": "life analogies" },
+      "triggers": {}
+    },
+    {
+      "id": "style.tags",
+      "module": "style",
+      "headings": {
+        "zh-CN": "二、阶段标签",
+        "en-US": "2. Phase Tags"
+      },
+      "hint": { "zh": "阶段标签", "en": "phase tags" },
+      "triggers": { "event": ["session_advance"] }
+    },
+    {
+      "id": "style.confirm",
+      "module": "style",
+      "headings": {
+        "zh-CN": "三、先确认后执行",
+        "en-US": "3. Confirm Before Execution"
+      },
+      "hint": { "zh": "模糊需求给 2–3 方案", "en": "2–3 options on ambiguity" },
+      "triggers": {}
+    },
+    {
+      "id": "style.conclusion",
+      "module": "style",
+      "headings": {
+        "zh-CN": "四、先给结论，再给细节",
+        "en-US": "4. Conclusion First, Details Second"
+      },
+      "hint": { "zh": "先结论后细节", "en": "conclusion then details" },
+      "triggers": {}
+    },
+    {
+      "id": "style.rhythm",
+      "module": "style",
+      "headings": {
+        "zh-CN": "五、节奏可控",
+        "en-US": "5. Controllable Progress Rhythm"
+      },
+      "hint": { "zh": "每阶段询问是否继续", "en": "ask before next phase" },
+      "triggers": { "event": ["session_advance"] }
+    },
+    {
+      "id": "style.zerodestroy",
+      "module": "style",
+      "headings": {
+        "zh-CN": "六、零破坏性变更规范",
+        "en-US": "6. Zero-Destructive Change Specifications"
+      },
+      "hint": { "zh": "必选/可选修改标注", "en": "mandatory vs optional edits" },
+      "triggers": { "event": ["fs_write"] }
+    },
+    {
+      "id": "style.complexity",
+      "module": "style",
+      "headings": {
+        "zh-CN": "七、渐进式复杂度",
+        "en-US": "7. Progressive Complexity"
+      },
+      "hint": { "zh": "避免过度工程化", "en": "avoid over-engineering" },
+      "triggers": {}
+    },
+    {
+      "id": "style.commands",
+      "module": "style",
+      "headings": {
+        "zh-CN": "八、命令与配置友好",
+        "en-US": "8. User-Friendly Commands & Configurations"
+      },
+      "hint": { "zh": "小白友好命令", "en": "beginner-friendly commands" },
+      "triggers": { "event": ["run_command"] }
+    },
+    {
+      "id": "workflow.docs",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "一、项目初始化与文档体系",
+        "en-US": "1. Project Initialization & Documentation System"
+      },
+      "hint": { "zh": "轻量 vs 常规文档", "en": "lightweight vs standard docs" },
+      "triggers": { "phase": ["design", "phase0"] }
+    },
+    {
+      "id": "workflow.phase0",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "阶段0强制输出：项目资源预估表",
+        "en-US": "Phase-0 Mandatory Output: Project Resource Estimate Table"
+      },
+      "hint": { "zh": "阶段0 资源预估表", "en": "phase-0 resource estimate" },
+      "triggers": { "phase": ["phase0"] }
+    },
+    {
+      "id": "workflow.db",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "二、数据库设计强制规范",
+        "en-US": "2. Database Design Mandatory Spec"
+      },
+      "hint": { "zh": "表结构+索引", "en": "schema + indexes" },
+      "triggers": { "phase": ["design"], "ext": [".sql"] }
+    },
+    {
+      "id": "workflow.ui",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "三、前端可视化定位协议",
+        "en-US": "3. Front-End Visual Positioning Protocol"
+      },
+      "hint": { "zh": "写前端前的映射表", "en": "UI mapping before frontend" },
+      "triggers": { "phase": ["ui"], "ext": [".tsx", ".jsx", ".vue", ".html", ".svelte"] }
+    },
+    {
+      "id": "workflow.deploy",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "四、部署与灾备机制",
+        "en-US": "4. Deployment & Disaster Recovery Mechanisms"
+      },
+      "hint": { "zh": "备份/回滚", "en": "backup / rollback" },
+      "triggers": { "intent": ["deploy", "docker-compose", "rollback", "backup"] }
+    },
+    {
+      "id": "workflow.enhance",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "五、需求发散与建议",
+        "en-US": "5. Requirement Expansion & Suggestions"
+      },
+      "hint": { "zh": "功能增强建议卡", "en": "enhancement card" },
+      "triggers": { "phase": ["enhance"] }
+    },
+    {
+      "id": "workflow.test",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "六、测试与自检闭环",
+        "en-US": "6. Closed-Loop Testing & Self-Inspection"
+      },
+      "hint": { "zh": "测试与自检声明", "en": "tests and self-declaration" },
+      "triggers": { "phase": ["test"] }
+    },
+    {
+      "id": "workflow.commit",
+      "module": "workflow",
+      "headings": {
+        "zh-CN": "七、版本锚点",
+        "en-US": "7. Version Anchoring"
+      },
+      "hint": { "zh": "里程碑 commit 信息", "en": "milestone commit message" },
+      "triggers": { "intent": ["commit", "git commit"] }
+    }
+  ]
+}

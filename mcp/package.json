@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "test": "tsc && node --test dist/*.test.js",
     "sync": "pwsh -File scripts/sync.ps1"
   },
   "license": "Apache-2.0",

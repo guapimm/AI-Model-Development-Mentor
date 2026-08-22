@@ -61,9 +61,11 @@
 
 ### MCP（Model Context Protocol）
 1. 构建服务：`cd mcp && npm install && npm run build`
-2. 将 MCP 客户端指向 `node <repo>/mcp/dist/index.js`
-3. 服务以资源（`mentor://prompts/{lang}/{module}`）和工具（`install`、`detect_tool`、`list_languages`、`list_modules`、`generate_resource_estimate`）形式暴露提示词
-4. 详见 `mcp/README.md`
+2. 将 MCP 客户端指向 `node <repo>/mcp/dist/index.js`（样例见 `mcp/examples/mcp.json`）
+3. **按需加载**：先 `session_start` 拿到 L0 目录，需要某条规则再 `policy_load`；不要每轮塞入完整 security/style/workflow
+4. 读写项目文件请走 `fs_write` / `run_command`（路径监狱；可选 Docker）
+5. 资源：`mentor://prompts/{lang}/{module}`（全文）与 `mentor://policy/{lang}/{fragmentId}`（切片）
+6. 详见 `mcp/README.md`
 
 ## 用 mentor CLI 一键安装
 

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mentor": {
+      "command": "node",
+      "args": ["/absolute/path/to/AI-Model-Development-Mentor/mcp/dist/index.js"],
+      "env": {
+        "MENTOR_PROMPTS_DIR": "/absolute/path/to/AI-Model-Development-Mentor"
+      }
+    }
+  }
+}

@@ -61,20 +61,36 @@ The prompt content is **tool-agnostic** — every tool only differs in *how* it 
 
 > 💡 **One-click install:** the `mentor` CLI writes files to the correct name/location for any of these tools automatically (see `cli/`).
 
-## 🧩 MCP Server
+## 🧩 MCP Server (IDE)
 
-For tools that speak **MCP (Model Context Protocol)**, a TypeScript server (`mcp/`) exposes the mentor framework as standard resources and tools — no manual file copying:
+`mcp/` is an **on-demand policy + sandbox** MCP server. The IDE is the coding agent; this process does **not** run an LLM and is **not published to npm**.
 
-- **Resources** `mentor://prompts/{lang}/{module}` — read any prompt (9 languages × 5 modules) on demand.
-- **Tools** — `install`, `detect_tool`, `list_languages`, `list_modules`, `generate_resource_estimate`.
-
-Run it locally (clone the repo, then):
+Full tutorial, rules, and caveats: [mcp/README.md](./mcp/README.md).
 
 ```bash
-cd mcp && npm install && npm run build && node dist/index.js
+git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
+cd AI-Model-Development-Mentor/mcp
+npm install          # local deps only — not a registry publish
+npm run build
 ```
 
-Then point your MCP client at `node <repo>/mcp/dist/index.js`. See [mcp/README.md](./mcp/README.md) for details.
+Copy [mcp/examples/mcp.json](./mcp/examples/mcp.json), replace the placeholder with **your absolute path**, then add it to Cursor / Claude Code / VS Code. First tool call in a chat: `session_start`.
+
+## Usage rules
+
+1. **Load the smallest set that fits the task.** `AGENTS.md` is enough for everyday coding. Open `security.md` / `workflow.md` / `style.md` only when you need them. With MCP, call `session_start` then `policy_load(id)` — do not paste all four modules every turn.
+2. **Phase 0 before application code.** Requirements + resource estimate first; then Design → Logic → UI → Test, confirm at each step.
+3. **Prefer MCP sandbox tools when the server is connected.** `fs_write` / `run_command` enforce line limits, `.env` deny, and phase gates. The IDE’s own Write/Bash bypasses those gates.
+4. **Do not treat `complete` as the source of truth.** It is an older one-shot dump and is missing later resource-control rules. Use the four split modules.
+5. **Secrets live in environment variables.** Only `.env.example` (names, no values) belongs in git.
+
+## Notes / caveats
+
+- **Two install paths:** GitHub Release `mentor` binary (prompts only, no Node) **or** clone + local `mcp/` build (IDE MCP). There is no `npx @guapimm/mentor-mcp`.
+- **MCP config needs absolute paths** and a reload after edits. Windows: `E:/path/to/repo` is fine.
+- **Sandbox is a path jail, not a VM.** It keeps I/O inside the workspace and blocks `.env` / `.git`; Docker is optional for `run_command` only.
+- **Node ≥ 18** is required only for MCP. Prompt-file users can ignore `mcp/`.
+- After `git pull`, rebuild: `cd mcp && npm install && npm run build`.
 
 ## ⬇️ Install
 
@@ -129,7 +145,9 @@ AI_Model_Development_Mentor/
 ├── LICENSE              # Apache-2.0 License
 ├── cli/                 # mentor CLI (Go)
 ├── rust/                # mentor CLI (Rust, zero-dependency mirror)
-├── mcp/                 # mentor-mcp server (TypeScript, MCP resources + tools)
+├── mcp/                 # mentor-mcp (local stdio server; not on npm)
+│   ├── examples/mcp.json
+│   └── policy/fragments.json   # on-demand prompt slices
 ├── templates/           # fill-in templates (resource estimate / UI mapping)
 ├── zh-CN/  en-US/  ja-JP/  ko-KR/  es-ES/  fr-FR/  de-DE/  pt-BR/  ru-RU/
 └── <lang>/
@@ -159,6 +177,9 @@ The workflow builds both implementations — Go binaries (windows/linux/darwin �
 
 **Q: Do I need all 4 modules?**
 A: No. `AGENTS.md` is the only must-have. Add `security.md` for stronger guardrails, `style.md` for a friendlier conversation experience.
+
+**Q: Is mentor-mcp on npm?**
+A: No. Clone the GitHub repo and build `mcp/` locally. See [mcp/README.md](./mcp/README.md).
 
 **Q: Does this work with other AI products?**
 A: Yes. The prompt content is tool-agnostic — every tool just loads it differently. See the table above or `COMPATIBILITY.md` for each tool's loading guide.

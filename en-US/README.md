@@ -39,6 +39,35 @@ Following the instructions in [COMPATIBILITY.md](./COMPATIBILITY.md), copy the f
 
 > Supported commands: `install` / `add` / `remove` / `list` / `detect` / `pack`; modules: agent (default) / security / style / workflow / complete; tools: opencode / claude-code / codex / cursor / other.
 
+## 🧩 Connect an IDE via MCP (on-demand prompts)
+
+Full tutorial, rules, and caveats: [mcp/README.md](../mcp/README.md). **Not on npm** — clone and build locally.
+
+```bash
+git clone https://github.com/guapimm/AI-Model-Development-Mentor.git
+cd AI-Model-Development-Mentor/mcp
+npm install          # local deps only, not a registry publish
+npm run build
+```
+
+Copy [mcp/examples/mcp.json](../mcp/examples/mcp.json), replace the placeholder with **your absolute path**, and add it to Cursor / Claude Code / VS Code. First tool call: `session_start`.
+
+## Usage rules
+
+1. **Load the smallest set that fits the task.** Everyday coding: `AGENTS.md` only. Auth/security: add `security.md`. Greenfield: add `workflow.md`. With MCP: `session_start` + `policy_load(id)` — do not paste all four modules every turn.
+2. **Phase 0 before application code.** Requirements + resource estimate first; then Design → Logic → UI → Test, confirm at each step.
+3. **Prefer MCP sandbox tools when connected.** `fs_write` / `run_command` enforce line limits, `.env` deny, and phase gates. The IDE’s own Write/Bash bypasses them.
+4. **Do not treat the complete dump as source of truth.** `Complete-Mentor-Prompt.md` is an older merge and misses later resource-control rules. Use the four split modules.
+5. **Secrets live in environment variables.** Only `.env.example` (names, no values) belongs in git.
+
+## Notes / caveats
+
+- **Two install paths:** GitHub Release `mentor` binary (prompts only, no Node) **or** clone + local `mcp/` build (IDE MCP). There is no `npx @guapimm/mentor-mcp`.
+- **MCP config needs absolute paths** and a reload after edits. Windows: `E:/path/to/repo` is fine.
+- **Sandbox is a path jail, not a VM.** I/O stays in the workspace; `.env` / `.git` writes are blocked. Docker is optional for `run_command` only.
+- **Node ≥ 18** is required only for MCP.
+- After `git pull`, rebuild: `cd mcp && npm install && npm run build`.
+
 ## 📖 Usage Guide (opencode)
 
 ### Command Cheat-Sheet
