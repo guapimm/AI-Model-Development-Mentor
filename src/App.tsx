@@ -18,7 +18,14 @@ import SettingsModal from "./components/SettingsModal";
 import StaticReportView from "./components/StaticReportView";
 import { formatBytes } from "./utils";
 
-const DEFAULTS = { baseUrl: "https://api.deepseek.com/v1", apiKey: "", model: "deepseek-chat" };
+const DEFAULTS: Settings = {
+  protocol: "openai",
+  baseUrl: "https://api.deepseek.com/v1",
+  apiKey: "",
+  model: "deepseek-chat",
+  azure_deployment: null,
+  azure_api_version: null,
+};
 
 export default function App() {
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -34,6 +41,8 @@ export default function App() {
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState<SummarizeProgress | null>(null);
   const [strength, setStrength] = useState<Strength>("medium");
+  const [fullScope, setFullScope] = useState(false);
+  const [unlimitedOutput, setUnlimitedOutput] = useState(false);
 
   const [staticReport, setStaticReport] = useState<StaticReport | null>(null);
   const [staticRunning, setStaticRunning] = useState(false);
@@ -106,7 +115,13 @@ export default function App() {
     setError(null);
     setProgress(null);
     try {
-      const res = await aiSummarizeProject(rootPath, strength, (p) => setProgress(p));
+      const res = await aiSummarizeProject(
+        rootPath,
+        strength,
+        fullScope,
+        unlimitedOutput,
+        (p) => setProgress(p)
+      );
       setAnalysis(res);
     } catch (e) {
       setError(String(e));
@@ -128,7 +143,7 @@ export default function App() {
       if (cached && !cached.summary.startsWith("⚠️")) {
         text = cached.summary;
       } else {
-        text = await aiExplainFile(rootPath, node.relativePath, strength);
+        text = await aiExplainFile(rootPath, node.relativePath, strength, unlimitedOutput);
       }
       // Ignore result if user switched files meanwhile.
       if (selectedRef.current?.relativePath === node.relativePath) {
@@ -202,13 +217,31 @@ export default function App() {
               className="strength-select"
               value={strength}
               onChange={(e) => setStrength(e.target.value as Strength)}
-              title="理解强度：控制分析的文件数量与解读深度"
+              title="理解强度：控制 AI 输出内容的详细程度"
               disabled={analyzing}
             >
-              <option value="light">⚡ 轻度（10 个文件·速览）</option>
-              <option value="medium">⚖️ 中度（30 个文件·标准）</option>
-              <option value="deep">🔬 深度（60 个文件·逐函数）</option>
+              <option value="light">⚡ 简要</option>
+              <option value="medium">⚖️ 标准</option>
+              <option value="deep">🔬 详尽</option>
             </select>
+            <label className="toggle" title="开启后尝试分析全部代码文件（上限200个），耗时和费用更高">
+              <input
+                type="checkbox"
+                checked={fullScope}
+                onChange={(e) => setFullScope(e.target.checked)}
+                disabled={analyzing}
+              />
+              全量分析
+            </label>
+            <label className="toggle" title="不限制 AI 单次输出的长度（费用可能增加）">
+              <input
+                type="checkbox"
+                checked={unlimitedOutput}
+                onChange={(e) => setUnlimitedOutput(e.target.checked)}
+                disabled={analyzing}
+              />
+              不限长度
+            </label>
             <button
               className="ghost-btn"
               onClick={handleStaticAnalysis}

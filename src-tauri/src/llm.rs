@@ -254,6 +254,93 @@ async fn chat_azure(settings: &Settings, messages: &[ChatMessage], max_tokens: O
     parse_openai_response(&parsed)
 }
 
+// ---------------- Model listing & connection test ----------------
+
+pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
+    if settings.api_key.trim().is_empty() && settings.protocol != Protocol::OpenAI {
+        return Err("请先填写 API Key".to_string());
+    }
+
+    let base = settings.effective_base_url();
+    let (url, headers): (String, Vec<(&str, String)>) = match settings.protocol {
+        Protocol::OpenAI | Protocol::Azure => (
+            format!("{}/models", base),
+            vec![(
+                if settings.protocol == Protocol::Azure { "api-key" } else { "Authorization" },
+                if settings.protocol == Protocol::Azure {
+                    settings.api_key.clone()
+                } else {
+                    format!("Bearer {}", settings.api_key)
+                },
+            )],
+        ),
+        Protocol::Anthropic => (
+            format!("{}/v1/models", base),
+            vec![
+                ("x-api-key", settings.api_key.clone()),
+                ("anthropic-version", "2023-06-01".to_string()),
+            ],
+        ),
+        Protocol::Gemini => (
+            format!("{}/models?key={}", base, settings.api_key),
+            vec![],
+        ),
+    };
+
+    let mut req = http_client().get(&url).timeout(std::time::Duration::from_secs(30));
+    for (k, v) in headers {
+        req = req.header(k, v);
+    }
+    let resp = req
+        .send()
+        .await
+        .map_err(|e| format!("获取模型列表失败: {e}"))?;
+    let status = resp.status();
+    let body: Value = resp
+        .json()
+        .await
+        .map_err(|e| format!("响应解析失败 (HTTP {status}): {e}"))?;
+    if !status.is_success() {
+        return Err(format!("获取模型列表失败 (HTTP {status}): {}", error_message(&body)));
+    }
+
+    let models: Vec<String> = match settings.protocol {
+        Protocol::Gemini => body["models"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|m| m.get("name").and_then(|n| n.as_str()))
+                    .map(|n| n.trim_start_matches("models/").to_string())
+                    .collect()
+            })
+            .unwrap_or_default(),
+        _ => body["data"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|m| m.get("id").and_then(|i| i.as_str()))
+                    .map(|s| s.to_string())
+                    .collect()
+            })
+            .unwrap_or_default(),
+    };
+
+    if models.is_empty() {
+        return Err("服务商未返回模型列表，请手动输入模型名称".to_string());
+    }
+    Ok(models)
+}
+
+pub async fn test_connection(settings: &Settings) -> Result<(), String> {
+    chat(
+        settings,
+        &[ChatMessage { role: "user", content: "请只回复两个字：正常".to_string() }],
+        Some(32),
+    )
+    .await
+    .map(|_| ())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -54,6 +54,7 @@ async fn ai_summarize_project(
     app: AppHandle,
     root_path: String,
     strength: Strength,
+    full_scope: Option<bool>,
     unlimited_output: Option<bool>,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
@@ -64,6 +65,7 @@ async fn ai_summarize_project(
         &s,
         &PathBuf::from(&root_path),
         strength,
+        full_scope.unwrap_or(false),
         unlimited_output.unwrap_or(false),
         channel,
     )
@@ -111,6 +113,16 @@ fn get_dependency_graph(
     depgraph::build_dependency_graph(&PathBuf::from(&root_path), channel)
 }
 
+#[tauri::command]
+async fn list_ai_models(settings: Settings) -> Result<Vec<String>, String> {
+    llm::list_models(&settings).await
+}
+
+#[tauri::command]
+async fn test_ai_connection(settings: Settings) -> Result<(), String> {
+    llm::test_connection(&settings).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -134,7 +146,9 @@ pub fn run() {
             export_xmind,
             analyze_static,
             get_file_symbols,
-            get_dependency_graph
+            get_dependency_graph,
+            list_ai_models,
+            test_ai_connection
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

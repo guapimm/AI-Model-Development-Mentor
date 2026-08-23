@@ -194,17 +194,22 @@ pub async fn explain_file(
     .await
 }
 
+/// File cap when the user enables "full scope" analysis.
+const FULL_SCOPE_MAX_FILES: usize = 200;
+
 pub async fn summarize_project(
     settings: &Settings,
     root: &Path,
     strength: Strength,
+    full_scope: bool,
     unlimited_output: bool,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
     let scan = scanner::scan_project(root)?;
     let max_tokens = if unlimited_output { None } else { Some(strength.max_tokens()) };
 
-    let files = pick_files(&scan.tree, strength.max_files());
+    let file_cap = if full_scope { FULL_SCOPE_MAX_FILES } else { strength.max_files() };
+    let files = pick_files(&scan.tree, file_cap);
     let total = files.len();
     let max_bytes = strength.max_file_bytes();
 

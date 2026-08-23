@@ -22,10 +22,15 @@ export interface ScanResult {
   languages: LangStat[];
 }
 
+export type Protocol = "openai" | "anthropic" | "gemini" | "azure";
+
 export interface Settings {
+  protocol: Protocol;
   baseUrl: string;
   apiKey: string;
   model: string;
+  azure_deployment: string | null;
+  azure_api_version: string | null;
 }
 
 export interface SummarizeProgress {
