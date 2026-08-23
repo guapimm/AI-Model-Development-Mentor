@@ -10,6 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@antv/g6": "^5.1.1",
     "@tauri-apps/api": "^2.9.0",
     "@tauri-apps/plugin-dialog": "^2.7.2"
   },

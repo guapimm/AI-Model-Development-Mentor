@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "@tauri-apps/api/core";
-import { FileSymbols, StaticProgress, SummarizeProgress } from "./types";
+import { DepGraphData, FileSymbols, StaticProgress, SummarizeProgress } from "./types";
 
 export type Strength = "light" | "medium" | "deep";
 
@@ -45,6 +45,15 @@ export function getFileSymbols(
   language: string
 ): Promise<FileSymbols> {
   return invoke("get_file_symbols", { rootPath, relativePath, language });
+}
+
+export function getDependencyGraph(
+  rootPath: string,
+  onProgress: (p: StaticProgress) => void
+): Promise<DepGraphData> {
+  const channel = new Channel<StaticProgress>();
+  channel.onmessage = onProgress;
+  return invoke("get_dependency_graph", { rootPath, channel });
 }
 
 interface StaticReportResult {

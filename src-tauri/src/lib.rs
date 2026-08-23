@@ -2,6 +2,7 @@ mod analysis;
 mod llm;
 mod scanner;
 mod settings;
+mod depgraph;
 mod static_analysis;
 mod symbols;
 mod xmind;
@@ -86,6 +87,14 @@ fn get_file_symbols(
     symbols::parse_file(&PathBuf::from(&root_path), &relative_path, &language)
 }
 
+#[tauri::command]
+fn get_dependency_graph(
+    root_path: String,
+    channel: Channel<static_analysis::StaticProgress>,
+) -> Result<depgraph::DepGraphData, String> {
+    depgraph::build_dependency_graph(&PathBuf::from(&root_path), channel)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -108,7 +117,8 @@ pub fn run() {
             ai_summarize_project,
             export_xmind,
             analyze_static,
-            get_file_symbols
+            get_file_symbols,
+            get_dependency_graph
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

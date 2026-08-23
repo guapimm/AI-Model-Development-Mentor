@@ -357,7 +357,11 @@ export default function App() {
             ) : null}
 
             {!selected && !analysis && !analyzing && staticReport && (
-              <StaticReportView report={staticReport} onSelectFile={selectFileByPath} />
+              <StaticReportView
+                report={staticReport}
+                rootPath={rootPath}
+                onSelectFile={selectFileByPath}
+              />
             )}
 
             {!selected && !analysis && !analyzing && !staticReport && (

@@ -1,5 +1,15 @@
-import { EntryPoint, FileMetric, StaticReport, TechStackItem } from "../types";
+import { useState } from "react";
+import { Channel } from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core";
+import {
+  EntryPoint,
+  FileMetric,
+  StaticProgress,
+  StaticReport,
+  TechStackItem,
+} from "../types";
 import { langColor } from "../utils";
+import DepGraphView from "./DepGraphView";
 
 function TechStack({ items }: { items: TechStackItem[] }) {
   if (items.length === 0) {
@@ -33,13 +43,40 @@ function TechStack({ items }: { items: TechStackItem[] }) {
 
 export default function StaticReportView({
   report,
+  rootPath,
   onSelectFile,
 }: {
   report: StaticReport;
+  rootPath: string;
   onSelectFile: (path: string) => void;
 }) {
   const topMetrics: FileMetric[] = report.metrics.slice(0, 20);
   const entries: EntryPoint[] = report.entryPoints;
+
+  const [graphData, setGraphData] = useState<import("../types").DepGraphData | null>(null);
+  const [graphLoading, setGraphLoading] = useState(false);
+  const [graphPercent, setGraphPercent] = useState(0);
+  const [graphError, setGraphError] = useState<string | null>(null);
+
+  async function loadGraph() {
+    if (graphLoading || !rootPath) return;
+    setGraphLoading(true);
+    setGraphError(null);
+    setGraphPercent(0);
+    try {
+      const channel = new Channel<StaticProgress>();
+      channel.onmessage = (p) => setGraphPercent(p.percent);
+      const data = await invoke<import("../types").DepGraphData>("get_dependency_graph", {
+        rootPath,
+        channel,
+      });
+      setGraphData(data);
+    } catch (e) {
+      setGraphError(String(e));
+    } finally {
+      setGraphLoading(false);
+    }
+  }
 
   return (
     <div className="static-report">
@@ -115,6 +152,27 @@ export default function StaticReportView({
             ))}
           </tbody>
         </table>
+      </section>
+
+      <section className="panel">
+        <h3>🕸 依赖关系图谱</h3>
+        {!graphData && !graphLoading && (
+          <button className="primary-btn" onClick={loadGraph}>
+            生成全项目依赖图谱
+          </button>
+        )}
+        {graphLoading && (
+          <div className="progress-panel" style={{ marginTop: 0 }}>
+            <div className="progress-percent">{graphPercent}%</div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${graphPercent}%` }} />
+            </div>
+          </div>
+        )}
+        {graphError && <p className="dim-note">生成失败：{graphError}</p>}
+        {graphData && (
+          <DepGraphView data={graphData} onSelectFile={onSelectFile} />
+        )}
       </section>
 
       {report.warnings.length > 0 && (

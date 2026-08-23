@@ -95,3 +95,23 @@ export interface FileSymbols {
   symbols: SymbolInfo[];
   imports: string[];
 }
+
+export interface DepGraphNode {
+  id: string;
+  language: string;
+  inDegree: number;
+  outDegree: number;
+}
+
+export interface DepGraphEdge {
+  from: string;
+  to: string;
+}
+
+export interface DepGraphData {
+  nodes: DepGraphNode[];
+  edges: DepGraphEdge[];
+  filesScanned: number;
+  edgesResolved: number;
+  truncated: boolean;
+}
