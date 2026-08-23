@@ -3,9 +3,6 @@ use crate::symbols::extract_symbols;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
-use tauri::ipc::Channel;
-
-use crate::static_analysis::StaticProgress;
 
 /// Skip files above this size for import parsing.
 const MAX_PARSE_BYTES: usize = 300_000;
@@ -274,35 +271,18 @@ fn resolve_candidate(
     hits
 }
 
-pub fn build_dependency_graph(
-    root: &Path,
-    channel: Channel<StaticProgress>,
-) -> Result<DepGraphData, String> {
-    macro_rules! progress {
-        ($pct:expr, $phase:expr) => {
-            let _ = channel.send(StaticProgress {
-                phase: $phase.to_string(),
-                percent: $pct,
-            });
-        };
-    }
-
-    progress!(3, "扫描目录结构");
+pub fn build_dependency_graph(root: &Path) -> Result<DepGraphData, String> {
     let scan = scanner::scan_project(root)?;
 
     let mut files: Vec<FileNode> = Vec::new();
     collect_parsable_files(&scan.tree, &mut files);
 
-    let total = files.len().max(1);
-    progress!(8, format!("准备解析 {} 个文件的依赖", files.len()));
-
     let index = FileIndex::build(&files);
 
     // importer -> set of target indices
     let mut edge_set: HashSet<(usize, usize)> = HashSet::new();
-    let mut last_percent: u8 = 8;
 
-    for (i, f) in files.iter().enumerate() {
+    for f in files.iter() {
         let full = root.join(&f.relative_path);
         if let Ok(meta) = std::fs::metadata(&full) {
             if meta.len() as usize <= MAX_PARSE_BYTES {
@@ -314,8 +294,12 @@ pub fn build_dependency_graph(
                         if let Some(from) = importer_idx {
                             for imp in &fs.imports {
                                 for target in import_targets(&lang, imp) {
-                                    for to in resolve_candidate(&target, &lang, &f.relative_path, &index)
-                                    {
+                                    for to in resolve_candidate(
+                                        &target,
+                                        &lang,
+                                        &f.relative_path,
+                                        &index,
+                                    ) {
                                         if to != from {
                                             edge_set.insert((from, to));
                                         }
@@ -327,16 +311,7 @@ pub fn build_dependency_graph(
                 }
             }
         }
-
-        // Progress 8% -> 92%.
-        let percent = (8 + ((i as u64 + 1) * 84 / total as u64)) as u8;
-        if percent != last_percent {
-            last_percent = percent;
-            progress!(percent, format!("解析依赖 ({}/{})", i + 1, files.len()));
-        }
     }
-
-    progress!(94, "构建图谱");
 
     // Degree counting.
     let mut in_deg = vec![0usize; files.len()];
@@ -377,8 +352,6 @@ pub fn build_dependency_graph(
         edges.truncate(MAX_EDGES);
         truncated = true;
     }
-
-    progress!(100, "完成");
 
     Ok(DepGraphData {
         nodes,

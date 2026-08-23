@@ -3,7 +3,6 @@ use serde::Serialize;
 use std::collections::{HashMap, HashSet};
 use std::io::Read;
 use std::path::Path;
-use tauri::ipc::Channel;
 
 /// Per-file read cap when counting metrics.
 const METRIC_READ_CAP: u64 = 1_000_000;
@@ -11,12 +10,6 @@ const METRIC_READ_CAP: u64 = 1_000_000;
 const MAX_METRICS: usize = 1000;
 /// Lines threshold for "consider splitting" warnings.
 const BIG_FILE_LINES: usize = 2000;
-
-#[derive(Clone, Serialize)]
-pub struct StaticProgress {
-    pub phase: String,
-    pub percent: u8,
-}
 
 #[derive(Serialize, Clone)]
 pub struct TechStackItem {
@@ -359,41 +352,24 @@ fn detect_entry_points(files: &[FileNode]) -> Vec<EntryPoint> {
     out
 }
 
-pub fn run_static_analysis(
-    root: &Path,
-    channel: Channel<StaticProgress>,
-) -> Result<StaticReport, String> {
-    macro_rules! progress {
-        ($pct:expr, $phase:expr) => {
-            let _ = channel.send(StaticProgress {
-                phase: $phase.to_string(),
-                percent: $pct,
-            });
-        };
-    }
-
-    progress!(2, "扫描目录结构");
+pub fn run_static_analysis(root: &Path) -> Result<StaticReport, String> {
     let scan = scanner::scan_project(root)?;
     let root_name = scan.root_name.clone();
 
-    progress!(6, "识别清单文件");
     let mut manifests = Vec::new();
     collect_manifests(&scan.tree, &mut manifests);
 
-    progress!(10, "识别技术栈");
     let tech_stack = detect_tech_stack(&manifests, root);
 
     let mut files = Vec::new();
     collect_code_files(&scan.tree, &mut files);
     let total_code_files = files.len();
-    let total = files.len().max(1);
 
     let mut metrics: Vec<FileMetric> = Vec::new();
     let mut total_lines = 0usize;
     let mut total_todos = 0usize;
-    let mut last_percent: u8 = 12;
 
-    for (i, f) in files.iter().enumerate() {
+    for f in files.iter() {
         let full = root.join(&f.relative_path);
         if let Ok((lines, code_lines, todos)) = count_file_metrics(&full) {
             total_lines += lines;
@@ -406,22 +382,13 @@ pub fn run_static_analysis(
                 todos,
             });
         }
-
-        // Progress from 12% to 92% across the file loop.
-        let percent = (12 + ((i as u64 + 1) * 80 / total as u64)) as u8;
-        if percent != last_percent {
-            last_percent = percent;
-            progress!(percent, format!("分析代码文件 ({}/{})", i + 1, files.len()));
-        }
     }
 
     metrics.sort_by(|a, b| b.lines.cmp(&a.lines));
     metrics.truncate(MAX_METRICS);
 
-    progress!(94, "定位入口点");
     let entry_points = detect_entry_points(&files);
 
-    progress!(98, "生成报告");
     let mut warnings = Vec::new();
     for m in metrics.iter().take(20) {
         if m.lines >= BIG_FILE_LINES {
@@ -434,8 +401,6 @@ pub fn run_static_analysis(
     if scan.truncated {
         warnings.push("项目文件过多，扫描结果被截断，统计可能不完整".to_string());
     }
-
-    progress!(100, "完成");
 
     Ok(StaticReport {
         root_name,

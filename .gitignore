@@ -1,10 +1,5 @@
-node_modules
-dist
-dist-ssr
+target/
 *.local
-
-src-tauri/target
-src-tauri/Cargo.lock.bak
 
 .DS_Store
 Thumbs.db

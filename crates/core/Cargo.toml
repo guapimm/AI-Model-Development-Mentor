@@ -1,0 +1,24 @@
+[package]
+name = "code-superman-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Codebase static analysis core: scanning, tech-stack detection, tree-sitter symbols, dependency graph, XMind export"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+ignore = "0.4"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tree-sitter.workspace = true
+tree-sitter-javascript.workspace = true
+tree-sitter-typescript.workspace = true
+tree-sitter-python.workspace = true
+tree-sitter-rust.workspace = true
+tree-sitter-go.workspace = true
+tree-sitter-java.workspace = true
+tree-sitter-c.workspace = true
+tree-sitter-cpp.workspace = true
+tree-sitter-c-sharp.workspace = true
+tree-sitter-php.workspace = true
+tree-sitter-ruby.workspace = true
