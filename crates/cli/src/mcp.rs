@@ -1,5 +1,5 @@
-﻿use crate::compact::{self, Strength};
-use code_superman_core::xmind::{XmindInput};
+use crate::compact::{self, Strength};
+use code_superman_core::xmind::{FileNote, XmindInput};
 use code_superman_core::{depgraph, scanner, static_analysis, symbols, xmind};
 use rmcp::handler::server::wrapper::Parameters;
 use rmcp::{ErrorData, ServerHandler, tool, tool_handler, tool_router};
@@ -9,6 +9,40 @@ use std::path::PathBuf;
 
 fn err(e: String) -> ErrorData {
     ErrorData::internal_error(e, None)
+}
+
+/// MCP 参数侧的文件备注类型（core 的 FileNote 镜像，附带 JsonSchema）。
+#[derive(Debug, serde::Deserialize, JsonSchema)]
+#[serde(untagged)]
+pub enum FileNoteParam {
+    /// 一句话职责摘要
+    Simple(String),
+    /// 职责摘要 + 深入解析
+    Detailed {
+        /// 一句话职责摘要
+        summary: String,
+        /// 深入解析长文（实现要点、数据流、模块关系等）
+        #[serde(default)]
+        details: Option<String>,
+    },
+}
+
+impl From<FileNoteParam> for FileNote {
+    fn from(p: FileNoteParam) -> Self {
+        match p {
+            FileNoteParam::Simple(s) => FileNote::Simple(s),
+            FileNoteParam::Detailed { summary, details } => {
+                FileNote::Detailed { summary, details }
+            }
+        }
+    }
+}
+
+fn to_notes(map: Option<HashMap<String, FileNoteParam>>) -> HashMap<String, FileNote> {
+    map.unwrap_or_default()
+        .into_iter()
+        .map(|(k, v)| (k, v.into()))
+        .collect()
 }
 
 #[derive(Debug, serde::Deserialize, JsonSchema)]
@@ -21,9 +55,9 @@ pub struct AnalyzeParams {
     /// 指定此路径则同时导出 .xmind 思维导图（含总览/入口点/核心模块/目录树分支）
     #[serde(default)]
     pub xmind_out: Option<String>,
-    /// 相对路径 -> 该文件职责一句话摘要，写入思维导图对应节点备注（可选；建议先分析再总结传入）
+    /// 相对路径 -> 该文件职责摘要（"一句话"或 {summary, details} 双字段），写入思维导图对应节点备注；details 为深入解析长文
     #[serde(default)]
-    pub file_summaries: Option<HashMap<String, String>>,
+    pub file_summaries: Option<HashMap<String, FileNoteParam>>,
 }
 
 #[derive(Debug, serde::Deserialize, JsonSchema)]
@@ -41,9 +75,9 @@ pub struct XmindParams {
     /// 输出 .xmind 文件路径（默认 <path>/architecture.xmind）
     #[serde(default)]
     pub out: Option<String>,
-    /// 相对路径 -> 该文件职责一句话摘要，写入思维导图对应节点备注（可选）
+    /// 相对路径 -> 该文件职责摘要（"一句话"或 {summary, details} 双字段），写入思维导图对应节点备注
     #[serde(default)]
-    pub file_summaries: Option<HashMap<String, String>>,
+    pub file_summaries: Option<HashMap<String, FileNoteParam>>,
 }
 
 fn do_export_xmind(
@@ -51,7 +85,7 @@ fn do_export_xmind(
     out: &PathBuf,
     report: &static_analysis::StaticReport,
     dep_graph: Option<&depgraph::DepGraphData>,
-    summaries: &HashMap<String, String>,
+    summaries: &HashMap<String, FileNote>,
 ) -> Result<(), ErrorData> {
     let scan = scanner::scan_project(root).map_err(err)?;
     let input = XmindInput {
@@ -94,9 +128,8 @@ fn analyze(&self, Parameters(p): Parameters<AnalyzeParams>) -> Result<String, Er
 
         if let Some(xmind_path) = &p.xmind_out {
             let out = PathBuf::from(xmind_path);
-            let empty = HashMap::new();
-            let summaries = p.file_summaries.as_ref().unwrap_or(&empty);
-            do_export_xmind(&root, &out, &report, dep_graph.as_ref(), summaries)?;
+            let summaries = to_notes(p.file_summaries);
+            do_export_xmind(&root, &out, &report, dep_graph.as_ref(), &summaries)?;
             md.push_str(&format!(
                 "\n---\n\n📦 已导出架构思维导图（含总览/技术栈/入口点/核心模块/文件职责备注）：{}\n",
                 out.display()
@@ -136,9 +169,8 @@ fn analyze(&self, Parameters(p): Parameters<AnalyzeParams>) -> Result<String, Er
         };
         let report = static_analysis::run_static_analysis(&root).map_err(err)?;
         let dep_graph = depgraph::build_dependency_graph(&root).map_err(err)?;
-        let empty = HashMap::new();
-        let summaries = p.file_summaries.as_ref().unwrap_or(&empty);
-        do_export_xmind(&root, &out, &report, Some(&dep_graph), summaries)?;
+        let summaries = to_notes(p.file_summaries);
+        do_export_xmind(&root, &out, &report, Some(&dep_graph), &summaries)?;
         Ok(format!(
             "已导出架构思维导图到 {}（可传 file_summaries 为文件节点附加职责说明）",
             out.display()
@@ -149,6 +181,6 @@ fn analyze(&self, Parameters(p): Parameters<AnalyzeParams>) -> Result<String, Er
 #[tool_handler(
     name = "code-superman",
     version = "0.2.0",
-    instructions = "Code Superman：代码库理解工具。\n\n【两段式流程】当用户未指定强度时：先以 strength=brief 调用 analyze 获取 Token 估算与核心文件清单（秒级），然后用提问能力向用户展示估算结果并让其选择强度——选项应包含成本信息：⚡简要(报告~750 tokens)、⚖️标准(~5K tokens，精读核心Top15约X K)、🔬详尽(~12.5K tokens，全量依赖边)，其中 X 取自 brief 报告的核心 Top15 估算值。用户已明确指定强度时跳过询问直接分析。\n\n【导出思维导图】用户需要 xmind 时，必须先理解各关键文件的职责，为至少核心文件各写一句「这个文件在做什么」摘要，经 file_summaries 参数传入（会显示在导图节点备注中）；未传摘要则导图缺少职责说明。是否导出 xmind 也应在弹窗中一并询问用户。"
+    instructions = "Code Superman：代码库理解工具。\n\n【只读约束】本工具集仅做只读阅读与分析：除导出 .xmind 思维导图外，不得创建、修改或删除任何文件，不得执行任何写入类操作。\n\n【两段式流程】当用户未指定强度时：先以 strength=brief 调用 analyze 获取 Token 估算与核心文件清单（秒级），然后用提问能力向用户展示估算结果并让其选择强度——选项应包含成本信息：⚡简要(报告~750 tokens)、⚖️标准(~5K tokens，精读核心Top15约X K)、🔬详尽(~12.5K tokens，全量依赖边)，其中 X 取自 brief 报告的核心 Top15 估算值。用户已明确指定强度时跳过询问直接分析。大型项目（Token 估算 >100K 或代码文件 >200）应采用 SKILL.md 中的多 Agent 分治工作流。\n\n【导出思维导图】用户需要 xmind 时，必须先理解各文件的职责：为尽可能多的代码文件撰写摘要（至少覆盖核心 Top15 与各主要目录的代表文件），鼓励为重要文件填写 details 深入解析字段，经 file_summaries 参数传入（显示在导图节点备注中；目录树节点还会自动附带静态符号大纲）。未传摘要则导图缺少职责说明。是否导出 xmind 也应在弹窗中一并询问用户。"
 )]
 impl ServerHandler for CodeSupermanServer {}

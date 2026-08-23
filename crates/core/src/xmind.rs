@@ -10,6 +10,32 @@ use zip::ZipWriter;
 
 /// 符号统计解析的文件大小上限。
 const SYMBOL_PARSE_CAP: u64 = 300_000;
+/// 静态符号大纲的解析文件数预算（防超大项目导出过慢）。
+const SYMBOL_OUTLINE_BUDGET: usize = 500;
+
+/// 单个文件的职责备注：兼容纯字符串或 {summary, details} 双字段。
+#[derive(Debug, Clone, serde::Deserialize)]
+#[serde(untagged)]
+pub enum FileNote {
+    Simple(String),
+    Detailed {
+        summary: String,
+        #[serde(default)]
+        details: Option<String>,
+    },
+}
+
+impl FileNote {
+    fn note_text(&self) -> String {
+        match self {
+            FileNote::Simple(s) => s.clone(),
+            FileNote::Detailed { summary, details } => match details {
+                Some(d) if !d.trim().is_empty() => format!("{}\n\n{}", summary, d),
+                _ => summary.clone(),
+            },
+        }
+    }
+}
 
 struct IdGen(usize);
 
@@ -53,8 +79,8 @@ pub struct XmindInput<'a> {
     pub scan: &'a ScanResult,
     pub report: &'a StaticReport,
     pub dep_graph: Option<&'a DepGraphData>,
-    /// 相对路径 -> 该文件职责摘要（通常由调用方大模型撰写），写入节点备注。
-    pub summaries: &'a HashMap<String, String>,
+    /// 相对路径 -> 该文件职责摘要/详细解析（通常由调用方大模型撰写），写入节点备注。
+    pub summaries: &'a HashMap<String, FileNote>,
 }
 
 fn overview_branch(input: &XmindInput, gen: &mut IdGen) -> Value {
@@ -249,6 +275,34 @@ fn file_annotation(node: &FileNode, input: &XmindInput) -> String {
     }
 }
 
+/// 静态符号大纲：tree-sitter 解析的函数/类型清单及行号，写入节点备注。
+fn symbol_outline(node: &FileNode, input: &XmindInput) -> Option<String> {
+    let lang = node.language.as_deref()?;
+    if node.is_dir || node.size == 0 || node.size > SYMBOL_PARSE_CAP {
+        return None;
+    }
+    let source = std::fs::read_to_string(input.root.join(&node.relative_path)).ok()?;
+    let fs = crate::symbols::extract_symbols(&node.relative_path, lang, &source)?;
+    if !fs.supported_parse || fs.symbols.is_empty() {
+        return None;
+    }
+    let mut lines: Vec<String> = fs
+        .symbols
+        .iter()
+        .take(30)
+        .map(|s| {
+            format!(
+                "- {} {}（L{}-L{}）",
+                s.kind, s.name, s.start_line, s.end_line
+            )
+        })
+        .collect();
+    if fs.symbols.len() > 30 {
+        lines.push(format!("… 共 {} 个符号", fs.symbols.len()));
+    }
+    Some(format!("【符号大纲】\n{}", lines.join("\n")))
+}
+
 /// 粗略的符号构成统计，如「5函数·2类」；不支持或读取失败时返回 None。
 fn symbol_summary(node: &FileNode, input: &XmindInput) -> Option<String> {
     let lang = node.language.as_deref()?;
@@ -289,6 +343,7 @@ fn tree_branch(input: &XmindInput, gen: &mut IdGen, budget: &mut usize) -> Value
         input: &XmindInput,
         gen: &mut IdGen,
         budget: &mut usize,
+        sym_budget: &mut usize,
     ) -> Value {
         *budget = budget.saturating_sub(1);
         let mut t = if node.is_dir {
@@ -299,8 +354,21 @@ fn tree_branch(input: &XmindInput, gen: &mut IdGen, budget: &mut usize) -> Value
         };
 
         if !node.is_dir {
-            if let Some(summary) = input.summaries.get(&node.relative_path) {
-                t.insert("notes".into(), json!({ "plain": { "content": summary } }));
+            let mut note_parts: Vec<String> = Vec::new();
+            if let Some(note) = input.summaries.get(&node.relative_path) {
+                note_parts.push(note.note_text());
+            }
+            if *sym_budget > 0 {
+                *sym_budget -= 1;
+                if let Some(outline) = symbol_outline(node, input) {
+                    note_parts.push(outline);
+                }
+            }
+            if !note_parts.is_empty() {
+                t.insert(
+                    "notes".into(),
+                    json!({ "plain": { "content": note_parts.join("\n\n") } }),
+                );
             }
         }
 
@@ -310,7 +378,7 @@ fn tree_branch(input: &XmindInput, gen: &mut IdGen, budget: &mut usize) -> Value
                 if *budget == 0 {
                     break;
                 }
-                children.push(node_to_topic(child, input, gen, budget));
+                children.push(node_to_topic(child, input, gen, budget, sym_budget));
             }
             attach(&mut t, children);
         }
@@ -320,11 +388,12 @@ fn tree_branch(input: &XmindInput, gen: &mut IdGen, budget: &mut usize) -> Value
 
     let mut root = topic(gen, "📁 目录结构".into());
     let mut children = Vec::new();
+    let mut sym_budget = SYMBOL_OUTLINE_BUDGET;
     for child in &input.scan.tree.children {
         if *budget == 0 {
             break;
         }
-        children.push(node_to_topic(child, input, gen, budget));
+        children.push(node_to_topic(child, input, gen, budget, &mut sym_budget));
     }
     attach(&mut root, children);
     Value::Object(root)
@@ -512,7 +581,13 @@ mod tests {
     fn test_summary_attached_as_note() {
         let (scan, report, graph) = fixture();
         let mut summaries = HashMap::new();
-        summaries.insert("main.rs".to_string(), "程序入口".to_string());
+        summaries.insert(
+            "main.rs".to_string(),
+            FileNote::Detailed {
+                summary: "程序入口".to_string(),
+                details: Some("初始化运行时并分发子命令".to_string()),
+            },
+        );
         let root = std::env::temp_dir();
         let input = XmindInput {
             root: &root,
@@ -530,7 +605,21 @@ mod tests {
         let mut text = String::new();
         archive.by_name("content.json").unwrap().read_to_string(&mut text).unwrap();
         assert!(text.contains("程序入口"));
+        assert!(text.contains("初始化运行时"));
         assert!(text.contains("notes"));
         std::fs::remove_file(&out).ok();
+    }
+
+    #[test]
+    fn test_file_note_deserialization() {
+        let simple: FileNote = serde_json::from_str(r#""一句话职责""#).unwrap();
+        assert_eq!(simple.note_text(), "一句话职责");
+
+        let detailed: FileNote =
+            serde_json::from_str(r#"{"summary": "职责", "details": "深入解析内容"}"#).unwrap();
+        assert_eq!(detailed.note_text(), "职责\n\n深入解析内容");
+
+        let no_details: FileNote = serde_json::from_str(r#"{"summary": "只有职责"}"#).unwrap();
+        assert_eq!(no_details.note_text(), "只有职责");
     }
 }
