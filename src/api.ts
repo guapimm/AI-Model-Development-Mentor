@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "@tauri-apps/api/core";
-import { SummarizeProgress } from "./types";
+import { StaticProgress, SummarizeProgress } from "./types";
 
 export type Strength = "light" | "medium" | "deep";
 
@@ -28,6 +28,32 @@ export function aiSummarizeProject(
     strength,
     channel,
   });
+}
+
+export function analyzeStatic(
+  rootPath: string,
+  onProgress: (p: StaticProgress) => void
+): Promise<StaticReportResult> {
+  const channel = new Channel<StaticProgress>();
+  channel.onmessage = onProgress;
+  return invoke("analyze_static", { rootPath, channel });
+}
+
+interface StaticReportResult {
+  rootName: string;
+  techStack: { name: string; category: string; source: string }[];
+  entryPoints: { relativePath: string; reason: string }[];
+  metrics: {
+    relativePath: string;
+    language: string;
+    lines: number;
+    codeLines: number;
+    todos: number;
+  }[];
+  totalCodeFiles: number;
+  totalLines: number;
+  totalTodos: number;
+  warnings: string[];
 }
 
 export function exportXmind(

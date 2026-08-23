@@ -255,6 +255,163 @@ button.primary-btn.big {
   color: var(--text-dim);
 }
 
+.progress-percent {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.static-report h2 {
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+
+.stat-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+}
+
+.stat-box b {
+  font-size: 22px;
+  color: var(--accent);
+}
+
+.stat-box span {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.stack-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stack-group {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.stack-cat {
+  color: var(--text-dim);
+  font-size: 12px;
+  min-width: 90px;
+  text-align: right;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 12px;
+}
+
+.entry-list {
+  list-style: none;
+}
+
+.entry-list li {
+  padding: 5px 0;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  border-bottom: 1px solid var(--border);
+  max-width: 720px;
+}
+
+.file-link {
+  color: var(--accent);
+  cursor: pointer;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.entry-reason {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.metrics-table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 760px;
+  font-size: 13px;
+}
+
+.metrics-table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.metrics-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.metrics-table tbody tr {
+  cursor: pointer;
+}
+
+.metrics-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.mono {
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.warn-list {
+  list-style: none;
+  max-width: 720px;
+}
+
+.warn-list li {
+  padding: 4px 0;
+  color: #e5c07b;
+  font-size: 13px;
+}
+
+.dim-note {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
 .placeholder-note {
   margin-top: 24px;
   padding: 14px 16px;

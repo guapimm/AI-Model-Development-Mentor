@@ -2,6 +2,7 @@ mod analysis;
 mod llm;
 mod scanner;
 mod settings;
+mod static_analysis;
 mod xmind;
 
 use analysis::{ProjectAnalysis, Strength, SummarizeProgress};
@@ -67,6 +68,14 @@ fn export_xmind(
     xmind::export_xmind(&scan, &PathBuf::from(&out_path), &summaries)
 }
 
+#[tauri::command]
+fn analyze_static(
+    root_path: String,
+    channel: Channel<static_analysis::StaticProgress>,
+) -> Result<static_analysis::StaticReport, String> {
+    static_analysis::run_static_analysis(&PathBuf::from(&root_path), channel)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -87,7 +96,8 @@ pub fn run() {
             update_settings,
             ai_explain_file,
             ai_summarize_project,
-            export_xmind
+            export_xmind,
+            analyze_static
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -5,13 +5,16 @@ import {
   ProjectAnalysis,
   ScanResult,
   Settings,
+  StaticProgress,
+  StaticReport,
   SummarizeProgress,
   FileNode,
 } from "./types";
-import { aiExplainFile, aiSummarizeProject, exportXmind, Strength } from "./api";
+import { aiExplainFile, aiSummarizeProject, analyzeStatic, exportXmind, Strength } from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
 import SettingsModal from "./components/SettingsModal";
+import StaticReportView from "./components/StaticReportView";
 import { formatBytes } from "./utils";
 
 const DEFAULTS = { baseUrl: "https://api.deepseek.com/v1", apiKey: "", model: "deepseek-chat" };
@@ -30,6 +33,10 @@ export default function App() {
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState<SummarizeProgress | null>(null);
   const [strength, setStrength] = useState<Strength>("medium");
+
+  const [staticReport, setStaticReport] = useState<StaticReport | null>(null);
+  const [staticRunning, setStaticRunning] = useState(false);
+  const [staticProgress, setStaticProgress] = useState<StaticProgress | null>(null);
 
   const [fileExplanation, setFileExplanation] = useState<string | null>(null);
   const [explaining, setExplaining] = useState(false);
@@ -73,6 +80,7 @@ export default function App() {
       setRootPath(dir);
       setSelected(null);
       setAnalysis(null);
+      setStaticReport(null);
       setFileExplanation(null);
     } catch (e) {
       setError(String(e));
@@ -132,6 +140,37 @@ export default function App() {
     }
   }
 
+  async function handleStaticAnalysis() {
+    if (!rootPath || staticRunning) return;
+    setStaticRunning(true);
+    setError(null);
+    setStaticProgress(null);
+    try {
+      const report = await analyzeStatic(rootPath, (p) => setStaticProgress(p));
+      setStaticReport(report);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setStaticRunning(false);
+      setStaticProgress(null);
+    }
+  }
+
+  function selectFileByPath(path: string) {
+    const find = (node: FileNode): FileNode | null => {
+      if (node.relativePath === path) return node;
+      for (const c of node.children) {
+        const hit = find(c);
+        if (hit) return hit;
+      }
+      return null;
+    };
+    if (result) {
+      const found = find(result.tree);
+      if (found) setSelected(found);
+    }
+  }
+
   function handleSelect(node: FileNode) {
     setSelected(node);
     setFileExplanation(null);
@@ -157,6 +196,14 @@ export default function App() {
               <option value="medium">⚖️ 中度（30 个文件·标准）</option>
               <option value="deep">🔬 深度（60 个文件·逐函数）</option>
             </select>
+            <button
+              className="ghost-btn"
+              onClick={handleStaticAnalysis}
+              disabled={staticRunning || loading}
+              title="无需 AI Key：技术栈识别、入口点、代码度量，秒级完成"
+            >
+              📊 静态分析{staticReport ? " ✓" : ""}
+            </button>
             <button
               className="primary-btn"
               onClick={handleAnalyzeProject}
@@ -236,15 +283,31 @@ export default function App() {
                   </div>
                 )}
               </>
-            ) : analyzing && progress ? (
+            ) : staticRunning && staticProgress ? (
               <div className="progress-panel">
-                <h3>{progress.phase}</h3>
+                <h3>{staticProgress.phase}</h3>
+                <div className="progress-percent">{staticProgress.percent}%</div>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
-                    style={{ width: `${progress.total ? ((progress.done / progress.total) * 100).toFixed(0) : 0}%` }}
+                    style={{ width: `${staticProgress.percent}%` }}
                   />
                 </div>
+              </div>
+            ) : analyzing && progress ? (
+              <div className="progress-panel">
+                <h3>{progress.phase}</h3>
+                {(() => {
+                  const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
+                  return (
+                    <>
+                      <div className="progress-percent">{pct}%</div>
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                    </>
+                  );
+                })()}
                 <p className="progress-current">{progress.current}</p>
               </div>
             ) : analysis ? (
@@ -254,8 +317,14 @@ export default function App() {
               </>
             ) : null}
 
-            {!selected && !analysis && !analyzing && (
-              <LanguageStats languages={result.languages} />
+            {!selected && !analysis && !analyzing && staticReport && (
+              <StaticReportView report={staticReport} onSelectFile={selectFileByPath} />
+            )}
+
+            {!selected && !analysis && !analyzing && !staticReport && (
+              <>
+                <LanguageStats languages={result.languages} />
+              </>
             )}
           </section>
         </main>

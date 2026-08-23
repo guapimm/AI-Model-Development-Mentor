@@ -44,3 +44,38 @@ export interface ProjectAnalysis {
   overview: string;
   fileSummaries: FileSummary[];
 }
+
+export interface StaticProgress {
+  phase: string;
+  percent: number;
+}
+
+export interface TechStackItem {
+  name: string;
+  category: string;
+  source: string;
+}
+
+export interface FileMetric {
+  relativePath: string;
+  language: string;
+  lines: number;
+  codeLines: number;
+  todos: number;
+}
+
+export interface EntryPoint {
+  relativePath: string;
+  reason: string;
+}
+
+export interface StaticReport {
+  rootName: string;
+  techStack: TechStackItem[];
+  entryPoints: EntryPoint[];
+  metrics: FileMetric[];
+  totalCodeFiles: number;
+  totalLines: number;
+  totalTodos: number;
+  warnings: string[];
+}
