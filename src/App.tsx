@@ -11,11 +11,21 @@ import {
   FileNode,
   FileSymbols,
 } from "./types";
-import { aiExplainFile, aiSummarizeProject, analyzeStatic, exportXmind, getFileSymbols, Strength } from "./api";
+import {
+  aiExplainFile,
+  aiSummarizeProject,
+  analyzeStatic,
+  exportXmind,
+  getFileSymbols,
+  readFileContent,
+  saveFileContent,
+  Strength,
+} from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
 import SettingsModal from "./components/SettingsModal";
 import StaticReportView from "./components/StaticReportView";
+import CodeEditor from "./components/CodeEditor";
 import { formatBytes } from "./utils";
 
 const DEFAULTS: Settings = {
@@ -25,7 +35,36 @@ const DEFAULTS: Settings = {
   model: "deepseek-chat",
   azure_deployment: null,
   azure_api_version: null,
+  proxy_mode: "system",
+  proxy_url: "",
 };
+
+type Tab =
+  | {
+      id: string;
+      kind: "file";
+      path: string;
+      language: string | null;
+      content: string;
+      dirty: boolean;
+      loading: boolean;
+      error: string | null;
+    }
+  | { id: "report"; kind: "report" }
+  | { id: "overview"; kind: "overview" };
+
+function findNode(root: FileNode | undefined, path: string): FileNode | null {
+  if (!root) return null;
+  const walk = (node: FileNode): FileNode | null => {
+    if (node.relativePath === path) return node;
+    for (const c of node.children) {
+      const hit = walk(c);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  return walk(root);
+}
 
 export default function App() {
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -48,10 +87,14 @@ export default function App() {
   const [staticRunning, setStaticRunning] = useState(false);
   const [staticProgress, setStaticProgress] = useState<StaticProgress | null>(null);
 
-  const [fileSymbols, setFileSymbols] = useState<FileSymbols | null>(null);
+  // ---- Tabs ----
+  const [tabs, setTabs] = useState<Tab[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
+  const [fileSymbols, setFileSymbols] = useState<FileSymbols | null>(null);
   const [fileExplanation, setFileExplanation] = useState<string | null>(null);
   const [explaining, setExplaining] = useState(false);
+
   const [toast, setToast] = useState<string | null>(null);
   const selectedRef = useRef<FileNode | null>(null);
   selectedRef.current = selected;
@@ -61,26 +104,121 @@ export default function App() {
     window.setTimeout(() => setToast(null), 3000);
   }
 
-  async function handleExportXmind() {
-    if (!result || !rootPath) return;
-    const out = await save({
-      title: "导出 xmind 思维导图",
-      defaultPath: `${result.rootName}.xmind`,
-      filters: [{ name: "XMind 思维导图", extensions: ["xmind"] }],
-    });
-    if (!out) return;
-    try {
-      await exportXmind(rootPath, out, analysis?.fileSummaries);
-      showToast(`✅ 已导出: ${out}`);
-    } catch (e) {
-      setError(String(e));
-    }
-  }
-
   useEffect(() => {
     invoke<Settings>("get_settings").then(setSettings).catch(() => setSettings(null));
   }, []);
 
+  // ---------- Tab management ----------
+  function activate(id: string) {
+    setActiveId(id);
+    setTabs((ts) => {
+      const t = ts.find((x) => x.id === id);
+      if (t && t.kind === "file") {
+        // Sync right-hand detail panel with the activated file.
+        const node = findNode(result?.tree, t.path);
+        if (node) loadSymbolsFor(node);
+      }
+      return ts;
+    });
+  }
+
+  function loadSymbolsFor(node: FileNode) {
+    setSelected(node);
+    setFileExplanation(null);
+    setFileSymbols(null);
+    if (!node.isDir && node.language && rootPath) {
+      getFileSymbols(rootPath, node.relativePath, node.language)
+        .then((fs) => {
+          if (selectedRef.current?.relativePath === node.relativePath) {
+            setFileSymbols(fs);
+          }
+        })
+        .catch(() => {});
+    }
+  }
+
+  function openFile(node: FileNode) {
+    if (node.isDir) return;
+    const id = `file:${node.relativePath}`;
+    setTabs((ts) => {
+      if (!ts.some((t) => t.id === id)) {
+        const tab: Tab = {
+          id,
+          kind: "file",
+          path: node.relativePath,
+          language: node.language,
+          content: "",
+          dirty: false,
+          loading: true,
+          error: null,
+        };
+        setActiveId(id);
+        return [...ts, tab];
+      }
+      setActiveId(id);
+      return ts;
+    });
+    loadSymbolsFor(node);
+
+    readFileContent(rootPath, node.relativePath)
+      .then((fc) => {
+        setTabs((ts) =>
+          ts.map((t) =>
+            t.id === id && t.kind === "file"
+              ? { ...t, content: fc.content, loading: false, error: null }
+              : t
+          )
+        );
+      })
+      .catch((e) => {
+        setTabs((ts) =>
+          ts.map((t) =>
+            t.id === id && t.kind === "file"
+              ? { ...t, loading: false, error: String(e) }
+              : t
+          )
+        );
+      });
+  }
+
+  function closeTab(id: string) {
+    const tab = tabs.find((t) => t.id === id);
+    if (tab && tab.kind === "file" && tab.dirty) {
+      const ok = window.confirm(`「${tab.path.split("/").pop()}」有未保存的修改，确定关闭？`);
+      if (!ok) return;
+    }
+    setTabs((ts) => {
+      const idx = ts.findIndex((t) => t.id === id);
+      const next = ts.filter((t) => t.id !== id);
+      if (activeId === id) {
+        const fallback = next[Math.max(0, idx - 1)];
+        setActiveId(fallback ? fallback.id : null);
+      }
+      return next;
+    });
+  }
+
+  function updateFileTab(id: string, patch: Partial<Extract<Tab, { kind: "file" }>>) {
+    setTabs((ts) => ts.map((t) => (t.id === id && t.kind === "file" ? { ...t, ...patch } : t)));
+  }
+
+  function saveActive() {
+    const tab = tabs.find((t) => t.id === activeId);
+    if (!tab || tab.kind !== "file" || tab.loading || tab.error) return;
+    saveFileContent(rootPath, tab.path, tab.content)
+      .then(() => {
+        updateFileTab(tab.id, { dirty: false });
+        showToast(`✅ 已保存 ${tab.path}`);
+      })
+      .catch((e) => setError(String(e)));
+  }
+
+  function ensureTab(id: "report" | "overview") {
+    setTabs((ts) => (ts.some((t) => t.id === id) ? ts : [...ts, { id, kind: id } as Tab]));
+    setActiveId(id);
+  }
+
+  // ---------- Actions ----------
   async function handleOpenFolder() {
     setError(null);
     const dir = await open({ directory: true, multiple: false });
@@ -94,6 +232,8 @@ export default function App() {
       setAnalysis(null);
       setStaticReport(null);
       setFileExplanation(null);
+      setTabs([]);
+      setActiveId(null);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -123,11 +263,45 @@ export default function App() {
         (p) => setProgress(p)
       );
       setAnalysis(res);
+      ensureTab("overview");
     } catch (e) {
       setError(String(e));
     } finally {
       setAnalyzing(false);
       setProgress(null);
+    }
+  }
+
+  async function handleStaticAnalysis() {
+    if (!rootPath || staticRunning) return;
+    setStaticRunning(true);
+    setError(null);
+    setStaticProgress(null);
+    try {
+      const report = await analyzeStatic(rootPath, (p) => setStaticProgress(p));
+      setStaticReport(report);
+      ensureTab("report");
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setStaticRunning(false);
+      setStaticProgress(null);
+    }
+  }
+
+  async function handleExportXmind() {
+    if (!result || !rootPath) return;
+    const out = await save({
+      title: "导出 xmind 思维导图",
+      defaultPath: `${result.rootName}.xmind`,
+      filters: [{ name: "XMind 思维导图", extensions: ["xmind"] }],
+    });
+    if (!out) return;
+    try {
+      await exportXmind(rootPath, out, analysis?.fileSummaries);
+      showToast(`✅ 已导出: ${out}`);
+    } catch (e) {
+      setError(String(e));
     }
   }
 
@@ -145,7 +319,6 @@ export default function App() {
       } else {
         text = await aiExplainFile(rootPath, node.relativePath, strength, unlimitedOutput);
       }
-      // Ignore result if user switched files meanwhile.
       if (selectedRef.current?.relativePath === node.relativePath) {
         setFileExplanation(text);
       }
@@ -158,51 +331,7 @@ export default function App() {
     }
   }
 
-  async function handleStaticAnalysis() {
-    if (!rootPath || staticRunning) return;
-    setStaticRunning(true);
-    setError(null);
-    setStaticProgress(null);
-    try {
-      const report = await analyzeStatic(rootPath, (p) => setStaticProgress(p));
-      setStaticReport(report);
-    } catch (e) {
-      setError(String(e));
-    } finally {
-      setStaticRunning(false);
-      setStaticProgress(null);
-    }
-  }
-
-  function selectFileByPath(path: string) {
-    const find = (node: FileNode): FileNode | null => {
-      if (node.relativePath === path) return node;
-      for (const c of node.children) {
-        const hit = find(c);
-        if (hit) return hit;
-      }
-      return null;
-    };
-    if (result) {
-      const found = find(result.tree);
-      if (found) setSelected(found);
-    }
-  }
-
-  function handleSelect(node: FileNode) {
-    setSelected(node);
-    setFileExplanation(null);
-    setFileSymbols(null);
-    if (!node.isDir && node.language && rootPath) {
-      getFileSymbols(rootPath, node.relativePath, node.language)
-        .then((fs) => {
-          if (selectedRef.current?.relativePath === node.relativePath) {
-            setFileSymbols(fs);
-          }
-        })
-        .catch(() => {});
-    }
-  }
+  const activeTab = tabs.find((t) => t.id === activeId) ?? null;
 
   return (
     <div className="app">
@@ -213,6 +342,9 @@ export default function App() {
         </button>
         {result && (
           <>
+            <button className="ghost-btn" onClick={handleStaticAnalysis} disabled={staticRunning || loading}>
+              📊 静态分析{staticReport ? " ✓" : ""}
+            </button>
             <select
               className="strength-select"
               value={strength}
@@ -225,31 +357,13 @@ export default function App() {
               <option value="deep">🔬 详尽</option>
             </select>
             <label className="toggle" title="开启后尝试分析全部代码文件（上限200个），耗时和费用更高">
-              <input
-                type="checkbox"
-                checked={fullScope}
-                onChange={(e) => setFullScope(e.target.checked)}
-                disabled={analyzing}
-              />
+              <input type="checkbox" checked={fullScope} onChange={(e) => setFullScope(e.target.checked)} disabled={analyzing} />
               全量分析
             </label>
             <label className="toggle" title="不限制 AI 单次输出的长度（费用可能增加）">
-              <input
-                type="checkbox"
-                checked={unlimitedOutput}
-                onChange={(e) => setUnlimitedOutput(e.target.checked)}
-                disabled={analyzing}
-              />
+              <input type="checkbox" checked={unlimitedOutput} onChange={(e) => setUnlimitedOutput(e.target.checked)} disabled={analyzing} />
               不限长度
             </label>
-            <button
-              className="ghost-btn"
-              onClick={handleStaticAnalysis}
-              disabled={staticRunning || loading}
-              title="无需 AI Key：技术栈识别、入口点、代码度量，秒级完成"
-            >
-              📊 静态分析{staticReport ? " ✓" : ""}
-            </button>
             <button
               className="primary-btn"
               onClick={handleAnalyzeProject}
@@ -258,18 +372,9 @@ export default function App() {
             >
               {analyzing ? "AI 理解中..." : "🤖 AI 理解项目"}
             </button>
-            <button
-              className="ghost-btn"
-              onClick={handleExportXmind}
-              disabled={loading}
-              title="将项目架构导出为 XMind 思维导图（含 AI 摘要备注）"
-            >
+            <button className="ghost-btn" onClick={handleExportXmind} disabled={loading}>
               📤 导出 xmind
             </button>
-            <span className="summary">
-              {result.rootName} · {result.totalFiles} 个文件 · {formatBytes(result.totalSize)}
-              {result.truncated && <em className="warn">（项目过大，结果已截断）</em>}
-            </span>
           </>
         )}
         <div style={{ marginLeft: "auto" }}>
@@ -294,11 +399,134 @@ export default function App() {
           </button>
         </div>
       ) : (
-        <main className="layout">
+        <main className="layout ide-layout">
           <aside className="sidebar">
-            <FileTree root={result.tree} onSelect={handleSelect} selectedPath={selected?.relativePath ?? null} />
+            <FileTree
+              root={result.tree}
+              onSelect={(n) => {
+                if (n.isDir) {
+                  setSelected(n);
+                  setFileSymbols(null);
+                  setFileExplanation(null);
+                } else {
+                  openFile(n);
+                }
+              }}
+              selectedPath={selected?.relativePath ?? null}
+            />
           </aside>
-          <section className="detail">
+
+          <section className="workspace">
+            {/* Running indicators */}
+            {(staticRunning || analyzing) && (
+              <div className="run-strip">
+                {staticRunning && staticProgress && (
+                  <div className="run-item">
+                    <span>{staticProgress.phase}</span>
+                    <div className="mini-bar">
+                      <div className="mini-bar-fill" style={{ width: `${staticProgress.percent}%` }} />
+                    </div>
+                    <b>{staticProgress.percent}%</b>
+                  </div>
+                )}
+                {analyzing && progress && (
+                  <div className="run-item">
+                    <span>{progress.phase}</span>
+                    <div className="mini-bar">
+                      <div
+                        className="mini-bar-fill"
+                        style={{
+                          width: `${progress.total ? Math.round((progress.done / progress.total) * 100) : 0}%`,
+                        }}
+                      />
+                    </div>
+                    <b>{progress.total ? Math.round((progress.done / progress.total) * 100) : 0}%</b>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {tabs.length > 0 && (
+              <div className="tab-bar">
+                {tabs.map((t) => (
+                  <div
+                    key={t.id}
+                    className={`tab ${t.id === activeId ? "active" : ""}`}
+                    onClick={() => activate(t.id)}
+                  >
+                    <span>
+                      {t.kind === "file"
+                        ? `📄 ${t.path.split("/").pop()}${t.dirty ? " ●" : ""}`
+                        : t.kind === "report"
+                          ? "📊 静态分析报告"
+                          : "🤖 架构总览"}
+                    </span>
+                    <button
+                      className="tab-close"
+                      title="关闭（仅点击此处才退出该页面）"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        closeTab(t.id);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="tab-body">
+              {!activeTab ? (
+                <div className="empty-hint">
+                  <p>点击左侧文件打开代码编辑，或运行「📊 静态分析」「🤖 AI 理解项目」生成报告页签。</p>
+                  {!staticReport && !analysis && <LanguageStats languages={result.languages} />}
+                </div>
+              ) : activeTab.kind === "file" ? (
+                activeTab.loading ? (
+                  <div className="empty-hint">正在加载文件...</div>
+                ) : activeTab.error ? (
+                  <div className="empty-hint">⚠️ {activeTab.error}</div>
+                ) : (
+                  <>
+                    <div className="editor-toolbar">
+                      <span className="mono">{activeTab.path}</span>
+                      {activeTab.dirty && <em className="dirty-tag">未保存</em>}
+                      <button className="primary-btn small" onClick={saveActive} disabled={!activeTab.dirty}>
+                        💾 保存 (Ctrl+S)
+                      </button>
+                    </div>
+                    <CodeEditor
+                      key={activeTab.id}
+                      content={activeTab.content}
+                      language={activeTab.language}
+                      readOnly={false}
+                      onChange={(v) => updateFileTab(activeTab.id, { content: v, dirty: true })}
+                      onSave={saveActive}
+                    />
+                  </>
+                )
+              ) : activeTab.kind === "report" && staticReport ? (
+                <StaticReportView
+                  report={staticReport}
+                  rootPath={rootPath}
+                  onSelectFile={(path) => {
+                    const node = findNode(result.tree, path);
+                    if (node) openFile(node);
+                  }}
+                />
+              ) : activeTab.kind === "overview" && analysis ? (
+                <div className="overview-wrap">
+                  <h2>📋 项目架构总览</h2>
+                  <pre className="ai-text">{analysis.overview}</pre>
+                </div>
+              ) : (
+                <div className="empty-hint">数据已失效，请重新生成。</div>
+              )}
+            </div>
+          </section>
+
+          <aside className="right-panel">
             {selected ? (
               <>
                 <h2>{selected.isDir ? "📁" : "📄"} {selected.name}</h2>
@@ -307,41 +535,31 @@ export default function App() {
                   {selected.language && (<><dt>语言</dt><dd>{selected.language}</dd></>)}
                   <dt>{selected.isDir ? "内容大小" : "文件大小"}</dt>
                   <dd>{formatBytes(selected.size)}</dd>
-                  {!selected.isDir && (<><dt>直接子项</dt><dd>{selected.children.length}</dd></>)}
                 </dl>
 
                 {fileSymbols && fileSymbols.symbols.length > 0 && (
                   <div className="ai-section">
                     <div className="ai-section-head">
                       <h3>🧩 符号大纲（{fileSymbols.symbols.length}）</h3>
-                      <span className="dim-note">静态解析 · 无需 AI</span>
                     </div>
                     <ul className="outline-list">
                       {fileSymbols.symbols.map((s) => (
                         <li key={`${s.kind}-${s.name}-${s.startLine}`} className="outline-item">
                           <span className="outline-kind">{s.kind}</span>
                           <span className="outline-name" title={s.signature}>{s.name}</span>
-                          <span className="outline-lines">
-                            L{s.startLine}
-                            {s.endLine > s.startLine ? `-${s.endLine}` : ""}
-                          </span>
+                          <span className="outline-lines">L{s.startLine}{s.endLine > s.startLine ? `-${s.endLine}` : ""}</span>
                         </li>
                       ))}
                     </ul>
-                    {fileSymbols.imports.length > 0 && (
-                      <details className="imports-box">
-                        <summary>依赖引入（{fileSymbols.imports.length}）</summary>
-                        <pre className="ai-text">{fileSymbols.imports.join("\n")}</pre>
-                      </details>
-                    )}
                   </div>
                 )}
 
                 {!selected.isDir && (
                   <div className="ai-section">
                     <div className="ai-section-head">
-                      <h3>🤖 AI 解读</h3>                      <button
-                        className="primary-btn"
+                      <h3>🤖 AI 解读</h3>
+                      <button
+                        className="primary-btn small"
                         onClick={() => handleExplainFile(selected)}
                         disabled={explaining}
                       >
@@ -349,68 +567,25 @@ export default function App() {
                       </button>
                     </div>
                     {explaining && <div className="thinking">正在阅读代码并生成解读...</div>}
-                    {fileExplanation && (
-                      <pre className="ai-text">{fileExplanation}</pre>
-                    )}
+                    {fileExplanation && <pre className="ai-text">{fileExplanation}</pre>}
                   </div>
                 )}
               </>
-            ) : staticRunning && staticProgress ? (
-              <div className="progress-panel">
-                <h3>{staticProgress.phase}</h3>
-                <div className="progress-percent">{staticProgress.percent}%</div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${staticProgress.percent}%` }}
-                  />
-                </div>
-              </div>
-            ) : analyzing && progress ? (
-              <div className="progress-panel">
-                <h3>{progress.phase}</h3>
-                {(() => {
-                  const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
-                  return (
-                    <>
-                      <div className="progress-percent">{pct}%</div>
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${pct}%` }} />
-                      </div>
-                    </>
-                  );
-                })()}
-                <p className="progress-current">{progress.current}</p>
-              </div>
-            ) : analysis ? (
-              <>
-                <h2>📋 项目架构总览</h2>
-                <pre className="ai-text overview">{analysis.overview}</pre>
-              </>
-            ) : null}
-
-            {!selected && !analysis && !analyzing && staticReport && (
-              <StaticReportView
-                report={staticReport}
-                rootPath={rootPath}
-                onSelectFile={selectFileByPath}
-              />
-            )}
-
-            {!selected && !analysis && !analyzing && !staticReport && (
+            ) : (
               <>
                 <LanguageStats languages={result.languages} />
+                <p className="dim-note" style={{ marginTop: 16 }}>
+                  点击左侧文件查看详情与符号大纲。
+                </p>
               </>
             )}
-          </section>
+          </aside>
         </main>
       )}
 
       {showSettings && (
         <SettingsModal
-          initial={
-            settings ?? { ...DEFAULTS }
-          }
+          initial={settings ?? DEFAULTS}
           onClose={() => setShowSettings(false)}
           onSaved={(s) => setSettings(s)}
         />

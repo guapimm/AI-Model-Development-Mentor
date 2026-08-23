@@ -23,19 +23,31 @@ pub async fn chat(
     }
 }
 
-fn http_client() -> reqwest::Client {
-    reqwest::Client::new()
+fn http_client(settings: &Settings, timeout_secs: u64) -> reqwest::Client {
+    let mut builder =
+        reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout_secs));
+    match settings.proxy_mode.as_str() {
+        "none" => builder = builder.no_proxy(),
+        "custom" => {
+            if let Ok(proxy) = reqwest::Proxy::all(settings.proxy_url.trim()) {
+                builder = builder.proxy(proxy);
+            }
+        }
+        // "system": reqwest 默认读取环境变量 http_proxy/https_proxy
+        _ => {}
+    }
+    builder.build().unwrap_or_default()
 }
 
 async fn send_json(
+    settings: &Settings,
     url: &str,
     headers: Vec<(&str, String)>,
     body: Value,
 ) -> Result<String, String> {
-    let mut req = http_client()
+    let mut req = http_client(settings, 180)
         .post(url)
-        .json(&body)
-        .timeout(std::time::Duration::from_secs(180));
+        .json(&body);
     for (k, v) in headers {
         req = req.header(k, v);
     }
@@ -51,7 +63,10 @@ async fn send_json(
         .map_err(|e| format!("AI 响应解析失败 (HTTP {status}): {e}"))?;
 
     if !status.is_success() {
-        return Err(format!("AI 服务返回错误 (HTTP {status}): {}", error_message(&parsed)));
+        return Err(format!(
+            "AI 服务返回错误 (HTTP {status}): {}",
+            error_message(&parsed)
+        ));
     }
     Ok(parsed.to_string())
 }
@@ -100,6 +115,7 @@ async fn chat_openai_compatible(
     let url = format!("{}/chat/completions", settings.effective_base_url());
     let body = openai_body(&settings.model, messages, max_tokens);
     let raw = send_json(
+        settings,
         &url,
         vec![("Authorization", format!("Bearer {}", settings.api_key))],
         body,
@@ -138,7 +154,11 @@ pub fn parse_anthropic_response(body: &Value) -> Result<String, String> {
     Ok(text)
 }
 
-async fn chat_anthropic(settings: &Settings, messages: &[ChatMessage], max_tokens: u16) -> Result<String, String> {
+async fn chat_anthropic(
+    settings: &Settings,
+    messages: &[ChatMessage],
+    max_tokens: u16,
+) -> Result<String, String> {
     let url = format!("{}/v1/messages", settings.effective_base_url());
     let system = messages
         .iter()
@@ -147,6 +167,7 @@ async fn chat_anthropic(settings: &Settings, messages: &[ChatMessage], max_token
         .unwrap_or_default();
     let body = anthropic_body(&system, messages, max_tokens);
     let raw = send_json(
+        settings,
         &url,
         vec![
             ("x-api-key", settings.api_key.clone()),
@@ -193,7 +214,11 @@ pub fn parse_gemini_response(body: &Value) -> Result<String, String> {
     Ok(text)
 }
 
-async fn chat_gemini(settings: &Settings, messages: &[ChatMessage], max_tokens: Option<u16>) -> Result<String, String> {
+async fn chat_gemini(
+    settings: &Settings,
+    messages: &[ChatMessage],
+    max_tokens: Option<u16>,
+) -> Result<String, String> {
     let base = settings.effective_base_url();
     let url = format!(
         "{}/models/{}:generateContent",
@@ -206,13 +231,13 @@ async fn chat_gemini(settings: &Settings, messages: &[ChatMessage], max_tokens: 
         .map(|m| m.content.clone())
         .unwrap_or_default();
     let body = gemini_body(&system, messages, max_tokens);
-    let raw = send_json(&url, vec![], body.clone()).await?;
-    // Gemini authenticates via ?key= query param; retry with it on error.
+    let raw = send_json(settings, &url, vec![], body.clone()).await?;
+    // Gemini 通过 ?key= 查询参数鉴权；首次失败带 key 重试。
     let parsed: Value = serde_json::from_str(&raw).unwrap_or(Value::Null);
 
     if parsed.get("error").is_some() {
         let url_with_key = format!("{url}?key={}", settings.api_key);
-        let raw2 = send_json(&url_with_key, vec![], body).await?;
+        let raw2 = send_json(settings, &url_with_key, vec![], body).await?;
         let parsed2: Value = serde_json::from_str(&raw2).unwrap_or(Value::Null);
         if parsed2.get("error").is_some() {
             return Err(error_message(&parsed2));
@@ -224,7 +249,11 @@ async fn chat_gemini(settings: &Settings, messages: &[ChatMessage], max_tokens: 
 
 // ---------------- Azure OpenAI ----------------
 
-async fn chat_azure(settings: &Settings, messages: &[ChatMessage], max_tokens: Option<u16>) -> Result<String, String> {
+async fn chat_azure(
+    settings: &Settings,
+    messages: &[ChatMessage],
+    max_tokens: Option<u16>,
+) -> Result<String, String> {
     let deployment = settings
         .azure_deployment
         .clone()
@@ -240,11 +269,11 @@ async fn chat_azure(settings: &Settings, messages: &[ChatMessage], max_tokens: O
         api_version
     );
     let mut body = openai_body(&settings.model, messages, max_tokens);
-    // Azure ignores "model"; keep payload minimal.
     if let Some(obj) = body.as_object_mut() {
         obj.remove("model");
     }
     let raw = send_json(
+        settings,
         &url,
         vec![("api-key", settings.api_key.clone())],
         body,
@@ -266,7 +295,11 @@ pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
         Protocol::OpenAI | Protocol::Azure => (
             format!("{}/models", base),
             vec![(
-                if settings.protocol == Protocol::Azure { "api-key" } else { "Authorization" },
+                if settings.protocol == Protocol::Azure {
+                    "api-key"
+                } else {
+                    "Authorization"
+                },
                 if settings.protocol == Protocol::Azure {
                     settings.api_key.clone()
                 } else {
@@ -287,7 +320,7 @@ pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
         ),
     };
 
-    let mut req = http_client().get(&url).timeout(std::time::Duration::from_secs(30));
+    let mut req = http_client(settings, 30).get(&url);
     for (k, v) in headers {
         req = req.header(k, v);
     }
@@ -301,7 +334,10 @@ pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
         .await
         .map_err(|e| format!("响应解析失败 (HTTP {status}): {e}"))?;
     if !status.is_success() {
-        return Err(format!("获取模型列表失败 (HTTP {status}): {}", error_message(&body)));
+        return Err(format!(
+            "获取模型列表失败 (HTTP {status}): {}",
+            error_message(&body)
+        ));
     }
 
     let models: Vec<String> = match settings.protocol {
@@ -332,13 +368,18 @@ pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
 }
 
 pub async fn test_connection(settings: &Settings) -> Result<(), String> {
-    chat(
-        settings,
-        &[ChatMessage { role: "user", content: "请只回复两个字：正常".to_string() }],
-        Some(32),
-    )
-    .await
-    .map(|_| ())
+    let messages = [ChatMessage {
+        role: "user",
+        content: "请只回复两个字：正常".to_string(),
+    }];
+    let call = chat(settings, &messages, Some(32));
+    match tokio::time::timeout(std::time::Duration::from_secs(45), call).await {
+        Ok(result) => result.map(|_| ()),
+        Err(_) => Err(
+            "连接超时（45秒无响应）。若使用海外服务商，请在下方代理设置中配置代理后重试"
+                .to_string(),
+        ),
+    }
 }
 
 #[cfg(test)]
@@ -374,7 +415,6 @@ mod tests {
         let b = anthropic_body("sys", &msgs(), 4096);
         assert_eq!(b["system"], "sys");
         assert_eq!(b["max_tokens"], 4096);
-        // system must not be duplicated into messages
         let arr = b["messages"].as_array().unwrap();
         assert_eq!(arr.len(), 1);
         assert_eq!(arr[0]["role"], "user");

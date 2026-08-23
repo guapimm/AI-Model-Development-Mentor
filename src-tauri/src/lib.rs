@@ -1,4 +1,5 @@
-mod analysis;
+﻿mod analysis;
+mod editor;
 mod llm;
 mod scanner;
 mod settings;
@@ -123,6 +124,23 @@ async fn test_ai_connection(settings: Settings) -> Result<(), String> {
     llm::test_connection(&settings).await
 }
 
+#[tauri::command]
+fn read_file_content(
+    root_path: String,
+    relative_path: String,
+) -> Result<editor::FileContent, String> {
+    editor::read_file(&root_path, &relative_path)
+}
+
+#[tauri::command]
+fn save_file_content(
+    root_path: String,
+    relative_path: String,
+    content: String,
+) -> Result<(), String> {
+    editor::save_file(&root_path, &relative_path, &content)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -148,7 +166,9 @@ pub fn run() {
             get_file_symbols,
             get_dependency_graph,
             list_ai_models,
-            test_ai_connection
+            test_ai_connection,
+            read_file_content,
+            save_file_content
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

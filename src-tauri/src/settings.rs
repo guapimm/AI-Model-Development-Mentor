@@ -55,6 +55,15 @@ pub struct Settings {
     pub azure_deployment: Option<String>,
     #[serde(default)]
     pub azure_api_version: Option<String>,
+    /// Proxy strategy: "system" (env vars, default) | "none" | "custom"
+    #[serde(default = "default_proxy_mode")]
+    pub proxy_mode: String,
+    #[serde(default)]
+    pub proxy_url: String,
+}
+
+fn default_proxy_mode() -> String {
+    "system".to_string()
 }
 
 impl Default for Settings {
@@ -66,6 +75,8 @@ impl Default for Settings {
             model: String::new(),
             azure_deployment: None,
             azure_api_version: None,
+            proxy_mode: "system".to_string(),
+            proxy_url: String::new(),
         }
     }
 }

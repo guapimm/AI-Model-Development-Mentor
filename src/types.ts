@@ -31,6 +31,8 @@ export interface Settings {
   model: string;
   azure_deployment: string | null;
   azure_api_version: string | null;
+  proxy_mode: string;
+  proxy_url: string;
 }
 
 export interface SummarizeProgress {

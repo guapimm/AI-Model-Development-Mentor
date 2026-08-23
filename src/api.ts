@@ -10,6 +10,21 @@ import {
 
 export type Strength = "light" | "medium" | "deep";
 
+export function readFileContent(
+  rootPath: string,
+  relativePath: string
+): Promise<{ content: string; truncated: boolean }> {
+  return invoke("read_file_content", { rootPath, relativePath });
+}
+
+export function saveFileContent(
+  rootPath: string,
+  relativePath: string,
+  content: string
+): Promise<void> {
+  return invoke("save_file_content", { rootPath, relativePath, content });
+}
+
 export async function aiExplainFile(
   rootPath: string,
   relativePath: string,

@@ -78,6 +78,8 @@ export default function SettingsModal({
   const [model, setModel] = useState(initial.model);
   const [azureDeployment, setAzureDeployment] = useState(initial.azure_deployment ?? "");
   const [azureApiVersion, setAzureApiVersion] = useState(initial.azure_api_version ?? "");
+  const [proxyMode, setProxyMode] = useState(initial.proxy_mode || "system");
+  const [proxyUrl, setProxyUrl] = useState(initial.proxy_url ?? "");
   const [fetchedModels, setFetchedModels] = useState<string[]>([]);
 
   const [saving, setSaving] = useState(false);
@@ -93,6 +95,8 @@ export default function SettingsModal({
       model: model.trim(),
       azure_deployment: azureDeployment.trim() || null,
       azure_api_version: azureApiVersion.trim() || null,
+      proxy_mode: proxyMode,
+      proxy_url: proxyUrl.trim(),
     };
   }
 
@@ -236,6 +240,27 @@ export default function SettingsModal({
             </label>
           </>
         )}
+
+        <div className="field-group">
+          <label className="field">
+            <span>代理设置（海外服务商连不上时配置）</span>
+            <select value={proxyMode} onChange={(e) => setProxyMode(e.target.value)}>
+              <option value="system">跟随环境变量（默认）</option>
+              <option value="none">直连（忽略代理）</option>
+              <option value="custom">自定义代理地址</option>
+            </select>
+          </label>
+          {proxyMode === "custom" && (
+            <label className="field">
+              <span>代理地址</span>
+              <input
+                value={proxyUrl}
+                onChange={(e) => setProxyUrl(e.target.value)}
+                placeholder="http://127.0.0.1:7890"
+              />
+            </label>
+          )}
+        </div>
 
         {status && (
           <div className={`modal-status ${status.ok ? "ok" : "err"}`}>{status.text}</div>
