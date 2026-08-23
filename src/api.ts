@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "@tauri-apps/api/core";
-import { StaticProgress, SummarizeProgress } from "./types";
+import { FileSymbols, StaticProgress, SummarizeProgress } from "./types";
 
 export type Strength = "light" | "medium" | "deep";
 
@@ -37,6 +37,14 @@ export function analyzeStatic(
   const channel = new Channel<StaticProgress>();
   channel.onmessage = onProgress;
   return invoke("analyze_static", { rootPath, channel });
+}
+
+export function getFileSymbols(
+  rootPath: string,
+  relativePath: string,
+  language: string
+): Promise<FileSymbols> {
+  return invoke("get_file_symbols", { rootPath, relativePath, language });
 }
 
 interface StaticReportResult {

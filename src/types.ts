@@ -79,3 +79,19 @@ export interface StaticReport {
   totalTodos: number;
   warnings: string[];
 }
+
+export interface SymbolInfo {
+  kind: string;
+  name: string;
+  startLine: number;
+  endLine: number;
+  signature: string;
+}
+
+export interface FileSymbols {
+  relativePath: string;
+  language: string;
+  supportedParse: boolean;
+  symbols: SymbolInfo[];
+  imports: string[];
+}

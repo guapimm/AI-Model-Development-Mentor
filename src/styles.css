@@ -412,6 +412,55 @@ button.primary-btn.big {
   font-size: 13px;
 }
 
+.outline-list {
+  list-style: none;
+  max-width: 720px;
+}
+
+.outline-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.outline-kind {
+  color: var(--accent);
+  background: rgba(79, 140, 255, 0.12);
+  border-radius: 4px;
+  padding: 1px 8px;
+  font-size: 11px;
+  min-width: 52px;
+  text-align: center;
+}
+
+.outline-name {
+  font-family: Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outline-lines {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.imports-box {
+  margin-top: 10px;
+  max-width: 720px;
+}
+
+.imports-box summary {
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
 .placeholder-note {
   margin-top: 24px;
   padding: 14px 16px;

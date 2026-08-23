@@ -9,8 +9,9 @@ import {
   StaticReport,
   SummarizeProgress,
   FileNode,
+  FileSymbols,
 } from "./types";
-import { aiExplainFile, aiSummarizeProject, analyzeStatic, exportXmind, Strength } from "./api";
+import { aiExplainFile, aiSummarizeProject, analyzeStatic, exportXmind, getFileSymbols, Strength } from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
 import SettingsModal from "./components/SettingsModal";
@@ -37,6 +38,8 @@ export default function App() {
   const [staticReport, setStaticReport] = useState<StaticReport | null>(null);
   const [staticRunning, setStaticRunning] = useState(false);
   const [staticProgress, setStaticProgress] = useState<StaticProgress | null>(null);
+
+  const [fileSymbols, setFileSymbols] = useState<FileSymbols | null>(null);
 
   const [fileExplanation, setFileExplanation] = useState<string | null>(null);
   const [explaining, setExplaining] = useState(false);
@@ -174,6 +177,16 @@ export default function App() {
   function handleSelect(node: FileNode) {
     setSelected(node);
     setFileExplanation(null);
+    setFileSymbols(null);
+    if (!node.isDir && node.language && rootPath) {
+      getFileSymbols(rootPath, node.relativePath, node.language)
+        .then((fs) => {
+          if (selectedRef.current?.relativePath === node.relativePath) {
+            setFileSymbols(fs);
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   return (
@@ -264,11 +277,37 @@ export default function App() {
                   {!selected.isDir && (<><dt>直接子项</dt><dd>{selected.children.length}</dd></>)}
                 </dl>
 
+                {fileSymbols && fileSymbols.symbols.length > 0 && (
+                  <div className="ai-section">
+                    <div className="ai-section-head">
+                      <h3>🧩 符号大纲（{fileSymbols.symbols.length}）</h3>
+                      <span className="dim-note">静态解析 · 无需 AI</span>
+                    </div>
+                    <ul className="outline-list">
+                      {fileSymbols.symbols.map((s) => (
+                        <li key={`${s.kind}-${s.name}-${s.startLine}`} className="outline-item">
+                          <span className="outline-kind">{s.kind}</span>
+                          <span className="outline-name" title={s.signature}>{s.name}</span>
+                          <span className="outline-lines">
+                            L{s.startLine}
+                            {s.endLine > s.startLine ? `-${s.endLine}` : ""}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    {fileSymbols.imports.length > 0 && (
+                      <details className="imports-box">
+                        <summary>依赖引入（{fileSymbols.imports.length}）</summary>
+                        <pre className="ai-text">{fileSymbols.imports.join("\n")}</pre>
+                      </details>
+                    )}
+                  </div>
+                )}
+
                 {!selected.isDir && (
                   <div className="ai-section">
                     <div className="ai-section-head">
-                      <h3>🤖 AI 解读</h3>
-                      <button
+                      <h3>🤖 AI 解读</h3>                      <button
                         className="primary-btn"
                         onClick={() => handleExplainFile(selected)}
                         disabled={explaining}

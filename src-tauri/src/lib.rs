@@ -3,6 +3,7 @@ mod llm;
 mod scanner;
 mod settings;
 mod static_analysis;
+mod symbols;
 mod xmind;
 
 use analysis::{ProjectAnalysis, Strength, SummarizeProgress};
@@ -76,6 +77,15 @@ fn analyze_static(
     static_analysis::run_static_analysis(&PathBuf::from(&root_path), channel)
 }
 
+#[tauri::command]
+fn get_file_symbols(
+    root_path: String,
+    relative_path: String,
+    language: String,
+) -> Result<symbols::FileSymbols, String> {
+    symbols::parse_file(&PathBuf::from(&root_path), &relative_path, &language)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -97,7 +107,8 @@ pub fn run() {
             ai_explain_file,
             ai_summarize_project,
             export_xmind,
-            analyze_static
+            analyze_static,
+            get_file_symbols
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
