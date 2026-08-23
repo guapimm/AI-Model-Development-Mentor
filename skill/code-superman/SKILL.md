@@ -74,16 +74,50 @@ code-superman xmind <项目路径> -o out.xmind
 
 ### 导出思维导图（两步出图法）
 
-导出的架构图包含总览/入口点/核心模块/警告/目录树五分支；目录树节点自带「语言·行数·被依赖数·符号构成」标注。要让导图说明「每个文件在做什么」：
+导出的架构图包含总览/入口点/核心模块/警告/目录树五分支；目录树节点自带「语言·行数·被依赖数·符号构成」标注，且每个代码文件的备注自动附带静态【符号大纲】。要让导图进一步说明「每个文件在做什么」：
 
-1. 先理解各关键文件的职责，为**至少核心文件**各写一句「这个文件在做什么」摘要
+1. 理解各文件职责后撰写摘要：为**尽可能多的代码文件**提供条目（至少覆盖核心 Top15 与各主要目录的代表文件），重要文件鼓励填写 details 深入解析
 2. MCP 方式：调用 `analyze` 时同时传 `xmind_out` 与 `file_summaries`；CLI 方式无此参数（仅 MCP 支持）
 
-## 注意事项
+## 通用注意事项
 
 - 路径传项目根目录的绝对路径；symbols 的文件参数用 `/` 分隔
 - 符号解析支持 Rust/Python/TS/JS/Go/Java/C/C++/C#/PHP/Ruby；其他语言返回空大纲
 - 输出被截断时改用 `--detail detailed` 或缩小分析范围，不要原样重试
+
+## 交互约定
+
+- **只读约束**：仅做只读阅读与分析；除导出 .xmind 外不得创建、修改或删除任何文件
+- 用户未指定强度时，先用 brief 快扫获取 Token 估算，再带成本信息弹窗让用户选择（见推荐工作流）
+- 导出 xmind 前必须准备文件职责摘要经 file_summaries 传入（见两步出图法）
+
+## 大型项目分治工作流（opencode 多 Agent）
+
+**触发条件**：brief 分析显示 Token 估算 >100K，或代码文件 >200 个。
+
+### 步骤
+
+1. **快扫定分片**：`analyze <路径> --detail brief` → 看 Token 估算、语言占比与顶层目录结构
+2. **切分模块**：按顶层目录/主要模块切成 N 片（每片 ≤50K tokens 为宜，一般 N=2~6）
+3. **派发子代理**：用 Task 工具并行派出 explore 子代理，每个子代理的提示词模板：
+
+   ```
+   你负责理解项目 <根路径> 的 <子目录> 部分。
+   1. 运行 code-superman analyze <根路径>/<子目录> --detail standard
+   2. 对其中入度最高或行数最多的关键文件运行 code-superman symbols 并精读
+   3. 只返回一个 JSON 对象（不要其他内容），键为相对项目根的文件路径，值为：
+      {"summary": "该文件一句话职责", "details": "实现要点/数据流/依赖关系等深入解析"}
+   只做只读分析，不创建或修改任何文件。
+   ```
+
+4. **合并结果**：主模型将各子代理返回的 JSON 合并为一个 map（键冲突时保留更详细的一方）
+5. **统一出图**：调用 `analyze`（path=项目根）传 `xmind_out` 与合并后的 `file_summaries`
+
+### 注意事项
+
+- 子代理返回必须是合法 JSON，解析失败则要求其重试
+- 合并后条目过多时可截断到最重要的 ~200 个文件
+- 超大项目单次 MCP 调用可能超时，可在 opencode 配置 `experimental.mcp_timeout`（毫秒）调大
 
 ## MCP Server 模式
 
@@ -97,8 +131,4 @@ code-superman xmind <项目路径> -o out.xmind
 }
 ```
 
-可用 tools：`analyze`（path / strength / xmind_out / file_summaries）、`get_file_symbols`（path / file）、`export_xmind`（path / out / file_summaries）。
-
-**交互约定**：
-- 用户未指定强度时，先用 brief 快扫获取 Token 估算，再带成本信息弹窗让用户选择（见推荐工作流）
-- 导出 xmind 前必须准备核心文件的职责摘要经 file_summaries 传入
+可用 tools：`analyze`（path / strength / xmind_out / file_summaries）、`get_file_symbols`（path / file）、`export_xmind`（path / out / file_summaries）。file_summaries 的值支持 `"一句话"` 或 `{"summary": "...", "details": "..."}` 双字段。

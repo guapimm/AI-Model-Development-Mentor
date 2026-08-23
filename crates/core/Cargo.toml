@@ -9,6 +9,7 @@ description = "Codebase static analysis core: scanning, tech-stack detection, tr
 serde.workspace = true
 serde_json.workspace = true
 ignore = "0.4"
+rayon = "1.10"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tree-sitter.workspace = true
 tree-sitter-javascript.workspace = true

@@ -272,36 +272,43 @@ fn resolve_candidate(
 }
 
 pub fn build_dependency_graph(root: &Path) -> Result<DepGraphData, String> {
+    use rayon::prelude::*;
+
     let scan = scanner::scan_project(root)?;
 
     let mut files: Vec<FileNode> = Vec::new();
     collect_parsable_files(&scan.tree, &mut files);
 
     let index = FileIndex::build(&files);
+    let idx_of: HashMap<&str, usize> = files
+        .iter()
+        .enumerate()
+        .map(|(i, f)| (f.relative_path.as_str(), i))
+        .collect();
 
-    // importer -> set of target indices
-    let mut edge_set: HashSet<(usize, usize)> = HashSet::new();
-
-    for f in files.iter() {
-        let full = root.join(&f.relative_path);
-        if let Ok(meta) = std::fs::metadata(&full) {
-            if meta.len() as usize <= MAX_PARSE_BYTES {
-                if let Ok(source) = std::fs::read_to_string(&full) {
-                    let lang = f.language.clone().unwrap_or_default();
-                    if let Some(fs) = extract_symbols(&f.relative_path, &lang, &source) {
-                        let importer_idx =
-                            files.iter().position(|x| x.relative_path == f.relative_path);
-                        if let Some(from) = importer_idx {
-                            for imp in &fs.imports {
-                                for target in import_targets(&lang, imp) {
-                                    for to in resolve_candidate(
-                                        &target,
-                                        &lang,
-                                        &f.relative_path,
-                                        &index,
-                                    ) {
-                                        if to != from {
-                                            edge_set.insert((from, to));
+    // Parallel per-file import parsing; each worker returns local edges.
+    let per_file_edges: Vec<Vec<(usize, usize)>> = files
+        .par_iter()
+        .map(|f| {
+            let mut local = Vec::new();
+            let full = root.join(&f.relative_path);
+            if let Ok(meta) = std::fs::metadata(&full) {
+                if meta.len() as usize <= MAX_PARSE_BYTES {
+                    if let Ok(source) = std::fs::read_to_string(&full) {
+                        let lang = f.language.clone().unwrap_or_default();
+                        if let Some(fs) = extract_symbols(&f.relative_path, &lang, &source) {
+                            if let Some(&from) = idx_of.get(f.relative_path.as_str()) {
+                                for imp in &fs.imports {
+                                    for target in import_targets(&lang, imp) {
+                                        for to in resolve_candidate(
+                                            &target,
+                                            &lang,
+                                            &f.relative_path,
+                                            &index,
+                                        ) {
+                                            if to != from {
+                                                local.push((from, to));
+                                            }
                                         }
                                     }
                                 }
@@ -310,7 +317,14 @@ pub fn build_dependency_graph(root: &Path) -> Result<DepGraphData, String> {
                     }
                 }
             }
-        }
+            local
+        })
+        .collect();
+
+    // importer -> set of target indices
+    let mut edge_set: HashSet<(usize, usize)> = HashSet::new();
+    for local in per_file_edges {
+        edge_set.extend(local);
     }
 
     // Degree counting.

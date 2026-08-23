@@ -1,4 +1,5 @@
 use crate::scanner::{self, FileNode};
+use rayon::prelude::*;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
 use std::io::Read;
@@ -368,27 +369,24 @@ pub fn run_static_analysis(root: &Path) -> Result<StaticReport, String> {
     collect_code_files(&scan.tree, &mut files);
     let total_code_files = files.len();
 
-    let mut metrics: Vec<FileMetric> = Vec::new();
-    let mut total_lines = 0usize;
-    let mut total_todos = 0usize;
-    let mut total_chars = 0usize;
-
-    for f in files.iter() {
-        let full = root.join(&f.relative_path);
-        if let Ok((lines, code_lines, todos, chars)) = count_file_metrics(&full) {
-            total_lines += lines;
-            total_todos += todos;
-            total_chars += chars;
-            metrics.push(FileMetric {
+    let mut metrics: Vec<FileMetric> = files
+        .par_iter()
+        .filter_map(|f| {
+            let full = root.join(&f.relative_path);
+            count_file_metrics(&full).ok().map(|(lines, code_lines, todos, chars)| FileMetric {
                 relative_path: f.relative_path.clone(),
                 language: f.language.clone().unwrap_or_default(),
                 lines,
                 code_lines,
                 todos,
                 chars,
-            });
-        }
-    }
+            })
+        })
+        .collect();
+
+    let total_lines: usize = metrics.iter().map(|m| m.lines).sum();
+    let total_todos: usize = metrics.iter().map(|m| m.todos).sum();
+    let total_chars: usize = metrics.iter().map(|m| m.chars).sum();
 
     metrics.sort_by(|a, b| b.lines.cmp(&a.lines));
     metrics.truncate(MAX_METRICS);

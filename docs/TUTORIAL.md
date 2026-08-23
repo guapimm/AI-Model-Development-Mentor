@@ -129,7 +129,19 @@ Claude Code / Cursor 等客户端同理，把 command 换成二进制的绝对�
 | `out` | 可选，默认 `<path>/architecture.xmind` |
 | `file_summaries` | 可选，`{文件路径: 一句话职责}`，写入对应节点备注 |
 
-> 💡 **两步出图法**（获得带"每个文件在做什么"的导图）：先 `analyze` 理解项目 → 为核心文件各写一句职责 → 调用时通过 `file_summaries` 传入。不传摘要时导图只有静态标注（语言/行数/符号构成等）。
+> 💡 **两步出图法**（获得带"每个文件在做什么"的导图）：先 `analyze` 理解项目 → 为尽可能多的代码文件撰写摘要（至少覆盖核心 Top15），重要文件可加 `details` 深入解析 → 调用时通过 `file_summaries` 传入。不传摘要时导图仍有静态标注与自动符号大纲。
+
+`file_summaries` 值的两种写法：
+
+```json
+{
+  "src/main.rs": "程序入口，初始化运行时并分发子命令",
+  "crates/core/src/depgraph.rs": {
+    "summary": "import 依赖解析器",
+    "details": "复用 symbols 的 tree-sitter 解析结果提取 import；后缀索引启发式解析相对路径；rayon 并行逐文件解析后合并依赖边集合。"
+  }
+}
+```
 
 ---
 
@@ -172,7 +184,28 @@ code-superman xmind D:\proj -o D:\out\arch.xmind          # 单独导出
 
 ---
 
-## 六、Skill 形态（可选）
+## 六、大型项目：多 Agent 分治（opencode）
+
+当 Token 估算 >100K 或代码文件 >200 个时，单代理难以精读全项目。利用 opencode 的 Task 子代理能力分治：
+
+```
+主模型
+ ├─ brief 快扫 → 看 Token 估算与顶层目录，切成 N 片（每片 ≤50K tokens）
+ ├─ Task 子代理 ×N：各自 analyze <子目录> + 精读关键文件 → 返回 {文件: {summary, details}} JSON
+ └─ 主模型合并 JSON → analyze 全项目 + xmind_out + 合并的 file_summaries → 出图
+```
+
+具体提示词模板与注意事项见 `skill/code-superman/SKILL.md` 的「大型项目分治工作流」。
+
+超大项目单次 MCP 调用可能超时，可在 opencode 配置中调大：
+
+```jsonc
+{ "experimental": { "mcp_timeout": 120000 } }
+```
+
+---
+
+## 七、Skill 形态（可选）
 
 把 `skill/code-superman/SKILL.md` 复制到技能目录：
 
@@ -183,7 +216,7 @@ code-superman xmind D:\proj -o D:\out\arch.xmind          # 单独导出
 
 ---
 
-## 七、故障排查
+## 八、故障排查
 
 | 现象 | 原因与解决 |
 |---|---|
@@ -196,6 +229,6 @@ code-superman xmind D:\proj -o D:\out\arch.xmind          # 单独导出
 
 ---
 
-## 八、一句话总结
+## 九、一句话总结
 
 **重启客户端后，对模型说"帮我理解 XX 项目"就够了**——模型自己会选择合适的工具和强度；需要更细控制时，用 `strength` 三档调节，需要导图就带上 `xmind_out`。
