@@ -105,7 +105,7 @@ pub fn extension_language(ext: &str) -> Option<&'static str> {
     Some(lang)
 }
 
-fn file_language(name: &str) -> Option<&'static str> {
+pub fn file_language(name: &str) -> Option<&'static str> {
     let lower = name.to_ascii_lowercase();
     if lower == "dockerfile" || lower.starts_with("dockerfile.") {
         return Some("Dockerfile");

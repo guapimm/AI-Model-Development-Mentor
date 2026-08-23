@@ -1,16 +1,43 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { ScanResult, FileNode } from "./types";
+import {
+  ProjectAnalysis,
+  ScanResult,
+  Settings,
+  SummarizeProgress,
+  FileNode,
+} from "./types";
+import { aiExplainFile, aiSummarizeProject } from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
+import SettingsModal from "./components/SettingsModal";
 import { formatBytes } from "./utils";
+
+const DEFAULTS = { baseUrl: "https://api.deepseek.com/v1", apiKey: "", model: "deepseek-chat" };
 
 export default function App() {
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [rootPath, setRootPath] = useState<string>("");
   const [selected, setSelected] = useState<FileNode | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const [analysis, setAnalysis] = useState<ProjectAnalysis | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [progress, setProgress] = useState<SummarizeProgress | null>(null);
+
+  const [fileExplanation, setFileExplanation] = useState<string | null>(null);
+  const [explaining, setExplaining] = useState(false);
+  const selectedRef = useRef<FileNode | null>(null);
+  selectedRef.current = selected;
+
+  useEffect(() => {
+    invoke<Settings>("get_settings").then(setSettings).catch(() => setSettings(null));
+  }, []);
 
   async function handleOpenFolder() {
     setError(null);
@@ -20,12 +47,71 @@ export default function App() {
     try {
       const res = await invoke<ScanResult>("scan_project", { path: dir });
       setResult(res);
+      setRootPath(dir);
       setSelected(null);
+      setAnalysis(null);
+      setFileExplanation(null);
     } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
     }
+  }
+
+  function requireConfigured(): boolean {
+    if (!settings || !settings.apiKey) {
+      setShowSettings(true);
+      return false;
+    }
+    return true;
+  }
+
+  async function handleAnalyzeProject() {
+    if (!requireConfigured() || !rootPath) return;
+    setAnalyzing(true);
+    setError(null);
+    setProgress(null);
+    try {
+      const res = await aiSummarizeProject(rootPath, 0, (p) => setProgress(p));
+      setAnalysis(res);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setAnalyzing(false);
+      setProgress(null);
+    }
+  }
+
+  async function handleExplainFile(node: FileNode) {
+    if (!requireConfigured()) return;
+    setExplaining(true);
+    setFileExplanation(null);
+    try {
+      let text: string;
+      const cached = analysis?.fileSummaries.find(
+        (s) => s.relativePath === node.relativePath
+      );
+      if (cached && !cached.summary.startsWith("⚠️")) {
+        text = cached.summary;
+      } else {
+        text = await aiExplainFile(rootPath, node.relativePath);
+      }
+      // Ignore result if user switched files meanwhile.
+      if (selectedRef.current?.relativePath === node.relativePath) {
+        setFileExplanation(text);
+      }
+    } catch (e) {
+      if (selectedRef.current?.relativePath === node.relativePath) {
+        setFileExplanation(`⚠️ ${String(e)}`);
+      }
+    } finally {
+      setExplaining(false);
+    }
+  }
+
+  function handleSelect(node: FileNode) {
+    setSelected(node);
+    setFileExplanation(null);
   }
 
   return (
@@ -36,17 +122,32 @@ export default function App() {
           {loading ? "扫描中..." : "打开项目文件夹"}
         </button>
         {result && (
-          <span className="summary">
-            {result.rootName} · {result.totalFiles} 个文件 ·{" "}
-            {formatBytes(result.totalSize)}
-            {result.truncated && (
-              <em className="warn">（项目过大，结果已截断）</em>
-            )}
-          </span>
+          <>
+            <button
+              className="primary-btn"
+              onClick={handleAnalyzeProject}
+              disabled={analyzing || loading}
+              title={settings?.apiKey ? "" : "请先配置 AI 服务"}
+            >
+              {analyzing ? "AI 理解中..." : "🤖 AI 理解项目"}
+            </button>
+            <span className="summary">
+              {result.rootName} · {result.totalFiles} 个文件 · {formatBytes(result.totalSize)}
+              {result.truncated && <em className="warn">（项目过大，结果已截断）</em>}
+            </span>
+          </>
         )}
+        <div style={{ marginLeft: "auto" }}>
+          <button
+            className={`ghost-btn ${settings?.apiKey ? "" : "attention"}`}
+            onClick={() => setShowSettings(true)}
+          >
+            ⚙️ {settings?.apiKey ? `已连接: ${settings.model}` : "配置 AI 服务"}
+          </button>
+        </div>
       </header>
 
-      {error && <div className="error-bar">出错了：{error}</div>}
+      {error && <div className="error-bar">{error}</div>}
 
       {!result ? (
         <div className="welcome">
@@ -59,42 +160,72 @@ export default function App() {
       ) : (
         <main className="layout">
           <aside className="sidebar">
-            <FileTree root={result.tree} onSelect={setSelected} selectedPath={selected?.relativePath ?? null} />
+            <FileTree root={result.tree} onSelect={handleSelect} selectedPath={selected?.relativePath ?? null} />
           </aside>
           <section className="detail">
             {selected ? (
               <>
-                <h2>
-                  {selected.isDir ? "📁" : "📄"} {selected.name}
-                </h2>
+                <h2>{selected.isDir ? "📁" : "📄"} {selected.name}</h2>
                 <p className="path">{selected.relativePath}</p>
                 <dl className="props">
-                  {selected.language && (
-                    <>
-                      <dt>语言</dt>
-                      <dd>{selected.language}</dd>
-                    </>
-                  )}
+                  {selected.language && (<><dt>语言</dt><dd>{selected.language}</dd></>)}
                   <dt>{selected.isDir ? "内容大小" : "文件大小"}</dt>
                   <dd>{formatBytes(selected.size)}</dd>
-                  {!selected.isDir && (
-                    <>
-                      <dt>直接子项</dt>
-                      <dd>{selected.children.length}</dd>
-                    </>
-                  )}
+                  {!selected.isDir && (<><dt>直接子项</dt><dd>{selected.children.length}</dd></>)}
                 </dl>
+
                 {!selected.isDir && (
-                  <div className="placeholder-note">
-                    🤖 AI 文件作用解读将在接入 LLM 后提供
+                  <div className="ai-section">
+                    <div className="ai-section-head">
+                      <h3>🤖 AI 解读</h3>
+                      <button
+                        className="primary-btn"
+                        onClick={() => handleExplainFile(selected)}
+                        disabled={explaining}
+                      >
+                        {explaining ? "分析中..." : fileExplanation ? "重新解读" : "解读此文件"}
+                      </button>
+                    </div>
+                    {explaining && <div className="thinking">正在阅读代码并生成解读...</div>}
+                    {fileExplanation && (
+                      <pre className="ai-text">{fileExplanation}</pre>
+                    )}
                   </div>
                 )}
               </>
-            ) : (
+            ) : analyzing && progress ? (
+              <div className="progress-panel">
+                <h3>{progress.phase}</h3>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${progress.total ? ((progress.done / progress.total) * 100).toFixed(0) : 0}%` }}
+                  />
+                </div>
+                <p className="progress-current">{progress.current}</p>
+              </div>
+            ) : analysis ? (
+              <>
+                <h2>📋 项目架构总览</h2>
+                <pre className="ai-text overview">{analysis.overview}</pre>
+              </>
+            ) : null}
+
+            {!selected && !analysis && !analyzing && (
               <LanguageStats languages={result.languages} />
             )}
           </section>
         </main>
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          initial={
+            settings ?? { ...DEFAULTS }
+          }
+          onClose={() => setShowSettings(false)}
+          onSaved={(s) => setSettings(s)}
+        />
       )}
     </div>
   );

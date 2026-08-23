@@ -1,11 +1,52 @@
+mod analysis;
+mod llm;
 mod scanner;
+mod settings;
 
-use scanner::ScanResult;
+use analysis::{ProjectAnalysis, SummarizeProgress};
+use settings::Settings;
 use std::path::PathBuf;
+use tauri::ipc::Channel;
+use tauri::AppHandle;
 
 #[tauri::command]
-fn scan_project(path: String) -> Result<ScanResult, String> {
+fn scan_project(path: String) -> Result<scanner::ScanResult, String> {
     scanner::scan_project(&PathBuf::from(&path))
+}
+
+#[tauri::command]
+fn get_settings(app: AppHandle) -> Settings {
+    settings::load_settings(&app)
+}
+
+#[tauri::command]
+fn update_settings(app: AppHandle, settings: Settings) -> Result<(), String> {
+    settings::save_settings(&app, &settings)
+}
+
+#[tauri::command]
+async fn ai_explain_file(
+    app: AppHandle,
+    root_path: String,
+    relative_path: String,
+) -> Result<String, String> {
+    let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
+        .await
+        .map_err(|e| e.to_string())?;
+    analysis::explain_file(&s, &root_path, &relative_path).await
+}
+
+#[tauri::command]
+async fn ai_summarize_project(
+    app: AppHandle,
+    root_path: String,
+    max_files: usize,
+    channel: Channel<SummarizeProgress>,
+) -> Result<ProjectAnalysis, String> {
+    let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
+        .await
+        .map_err(|e| e.to_string())?;
+    analysis::summarize_project(&s, &PathBuf::from(&root_path), max_files, channel).await
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -22,7 +63,13 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![scan_project])
+        .invoke_handler(tauri::generate_handler![
+            scan_project,
+            get_settings,
+            update_settings,
+            ai_explain_file,
+            ai_summarize_project
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

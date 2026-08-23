@@ -21,3 +21,26 @@ export interface ScanResult {
   truncated: boolean;
   languages: LangStat[];
 }
+
+export interface Settings {
+  baseUrl: string;
+  apiKey: string;
+  model: string;
+}
+
+export interface SummarizeProgress {
+  done: number;
+  total: number;
+  current: string;
+  phase: string;
+}
+
+export interface FileSummary {
+  relativePath: string;
+  summary: string;
+}
+
+export interface ProjectAnalysis {
+  overview: string;
+  fileSummaries: FileSummary[];
+}
