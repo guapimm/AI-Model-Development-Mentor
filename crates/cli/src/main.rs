@@ -2,8 +2,10 @@ mod compact;
 mod mcp;
 
 use clap::{Parser, Subcommand};
-use code_superman_core::{scanner, static_analysis, symbols, xmind};
+use code_superman_core::xmind::XmindInput;
+use code_superman_core::{depgraph, scanner, static_analysis, symbols, xmind};
 use compact::Strength;
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Parser)]
@@ -21,7 +23,7 @@ struct Cli {
 enum Commands {
     /// 以 stdio MCP server 模式运行
     Serve,
-    /// 分析项目：语言/技术栈/入口点/度量/核心模块
+    /// 分析项目：语言/技术栈/入口点/Token估算/度量/核心模块
     Analyze {
         /// 项目根目录
         path: String,
@@ -39,7 +41,7 @@ enum Commands {
         /// 相对项目根的文件路径
         file: String,
     },
-    /// 导出 XMind 架构思维导图
+    /// 导出 XMind 架构思维导图（含总览/核心模块/目录树）
     Xmind {
         /// 项目根目录
         path: String,
@@ -76,15 +78,21 @@ fn run_analyze(path: &str, detail: Option<String>, xmind_out: Option<String>) ->
     let dep_graph = if strength == Strength::Brief {
         None
     } else {
-        Some(code_superman_core::depgraph::build_dependency_graph(&root)?)
+        Some(depgraph::build_dependency_graph(&root)?)
     };
 
     let mut md = compact::render_analyze(&scan, &report, dep_graph.as_ref(), strength);
 
     if let Some(xp) = xmind_out {
         let out = PathBuf::from(xp);
-        xmind::export_xmind(&scan, &out, &Default::default())?;
-        md.push_str(&format!("\n---\n\n📦 已导出思维导图：{}\n", out.display()));
+        let input = XmindInput {
+            scan: &scan,
+            report: &report,
+            dep_graph: dep_graph.as_ref(),
+            summaries: &HashMap::new(),
+        };
+        xmind::export_xmind(&input, &out)?;
+        md.push_str(&format!("\n---\n\n📦 已导出架构思维导图：{}\n", out.display()));
     }
 
     Ok(compact::truncate(md, strength.max_chars()))
@@ -124,9 +132,18 @@ fn main() {
                     Some(o) => PathBuf::from(o),
                     None => PathBuf::from(p).join("architecture.xmind"),
                 };
-                let scan = scanner::scan_project(&PathBuf::from(p))?;
-                xmind::export_xmind(&scan, &out_path, &Default::default())?;
-                Ok(format!("已导出到 {}", out_path.display()))
+                let root = PathBuf::from(p);
+                let scan = scanner::scan_project(&root)?;
+                let report = static_analysis::run_static_analysis(&root)?;
+                let dep_graph = depgraph::build_dependency_graph(&root).ok();
+                let input = XmindInput {
+                    scan: &scan,
+                    report: &report,
+                    dep_graph: dep_graph.as_ref(),
+                    summaries: &HashMap::new(),
+                };
+                xmind::export_xmind(&input, &out_path)?;
+                Ok(format!("已导出架构思维导图到 {}", out_path.display()))
             }, &path);
         }
     }

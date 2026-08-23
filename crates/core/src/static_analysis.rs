@@ -28,6 +28,7 @@ pub struct FileMetric {
     #[serde(rename = "codeLines")]
     pub code_lines: usize,
     pub todos: usize,
+    pub chars: usize,
 }
 
 #[derive(Serialize, Clone)]
@@ -52,6 +53,8 @@ pub struct StaticReport {
     pub total_lines: usize,
     #[serde(rename = "totalTodos")]
     pub total_todos: usize,
+    #[serde(rename = "totalChars")]
+    pub total_chars: usize,
     pub warnings: Vec<String>,
 }
 
@@ -276,7 +279,7 @@ fn detect_tech_stack(manifests: &[(String, bool)], root: &Path) -> Vec<TechStack
     items
 }
 
-fn count_file_metrics(path: &Path) -> Result<(usize, usize, usize), String> {
+fn count_file_metrics(path: &Path) -> Result<(usize, usize, usize, usize), String> {
     let mut file = std::fs::File::open(path).map_err(|e| e.to_string())?;
     let mut buf = Vec::new();
     (&mut file)
@@ -297,7 +300,7 @@ fn count_file_metrics(path: &Path) -> Result<(usize, usize, usize), String> {
             todos += 1;
         }
     }
-    Ok((lines, code_lines, todos))
+    Ok((lines, code_lines, todos, text.chars().count()))
 }
 
 fn collect_code_files(node: &FileNode, out: &mut Vec<FileNode>) {
@@ -368,18 +371,21 @@ pub fn run_static_analysis(root: &Path) -> Result<StaticReport, String> {
     let mut metrics: Vec<FileMetric> = Vec::new();
     let mut total_lines = 0usize;
     let mut total_todos = 0usize;
+    let mut total_chars = 0usize;
 
     for f in files.iter() {
         let full = root.join(&f.relative_path);
-        if let Ok((lines, code_lines, todos)) = count_file_metrics(&full) {
+        if let Ok((lines, code_lines, todos, chars)) = count_file_metrics(&full) {
             total_lines += lines;
             total_todos += todos;
+            total_chars += chars;
             metrics.push(FileMetric {
                 relative_path: f.relative_path.clone(),
                 language: f.language.clone().unwrap_or_default(),
                 lines,
                 code_lines,
                 todos,
+                chars,
             });
         }
     }
@@ -410,6 +416,7 @@ pub fn run_static_analysis(root: &Path) -> Result<StaticReport, String> {
         total_code_files,
         total_lines,
         total_todos,
+        total_chars,
         warnings,
     })
 }
@@ -479,9 +486,10 @@ mod tests {
         let entries = detect_entry_points(&files);
         assert!(entries.iter().any(|e| e.reason.contains("main")));
 
-        let (lines, code_lines, todos) =
+        let (lines, code_lines, todos, chars) =
             count_file_metrics(&base.join("src").join("main.rs")).unwrap();
         assert_eq!((lines, code_lines, todos), (4, 4, 1));
+        assert!(chars > 0);
 
         std::fs::remove_dir_all(&base).ok();
     }

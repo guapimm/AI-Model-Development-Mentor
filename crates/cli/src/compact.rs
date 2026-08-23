@@ -101,6 +101,15 @@ fn render_tree(node: &code_superman_core::scanner::FileNode, level: usize, max_d
     }
 }
 
+fn est_tokens(chars: usize) -> String {
+    let k = chars / 4 / 1000;
+    if k >= 1 {
+        format!("~{}K", k)
+    } else {
+        format!("~{}", chars / 4)
+    }
+}
+
 /// 合并渲染：扫描 + 静态分析 +（standard/detailed）依赖图。
 pub fn render_analyze(
     scan: &ScanResult,
@@ -118,6 +127,32 @@ pub fn render_analyze(
         report.total_lines,
         report.total_todos,
     ));
+
+    // Token 估算
+    let core_chars: usize = dep_graph
+        .map(|g| {
+            let mut nodes = g.nodes.clone();
+            nodes.sort_by(|a, b| (b.in_degree + b.out_degree).cmp(&(a.in_degree + a.out_degree)));
+            nodes
+                .iter()
+                .take(15)
+                .filter_map(|n| report.metrics.iter().find(|m| m.relative_path == n.id))
+                .map(|m| m.chars)
+                .sum()
+        })
+        .unwrap_or(0);
+    out.push_str(&format!(
+        "## Token 估算（粗估，按 4 字符/token）\n\n- 全部代码文件：**{} tokens**（{} 个文件）\n",
+        est_tokens(report.total_chars),
+        report.total_code_files,
+    ));
+    if core_chars > 0 {
+        out.push_str(&format!(
+            "- 核心 Top15 文件：**{} tokens**（仅读核心模块的代价）\n",
+            est_tokens(core_chars)
+        ));
+    }
+    out.push('\n');
 
     // 语言占比
     if !scan.languages.is_empty() {

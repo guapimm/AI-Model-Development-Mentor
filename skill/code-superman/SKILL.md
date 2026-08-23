@@ -22,13 +22,15 @@ code-superman --version
 code-superman analyze <项目路径> --detail brief|standard|detailed
 ```
 
+报告头部含 **Token 估算**（全部代码 / 核心 Top15，按 4 字符/token 粗估），用于判断精读成本。
+
 | 强度 | 内容 | 输出上限 |
 |---|---|---|
-| brief | 语言占比、技术栈、入口点 | 3000 字符 |
+| brief | 语言占比、技术栈、入口点、Token 估算 | 3000 字符 |
 | standard（默认） | + 目录树、度量 Top20、核心文件 Top15（按入度）、警告 | 20000 |
 | detailed | + 全量依赖边、全量度量 | 50000 |
 
-可选 `--xmind <路径>` 在分析同时导出思维导图：
+可选 `--xmind <路径>` 导出**架构思维导图**（含总览/技术栈/入口点/核心模块/目录树分支）：
 
 ```bash
 code-superman analyze <项目路径> --xmind <项目路径>/architecture.xmind
@@ -50,10 +52,13 @@ code-superman xmind <项目路径> -o out.xmind
 
 ## 推荐工作流
 
-1. `analyze <路径> --detail standard` → 掌握技术栈与核心模块
+1. `analyze <路径> --detail standard` → 掌握技术栈与核心模块（参考 Token 估算决定后续精读范围）
 2. 对核心模块中的关键文件 `symbols` → 定位函数与行号
 3. 用文件读取工具按行号精读
-4. 用户需要思维导图时：`analyze <路径> --xmind <路径>/architecture.xmind`
+4. 用户需要思维导图时：
+   - 先理解各关键文件的职责，为每个文件写一句话摘要
+   - MCP 方式：调用 `analyze` 时传 `xmind_out` 和 `file_summaries`（摘要会写入对应节点备注）
+   - CLI 方式：`analyze <路径> --xmind <路径>/architecture.xmind`
 
 ## 注意事项
 
@@ -73,4 +78,6 @@ code-superman xmind <项目路径> -o out.xmind
 }
 ```
 
-可用 tools：`analyze`（path / strength / xmind_out）、`get_file_symbols`（path / file）、`export_xmind`（path / out）。
+可用 tools：`analyze`（path / strength / xmind_out / file_summaries）、`get_file_symbols`（path / file）、`export_xmind`（path / out / file_summaries）。
+
+**交互约定**：用户未指定强度、未表明是否需要 xmind 时，先用宿主提问能力向用户确认选项，再调用工具。

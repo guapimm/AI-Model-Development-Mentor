@@ -22,9 +22,11 @@ AI 代码库理解工具 —— 以 **MCP Server + CLI** 形态供大模型自�
 
 | 工具 | 参数 | 说明 |
 |---|---|---|
-| `analyze` | `path`, `strength?`, `xmind_out?` | 语言占比、技术栈、入口点、度量、核心模块；brief/standard/detailed 控制详略 |
+| `analyze` | `path`, `strength?`, `xmind_out?`, `file_summaries?` | 语言占比、技术栈、入口点、**Token 估算**、度量、核心模块 |
 | `get_file_symbols` | `path`, `file` | tree-sitter 单文件函数/类大纲 |
-| `export_xmind` | `path`, `out?` | 导出架构 .xmind 思维导图 |
+| `export_xmind` | `path`, `out?`, `file_summaries?` | 导出架构 .xmind：总览/入口点/核心模块/警告/目录树五分支 |
+
+思维导图为**架构图**而非单纯文件树；`file_summaries` 可让模型为关键文件附上一句话职责备注。
 
 ### 2. CLI
 
@@ -34,7 +36,7 @@ code-superman symbols <path> <file>
 code-superman xmind <path> [-o out.xmind]
 ```
 
-强度分档：**brief** = 语言/技术栈/入口点（3K 字符）；**standard**（默认）= 加目录树、度量 Top20、核心文件 Top15、警告（20K）；**detailed** = 加全量依赖边与全量度量（50K）。
+强度分档：**brief** = 语言/技术栈/入口点/Token估算（3K 字符）；**standard**（默认）= 加目录树、度量 Top20、核心文件 Top15、警告（20K）；**detailed** = 加全量依赖边与全量度量（50K）。
 
 ## 能力细节
 
