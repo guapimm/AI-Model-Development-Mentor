@@ -4,7 +4,7 @@ mod scanner;
 mod settings;
 mod xmind;
 
-use analysis::{ProjectAnalysis, SummarizeProgress};
+use analysis::{ProjectAnalysis, Strength, SummarizeProgress};
 use settings::Settings;
 use std::path::PathBuf;
 use tauri::ipc::Channel;
@@ -30,24 +30,25 @@ async fn ai_explain_file(
     app: AppHandle,
     root_path: String,
     relative_path: String,
+    strength: Strength,
 ) -> Result<String, String> {
     let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
         .await
         .map_err(|e| e.to_string())?;
-    analysis::explain_file(&s, &root_path, &relative_path).await
+    analysis::explain_file(&s, &root_path, &relative_path, strength).await
 }
 
 #[tauri::command]
 async fn ai_summarize_project(
     app: AppHandle,
     root_path: String,
-    max_files: usize,
+    strength: Strength,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
     let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
         .await
         .map_err(|e| e.to_string())?;
-    analysis::summarize_project(&s, &PathBuf::from(&root_path), max_files, channel).await
+    analysis::summarize_project(&s, &PathBuf::from(&root_path), strength, channel).await
 }
 
 #[tauri::command]

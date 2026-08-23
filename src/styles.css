@@ -285,6 +285,21 @@ button.primary-btn.big {
   border-color: #6b5426;
 }
 
+.strength-select {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.strength-select:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
 .ai-section {
   margin-top: 24px;
   max-width: 720px;

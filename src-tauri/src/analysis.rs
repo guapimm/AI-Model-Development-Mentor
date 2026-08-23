@@ -6,10 +6,88 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use tauri::ipc::Channel;
 
-/// Max source bytes sent per file to the LLM.
-const MAX_FILE_BYTES: u64 = 60_000;
-/// Default cap on files summarized in one project run.
-const DEFAULT_MAX_FILES: usize = 30;
+/// Analysis depth chosen by the user.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Strength {
+    Light,
+    Medium,
+    Deep,
+}
+
+impl Default for Strength {
+    fn default() -> Self {
+        Strength::Medium
+    }
+}
+
+impl Strength {
+    /// How many files get LLM-analyzed in one project run.
+    pub fn max_files(self) -> usize {
+        match self {
+            Strength::Light => 10,
+            Strength::Medium => 30,
+            Strength::Deep => 60,
+        }
+    }
+
+    /// Per-file source size sent to the LLM.
+    pub fn max_file_bytes(self) -> u64 {
+        match self {
+            Strength::Light => 30_000,
+            Strength::Medium => 60_000,
+            Strength::Deep => 120_000,
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Strength::Light => "轻度",
+            Strength::Medium => "中度",
+            Strength::Deep => "深度",
+        }
+    }
+
+    pub fn file_prompt(self) -> &'static str {
+        match self {
+            Strength::Light => "\
+请分析以下代码文件，用2-3句话概括该文件的职责和主要内容即可，不要展开细节。
+
+文件路径: {path}
+语言: {lang}
+{trunc}
+```
+{content}
+```",
+            Strength::Medium => "\
+请分析以下代码文件，输出：
+1. 一句话说明该文件的职责
+2. 主要的函数/类/组件及其作用（逐条列出）
+3. 能推断出的与其他模块的关系
+
+文件路径: {path}
+语言: {lang}
+{trunc}
+```
+{content}
+```",
+            Strength::Deep => "\
+请深入分析以下代码文件，输出：
+1. 该文件的职责
+2. 逐个列出主要函数/类/组件：名称、参数含义、返回值、内部逻辑要点
+3. 关键算法或业务逻辑的解释
+4. 与其他模块的关系和依赖
+5. 如发现明显的代码问题或风险，简要指出
+
+文件路径: {path}
+语言: {lang}
+{trunc}
+```
+{content}
+```",
+        }
+    }
+}
 
 #[derive(Clone, Serialize)]
 pub struct SummarizeProgress {
@@ -42,12 +120,12 @@ fn system_prompt() -> ChatMessage {
     }
 }
 
-fn read_source(path: &Path) -> Result<(String, bool), String> {
+fn read_source(path: &Path, max_bytes: u64) -> Result<(String, bool), String> {
     let mut file = std::fs::File::open(path).map_err(|e| e.to_string())?;
-    let mut buf = vec![0u8; MAX_FILE_BYTES as usize + 1];
+    let mut buf = vec![0u8; max_bytes as usize + 1];
     let n = file.read(&mut buf).map_err(|e| e.to_string())?;
-    let truncated = n as u64 > MAX_FILE_BYTES;
-    buf.truncate(n.min(MAX_FILE_BYTES as usize));
+    let truncated = n as u64 > max_bytes;
+    buf.truncate(n.min(max_bytes as usize));
     let text = String::from_utf8_lossy(&buf).to_string();
     Ok((text, truncated))
 }
@@ -71,23 +149,11 @@ fn pick_files(tree: &FileNode, max_files: usize) -> Vec<FileNode> {
     files
 }
 
-const FILE_PROMPT: &str = "\
-请分析以下代码文件，输出：
-1. 一句话说明该文件的职责
-2. 主要的函数/类/组件及其作用（逐条列出）
-3. 能推断出的与其他模块的关系
-
-文件路径: {path}
-语言: {lang}
-{trunc}
-```
-{content}
-```";
-
 pub async fn explain_file(
     settings: &Settings,
     root: &str,
     relative_path: &str,
+    strength: Strength,
 ) -> Result<String, String> {
     let full: PathBuf = Path::new(root).join(relative_path);
     if !full.is_file() {
@@ -100,10 +166,11 @@ pub async fn explain_file(
             .unwrap_or_default(),
     )
     .unwrap_or("未知");
-    let (content, truncated) = read_source(&full)?;
+    let (content, truncated) = read_source(&full, strength.max_file_bytes())?;
     let trunc_note = if truncated { "\n(注意: 文件过长，仅展示前一部分)" } else { "" };
 
-    let user_msg = FILE_PROMPT
+    let user_msg = strength
+        .file_prompt()
         .replace("{path}", relative_path)
         .replace("{lang}", lang)
         .replace("{trunc}", trunc_note)
@@ -119,13 +186,14 @@ pub async fn explain_file(
 pub async fn summarize_project(
     settings: &Settings,
     root: &Path,
-    max_files: usize,
+    strength: Strength,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
     let scan = scanner::scan_project(root)?;
 
-    let files = pick_files(&scan.tree, if max_files == 0 { DEFAULT_MAX_FILES } else { max_files });
+    let files = pick_files(&scan.tree, strength.max_files());
     let total = files.len();
+    let max_bytes = strength.max_file_bytes();
 
     let mut summaries: Vec<FileSummary> = Vec::new();
 
@@ -134,15 +202,21 @@ pub async fn summarize_project(
             done: i,
             total,
             current: f.relative_path.clone(),
-            phase: format!("正在理解文件 ({}/{})", i + 1, total),
+            phase: format!(
+                "【{}】正在理解文件 ({}/{})",
+                strength.label(),
+                i + 1,
+                total
+            ),
         });
 
         let full: PathBuf = root.join(&f.relative_path);
-        let Ok((content, truncated)) = read_source(&full) else {
+        let Ok((content, truncated)) = read_source(&full, max_bytes) else {
             continue;
         };
         let trunc_note = if truncated { "\n(注意: 文件过长，仅展示前一部分)" } else { "" };
-        let user_msg = FILE_PROMPT
+        let user_msg = strength
+            .file_prompt()
             .replace("{path}", &f.relative_path)
             .replace("{lang}", f.language.as_deref().unwrap_or("未知"))
             .replace("{trunc}", trunc_note)

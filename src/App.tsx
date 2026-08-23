@@ -8,7 +8,7 @@ import {
   SummarizeProgress,
   FileNode,
 } from "./types";
-import { aiExplainFile, aiSummarizeProject, exportXmind } from "./api";
+import { aiExplainFile, aiSummarizeProject, exportXmind, Strength } from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
 import SettingsModal from "./components/SettingsModal";
@@ -29,6 +29,7 @@ export default function App() {
   const [analysis, setAnalysis] = useState<ProjectAnalysis | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState<SummarizeProgress | null>(null);
+  const [strength, setStrength] = useState<Strength>("medium");
 
   const [fileExplanation, setFileExplanation] = useState<string | null>(null);
   const [explaining, setExplaining] = useState(false);
@@ -94,7 +95,7 @@ export default function App() {
     setError(null);
     setProgress(null);
     try {
-      const res = await aiSummarizeProject(rootPath, 0, (p) => setProgress(p));
+      const res = await aiSummarizeProject(rootPath, strength, (p) => setProgress(p));
       setAnalysis(res);
     } catch (e) {
       setError(String(e));
@@ -116,7 +117,7 @@ export default function App() {
       if (cached && !cached.summary.startsWith("⚠️")) {
         text = cached.summary;
       } else {
-        text = await aiExplainFile(rootPath, node.relativePath);
+        text = await aiExplainFile(rootPath, node.relativePath, strength);
       }
       // Ignore result if user switched files meanwhile.
       if (selectedRef.current?.relativePath === node.relativePath) {
@@ -145,6 +146,17 @@ export default function App() {
         </button>
         {result && (
           <>
+            <select
+              className="strength-select"
+              value={strength}
+              onChange={(e) => setStrength(e.target.value as Strength)}
+              title="理解强度：控制分析的文件数量与解读深度"
+              disabled={analyzing}
+            >
+              <option value="light">⚡ 轻度（10 个文件·速览）</option>
+              <option value="medium">⚖️ 中度（30 个文件·标准）</option>
+              <option value="deep">🔬 深度（60 个文件·逐函数）</option>
+            </select>
             <button
               className="primary-btn"
               onClick={handleAnalyzeProject}
