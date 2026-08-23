@@ -22,3 +22,15 @@ export function aiSummarizeProject(
     channel,
   });
 }
+
+export function exportXmind(
+  rootPath: string,
+  outPath: string,
+  fileSummaries?: { relativePath: string; summary: string }[]
+): Promise<void> {
+  return invoke("export_xmind", {
+    rootPath,
+    outPath,
+    fileSummaries: fileSummaries ?? [],
+  });
+}

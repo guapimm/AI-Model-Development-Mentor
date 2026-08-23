@@ -1,7 +1,7 @@
 use crate::llm::{chat, ChatMessage};
 use crate::scanner::{self, FileNode};
 use crate::settings::Settings;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use tauri::ipc::Channel;
@@ -26,7 +26,7 @@ pub struct ProjectAnalysis {
     pub file_summaries: Vec<FileSummary>,
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct FileSummary {
     #[serde(rename = "relativePath")]
     pub relative_path: String,

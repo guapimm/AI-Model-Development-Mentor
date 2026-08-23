@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import {
   ProjectAnalysis,
   ScanResult,
@@ -8,7 +8,7 @@ import {
   SummarizeProgress,
   FileNode,
 } from "./types";
-import { aiExplainFile, aiSummarizeProject } from "./api";
+import { aiExplainFile, aiSummarizeProject, exportXmind } from "./api";
 import FileTree from "./components/FileTree";
 import LanguageStats from "./components/LanguageStats";
 import SettingsModal from "./components/SettingsModal";
@@ -32,8 +32,30 @@ export default function App() {
 
   const [fileExplanation, setFileExplanation] = useState<string | null>(null);
   const [explaining, setExplaining] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const selectedRef = useRef<FileNode | null>(null);
   selectedRef.current = selected;
+
+  function showToast(msg: string) {
+    setToast(msg);
+    window.setTimeout(() => setToast(null), 3000);
+  }
+
+  async function handleExportXmind() {
+    if (!result || !rootPath) return;
+    const out = await save({
+      title: "导出 xmind 思维导图",
+      defaultPath: `${result.rootName}.xmind`,
+      filters: [{ name: "XMind 思维导图", extensions: ["xmind"] }],
+    });
+    if (!out) return;
+    try {
+      await exportXmind(rootPath, out, analysis?.fileSummaries);
+      showToast(`✅ 已导出: ${out}`);
+    } catch (e) {
+      setError(String(e));
+    }
+  }
 
   useEffect(() => {
     invoke<Settings>("get_settings").then(setSettings).catch(() => setSettings(null));
@@ -131,6 +153,14 @@ export default function App() {
             >
               {analyzing ? "AI 理解中..." : "🤖 AI 理解项目"}
             </button>
+            <button
+              className="ghost-btn"
+              onClick={handleExportXmind}
+              disabled={loading}
+              title="将项目架构导出为 XMind 思维导图（含 AI 摘要备注）"
+            >
+              📤 导出 xmind
+            </button>
             <span className="summary">
               {result.rootName} · {result.totalFiles} 个文件 · {formatBytes(result.totalSize)}
               {result.truncated && <em className="warn">（项目过大，结果已截断）</em>}
@@ -148,6 +178,7 @@ export default function App() {
       </header>
 
       {error && <div className="error-bar">{error}</div>}
+      {toast && <div className="toast">{toast}</div>}
 
       {!result ? (
         <div className="welcome">

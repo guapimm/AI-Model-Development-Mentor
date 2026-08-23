@@ -439,3 +439,21 @@ button.primary-btn.big {
   cursor: pointer;
   font-size: 13px;
 }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e3a29;
+  color: #a8e6c1;
+  border: 1px solid #2d5a3f;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  z-index: 200;
+  max-width: 80vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

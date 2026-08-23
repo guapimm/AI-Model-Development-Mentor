@@ -2,6 +2,7 @@ mod analysis;
 mod llm;
 mod scanner;
 mod settings;
+mod xmind;
 
 use analysis::{ProjectAnalysis, SummarizeProgress};
 use settings::Settings;
@@ -49,6 +50,22 @@ async fn ai_summarize_project(
     analysis::summarize_project(&s, &PathBuf::from(&root_path), max_files, channel).await
 }
 
+#[tauri::command]
+fn export_xmind(
+    root_path: String,
+    out_path: String,
+    file_summaries: Option<Vec<analysis::FileSummary>>,
+) -> Result<(), String> {
+    let scan = scanner::scan_project(&PathBuf::from(&root_path))?;
+    let summaries: std::collections::HashMap<String, String> = file_summaries
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|s| !s.summary.starts_with("⚠️"))
+        .map(|s| (s.relative_path, s.summary))
+        .collect();
+    xmind::export_xmind(&scan, &PathBuf::from(&out_path), &summaries)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -68,7 +85,8 @@ pub fn run() {
             get_settings,
             update_settings,
             ai_explain_file,
-            ai_summarize_project
+            ai_summarize_project,
+            export_xmind
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
