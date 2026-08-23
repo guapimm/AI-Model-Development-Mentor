@@ -40,6 +40,15 @@ impl Strength {
         }
     }
 
+    /// Default output cap per LLM call, scaled by depth.
+    pub fn max_tokens(self) -> u16 {
+        match self {
+            Strength::Light => 500,
+            Strength::Medium => 1500,
+            Strength::Deep => 3000,
+        }
+    }
+
     pub fn label(self) -> &'static str {
         match self {
             Strength::Light => "轻度",
@@ -154,6 +163,7 @@ pub async fn explain_file(
     root: &str,
     relative_path: &str,
     strength: Strength,
+    unlimited_output: bool,
 ) -> Result<String, String> {
     let full: PathBuf = Path::new(root).join(relative_path);
     if !full.is_file() {
@@ -177,8 +187,9 @@ pub async fn explain_file(
         .replace("{content}", &content);
 
     chat(
-        &settings,
+        settings,
         &[system_prompt(), ChatMessage { role: "user", content: user_msg }],
+        if unlimited_output { None } else { Some(strength.max_tokens()) },
     )
     .await
 }
@@ -187,9 +198,11 @@ pub async fn summarize_project(
     settings: &Settings,
     root: &Path,
     strength: Strength,
+    unlimited_output: bool,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
     let scan = scanner::scan_project(root)?;
+    let max_tokens = if unlimited_output { None } else { Some(strength.max_tokens()) };
 
     let files = pick_files(&scan.tree, strength.max_files());
     let total = files.len();
@@ -222,7 +235,8 @@ pub async fn summarize_project(
             .replace("{trunc}", trunc_note)
             .replace("{content}", &content);
 
-        match chat(&settings, &[system_prompt(), ChatMessage { role: "user", content: user_msg }]).await {
+        match chat(settings, &[system_prompt(), ChatMessage { role: "user", content: user_msg }], max_tokens).await
+        {
             Ok(summary) => summaries.push(FileSummary {
                 relative_path: f.relative_path.clone(),
                 summary,
@@ -272,8 +286,9 @@ pub async fn summarize_project(
     );
 
     let overview = chat(
-        &settings,
+        settings,
         &[system_prompt(), ChatMessage { role: "user", content: overview_prompt }],
+        max_tokens,
     )
     .await
     .unwrap_or_else(|e| format!("⚠️ 架构总览生成失败: {e}"));

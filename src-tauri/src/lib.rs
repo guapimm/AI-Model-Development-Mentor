@@ -34,11 +34,19 @@ async fn ai_explain_file(
     root_path: String,
     relative_path: String,
     strength: Strength,
+    unlimited_output: Option<bool>,
 ) -> Result<String, String> {
     let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
         .await
         .map_err(|e| e.to_string())?;
-    analysis::explain_file(&s, &root_path, &relative_path, strength).await
+    analysis::explain_file(
+        &s,
+        &root_path,
+        &relative_path,
+        strength,
+        unlimited_output.unwrap_or(false),
+    )
+    .await
 }
 
 #[tauri::command]
@@ -46,12 +54,20 @@ async fn ai_summarize_project(
     app: AppHandle,
     root_path: String,
     strength: Strength,
+    unlimited_output: Option<bool>,
     channel: Channel<SummarizeProgress>,
 ) -> Result<ProjectAnalysis, String> {
     let s = tauri::async_runtime::spawn_blocking(move || settings::load_settings(&app))
         .await
         .map_err(|e| e.to_string())?;
-    analysis::summarize_project(&s, &PathBuf::from(&root_path), strength, channel).await
+    analysis::summarize_project(
+        &s,
+        &PathBuf::from(&root_path),
+        strength,
+        unlimited_output.unwrap_or(false),
+        channel,
+    )
+    .await
 }
 
 #[tauri::command]
