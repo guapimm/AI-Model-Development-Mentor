@@ -97,6 +97,14 @@ pub fn export_xmind(
         "creator": { "name": "Code Superman", "version": "0.1.0" },
     });
 
+    // XMind 2020+/ZEN 格式要求 manifest.json 列出包内文件条目，否则报"not a valid XMind File"。
+    let manifest = json!({
+        "file-entries": {
+            "content.json": {},
+            "metadata.json": {},
+        },
+    });
+
     if let Some(parent) = out_path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
@@ -114,6 +122,12 @@ pub fn export_xmind(
         .map_err(|e| e.to_string())?;
     let meta_str = serde_json::to_string_pretty(&metadata).map_err(|e| e.to_string())?;
     zip.write_all(meta_str.as_bytes()).map_err(|e| e.to_string())?;
+
+    zip.start_file("manifest.json", options)
+        .map_err(|e| e.to_string())?;
+    let manifest_str =
+        serde_json::to_string_pretty(&manifest).map_err(|e| e.to_string())?;
+    zip.write_all(manifest_str.as_bytes()).map_err(|e| e.to_string())?;
 
     zip.finish().map_err(|e| e.to_string())?;
     Ok(())
@@ -155,11 +169,16 @@ mod tests {
 
         let f = std::fs::File::open(&out).unwrap();
         let mut archive = zip::ZipArchive::new(f).unwrap();
-        assert_eq!(archive.len(), 2);
+        assert_eq!(archive.len(), 3);
         let content = archive.by_name("content.json").unwrap();
         let text: String = std::io::Read::bytes(content).map(|b| b.unwrap() as char).collect();
         assert!(text.contains("main.rs"));
         assert!(text.contains("Rust"));
+
+        let manifest = archive.by_name("manifest.json").unwrap();
+        let mtext: String = std::io::Read::bytes(manifest).map(|b| b.unwrap() as char).collect();
+        assert!(mtext.contains("content.json"));
+        assert!(mtext.contains("file-entries"));
 
         std::fs::remove_file(&out).ok();
     }
