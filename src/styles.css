@@ -1,0 +1,267 @@
+:root {
+  color-scheme: dark;
+  --bg: #14171c;
+  --bg-panel: #1b1f26;
+  --bg-hover: #262c36;
+  --border: #2d3440;
+  --text: #e6e9ee;
+  --text-dim: #8b93a1;
+  --accent: #4f8cff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  user-select: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.summary {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.summary .warn {
+  color: #e5a54f;
+  margin-left: 8px;
+}
+
+button.primary-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+button.primary-btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+button.primary-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+button.primary-btn.big {
+  padding: 12px 28px;
+  font-size: 15px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.error-bar {
+  background: #4a2226;
+  color: #ffb4ba;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.welcome h1 {
+  font-size: 26px;
+}
+
+.welcome p {
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.layout {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 340px;
+  min-width: 240px;
+  border-right: 1px solid var(--border);
+  overflow: auto;
+  padding: 8px 0;
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.detail {
+  flex: 1;
+  overflow: auto;
+  padding: 20px 24px;
+}
+
+.file-tree {
+  font-size: 13px;
+}
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tree-row:hover {
+  background: var(--bg-hover);
+}
+
+.tree-row.selected {
+  background: #2a3a58;
+}
+
+.tree-icon {
+  font-size: 12px;
+}
+
+.tree-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-lang {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.tree-size {
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-left: auto;
+}
+
+.lang-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.panel h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lang-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  max-width: 520px;
+}
+
+.lang-bar-seg {
+  height: 100%;
+}
+
+.lang-list {
+  list-style: none;
+  max-width: 520px;
+}
+
+.lang-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.lang-name {
+  min-width: 120px;
+}
+
+.lang-meta {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.detail h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+.path {
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: Consolas, monospace;
+  margin-bottom: 16px;
+  user-select: text;
+}
+
+.props {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  row-gap: 8px;
+  font-size: 13px;
+  max-width: 520px;
+}
+
+.props dt {
+  color: var(--text-dim);
+}
+
+.placeholder-note {
+  margin-top: 24px;
+  padding: 14px 16px;
+  background: var(--bg-panel);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 13px;
+  max-width: 520px;
+}

@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+src-tauri/target
+src-tauri/Cargo.lock.bak
+
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
