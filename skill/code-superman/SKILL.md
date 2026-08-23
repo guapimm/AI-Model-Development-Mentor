@@ -52,13 +52,32 @@ code-superman xmind <项目路径> -o out.xmind
 
 ## 推荐工作流
 
-1. `analyze <路径> --detail standard` → 掌握技术栈与核心模块（参考 Token 估算决定后续精读范围）
+### 两段式：先估算再让用户选强度（用户未指定强度时）
+
+1. `analyze <路径> --detail brief` → 秒级获得全项目 Token 估算与核心文件清单
+2. 用提问能力向用户展示估算并让其选择，选项模板：
+
+   > Token 估算结果：全部代码约 **X tokens**，精读核心 Top15 约 **Y tokens**。请选择理解强度：
+   > ⚡ 简要（本次报告 ~750 tokens）
+   > ⚖️ 标准（报告 ~5K tokens）
+   > 🔬 详尽（报告 ~12.5K tokens，含全量依赖边）
+
+3. 按用户选择再次 `analyze` 对应强度
+
+用户已明确指定强度时跳过询问，直接分析。
+
+### 标准精读流程
+
+1. `analyze <路径> --detail standard` → 掌握技术栈与核心模块
 2. 对核心模块中的关键文件 `symbols` → 定位函数与行号
 3. 用文件读取工具按行号精读
-4. 用户需要思维导图时：
-   - 先理解各关键文件的职责，为每个文件写一句话摘要
-   - MCP 方式：调用 `analyze` 时传 `xmind_out` 和 `file_summaries`（摘要会写入对应节点备注）
-   - CLI 方式：`analyze <路径> --xmind <路径>/architecture.xmind`
+
+### 导出思维导图（两步出图法）
+
+导出的架构图包含总览/入口点/核心模块/警告/目录树五分支；目录树节点自带「语言·行数·被依赖数·符号构成」标注。要让导图说明「每个文件在做什么」：
+
+1. 先理解各关键文件的职责，为**至少核心文件**各写一句「这个文件在做什么」摘要
+2. MCP 方式：调用 `analyze` 时同时传 `xmind_out` 与 `file_summaries`；CLI 方式无此参数（仅 MCP 支持）
 
 ## 注意事项
 
@@ -80,4 +99,6 @@ code-superman xmind <项目路径> -o out.xmind
 
 可用 tools：`analyze`（path / strength / xmind_out / file_summaries）、`get_file_symbols`（path / file）、`export_xmind`（path / out / file_summaries）。
 
-**交互约定**：用户未指定强度、未表明是否需要 xmind 时，先用宿主提问能力向用户确认选项，再调用工具。
+**交互约定**：
+- 用户未指定强度时，先用 brief 快扫获取 Token 估算，再带成本信息弹窗让用户选择（见推荐工作流）
+- 导出 xmind 前必须准备核心文件的职责摘要经 file_summaries 传入

@@ -86,6 +86,7 @@ fn run_analyze(path: &str, detail: Option<String>, xmind_out: Option<String>) ->
     if let Some(xp) = xmind_out {
         let out = PathBuf::from(xp);
         let input = XmindInput {
+            root: &root,
             scan: &scan,
             report: &report,
             dep_graph: dep_graph.as_ref(),
@@ -137,6 +138,7 @@ fn main() {
                 let report = static_analysis::run_static_analysis(&root)?;
                 let dep_graph = depgraph::build_dependency_graph(&root).ok();
                 let input = XmindInput {
+                    root: &root,
                     scan: &scan,
                     report: &report,
                     dep_graph: dep_graph.as_ref(),

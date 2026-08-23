@@ -8,6 +8,9 @@ use std::path::Path;
 use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
 
+/// 符号统计解析的文件大小上限。
+const SYMBOL_PARSE_CAP: u64 = 300_000;
+
 struct IdGen(usize);
 
 impl IdGen {
@@ -45,6 +48,8 @@ fn est_tokens(chars: usize) -> String {
 
 /// XMind 导出的全部输入。
 pub struct XmindInput<'a> {
+    /// 项目根目录，用于读取文件做符号统计。
+    pub root: &'a Path,
     pub scan: &'a ScanResult,
     pub report: &'a StaticReport,
     pub dep_graph: Option<&'a DepGraphData>,
@@ -170,17 +175,23 @@ fn core_modules_branch(input: &XmindInput, gen: &mut IdGen) -> Option<Value> {
     let mut nodes = g.nodes.clone();
     nodes.sort_by(|a, b| (b.in_degree + b.out_degree).cmp(&(a.in_degree + a.out_degree)));
 
-    let mut root = topic(gen, "⭐ 核心模块（按连接度 Top 15）".into());
+    let mut root = topic(gen, "⭐ 核心模块（按被依赖次数排序）".into());
+    root.insert(
+        "notes".into(),
+        json!({ "plain": { "content": "「被 N 个文件依赖」越多说明该文件越核心，是理解项目的优先入口；「依赖 N 个文件」越多说明它越是聚合/调度层。" } }),
+    );
     attach(
         &mut root,
         nodes
             .iter()
             .take(15)
             .map(|n| {
-                Value::Object(topic(
-                    gen,
-                    format!("{} [入度{} 出度{}]", n.id, n.in_degree, n.out_degree),
-                ))
+                let mut title = format!("{}（被 {} 个文件依赖", n.id, n.in_degree);
+                if n.out_degree > 0 {
+                    title.push_str(&format!("、依赖 {} 个文件", n.out_degree));
+                }
+                title.push('）');
+                Value::Object(topic(gen, title))
             })
             .collect(),
     );
@@ -204,7 +215,7 @@ fn warnings_branch(input: &XmindInput, gen: &mut IdGen) -> Option<Value> {
     Some(Value::Object(root))
 }
 
-/// 文件节点的静态标注：语言 · 行数 · TODO · 入度。
+/// 文件节点的静态标注：语言 · 行数 · TODO · 被依赖数 · 符号构成。
 fn file_annotation(node: &FileNode, input: &XmindInput) -> String {
     let mut parts: Vec<String> = Vec::new();
     if let Some(lang) = &node.language {
@@ -223,15 +234,52 @@ fn file_annotation(node: &FileNode, input: &XmindInput) -> String {
     }
     if let Some(g) = input.dep_graph {
         if let Some(n) = g.nodes.iter().find(|n| n.id == node.relative_path) {
-            if n.in_degree > 0 || n.out_degree > 0 {
-                parts.push(format!("入度{}", n.in_degree));
+            if n.in_degree > 0 {
+                parts.push(format!("被{}个文件依赖", n.in_degree));
             }
         }
+    }
+    if let Some(sym) = symbol_summary(node, input) {
+        parts.push(sym);
     }
     if parts.is_empty() {
         String::new()
     } else {
         format!(" [{}]", parts.join(" · "))
+    }
+}
+
+/// 粗略的符号构成统计，如「5函数·2类」；不支持或读取失败时返回 None。
+fn symbol_summary(node: &FileNode, input: &XmindInput) -> Option<String> {
+    let lang = node.language.as_deref()?;
+    if node.is_dir || node.size == 0 || node.size > SYMBOL_PARSE_CAP {
+        return None;
+    }
+    let source = std::fs::read_to_string(input.root.join(&node.relative_path)).ok()?;
+    let fs = crate::symbols::extract_symbols(&node.relative_path, lang, &source)?;
+    if !fs.supported_parse || fs.symbols.is_empty() {
+        return None;
+    }
+    let funcs = fs
+        .symbols
+        .iter()
+        .filter(|s| s.kind.contains("函数") || s.kind.contains("方法"))
+        .count();
+    let types = fs.symbols.len() - funcs;
+    let mut out = String::new();
+    if funcs > 0 {
+        out.push_str(&format!("{}函数", funcs));
+    }
+    if types > 0 {
+        if !out.is_empty() {
+            out.push('·');
+        }
+        out.push_str(&format!("{}类型", types));
+    }
+    if out.is_empty() {
+        None
+    } else {
+        Some(out)
     }
 }
 
@@ -428,13 +476,15 @@ mod tests {
     #[test]
     fn test_export_contains_architecture_branches_and_manifest() {
         let (scan, report, graph) = fixture();
+        let out = std::env::temp_dir().join("cs_test_arch.xmind");
+        let root = std::env::temp_dir();
         let input = XmindInput {
+            root: &root,
             scan: &scan,
             report: &report,
             dep_graph: Some(&graph),
             summaries: &HashMap::new(),
         };
-        let out = std::env::temp_dir().join("cs_test_arch.xmind");
         export_xmind(&input, &out).expect("export should succeed");
 
         let f = std::fs::File::open(&out).unwrap();
@@ -449,7 +499,7 @@ mod tests {
         assert!(text.contains("⭐ 核心模块"));
         assert!(text.contains("Token 估算"));
         assert!(text.contains("clap"));
-        assert!(text.contains("[Rust · 10行 · TODO1 · 入度2]"));
+        assert!(text.contains("main.rs（被 2 个文件依赖）"));
 
         let manifest = archive.by_name("manifest.json").unwrap();
         let mtext: String = std::io::Read::bytes(manifest).map(|b| b.unwrap() as char).collect();
@@ -463,7 +513,9 @@ mod tests {
         let (scan, report, graph) = fixture();
         let mut summaries = HashMap::new();
         summaries.insert("main.rs".to_string(), "程序入口".to_string());
+        let root = std::env::temp_dir();
         let input = XmindInput {
+            root: &root,
             scan: &scan,
             report: &report,
             dep_graph: Some(&graph),
