@@ -2,7 +2,8 @@ mod compact;
 mod mcp;
 
 use clap::{Parser, Subcommand};
-use code_superman_core::{depgraph, scanner, static_analysis, symbols, xmind};
+use code_superman_core::{scanner, static_analysis, symbols, xmind};
+use compact::Strength;
 use std::path::PathBuf;
 
 #[derive(Parser)]
@@ -20,24 +21,16 @@ struct Cli {
 enum Commands {
     /// 以 stdio MCP server 模式运行
     Serve,
-    /// 扫描项目：语言占比 + 目录结构
-    Scan {
-        /// 项目根目录
-        path: String,
-        /// 目录树展开深度
-        #[arg(long, default_value_t = 2)]
-        depth: usize,
-    },
-    /// 静态分析：技术栈、入口点、度量、警告
+    /// 分析项目：语言/技术栈/入口点/度量/核心模块
     Analyze {
         /// 项目根目录
         path: String,
-        /// 最大文件表格行数
-        #[arg(long, default_value_t = 20)]
-        top: usize,
-        /// 输出字符上限
-        #[arg(long, default_value_t = 20000)]
-        max_chars: usize,
+        /// 理解强度：brief | standard | detailed（默认 standard）
+        #[arg(long)]
+        detail: Option<String>,
+        /// 同时导出 .xmind 到指定路径
+        #[arg(long)]
+        xmind: Option<String>,
     },
     /// 单文件符号大纲
     Symbols {
@@ -45,17 +38,6 @@ enum Commands {
         path: String,
         /// 相对项目根的文件路径
         file: String,
-    },
-    /// 依赖关系图
-    Deps {
-        /// 项目根目录
-        path: String,
-        /// 核心文件展示数量
-        #[arg(long, default_value_t = 30)]
-        top: usize,
-        /// 输出字符上限
-        #[arg(long, default_value_t = 20000)]
-        max_chars: usize,
     },
     /// 导出 XMind 架构思维导图
     Xmind {
@@ -65,6 +47,47 @@ enum Commands {
         #[arg(short, long)]
         out: Option<String>,
     },
+}
+
+async fn serve() {
+    use rmcp::ServiceExt;
+    let service = mcp::CodeSupermanServer;
+    let transport = (tokio::io::stdin(), tokio::io::stdout());
+    let server = service.serve(transport).await.expect("MCP server 启动失败");
+    server.waiting().await.expect("MCP server 运行出错");
+}
+
+fn parse_strength(s: &Option<String>) -> Strength {
+    match s {
+        Some(v) => Strength::parse(v).unwrap_or_else(|| {
+            eprintln!("错误：无效的强度 {}（可选 brief/standard/detailed）", v);
+            std::process::exit(1);
+        }),
+        None => Strength::default(),
+    }
+}
+
+fn run_analyze(path: &str, detail: Option<String>, xmind_out: Option<String>) -> Result<String, String> {
+    let strength = parse_strength(&detail);
+    let root = PathBuf::from(path);
+    let scan = scanner::scan_project(&root)?;
+    let report = static_analysis::run_static_analysis(&root)?;
+
+    let dep_graph = if strength == Strength::Brief {
+        None
+    } else {
+        Some(code_superman_core::depgraph::build_dependency_graph(&root)?)
+    };
+
+    let mut md = compact::render_analyze(&scan, &report, dep_graph.as_ref(), strength);
+
+    if let Some(xp) = xmind_out {
+        let out = PathBuf::from(xp);
+        xmind::export_xmind(&scan, &out, &Default::default())?;
+        md.push_str(&format!("\n---\n\n📦 已导出思维导图：{}\n", out.display()));
+    }
+
+    Ok(compact::truncate(md, strength.max_chars()))
 }
 
 fn main() {
@@ -77,28 +100,11 @@ fn main() {
                 .expect("无法创建 tokio 运行时")
                 .block_on(serve());
         }
-        Commands::Scan { path, depth } => {
-            run(|p| {
-                let scan = scanner::scan_project(&PathBuf::from(p))?;
-                Ok(compact::render_scan(&scan, depth))
-            }, &path);
-        }
         Commands::Analyze {
             path,
-            top,
-            max_chars,
-        } => {
-            run(
-                |p| {
-                    let report = static_analysis::run_static_analysis(&PathBuf::from(p))?;
-                    Ok(compact::truncate(
-                        compact::render_static_report(&report, top),
-                        max_chars,
-                    ))
-                },
-                &path,
-            );
-        }
+            detail,
+            xmind,
+        } => run(|p| run_analyze(p, detail, xmind), &path),
         Commands::Symbols { path, file } => {
             let ext = file.rsplit('.').next().unwrap_or("").to_string();
             run(move |p| {
@@ -106,19 +112,9 @@ fn main() {
                     .ok_or_else(|| format!("无法从扩展名 .{} 识别语言", ext))?
                     .to_string();
                 let fs = symbols::parse_file(&PathBuf::from(p), &file, &lang)?;
-                Ok(compact::render_symbols(&fs))
-            }, &path);
-        }
-        Commands::Deps {
-            path,
-            top,
-            max_chars,
-        } => {
-            run(|p| {
-                let g = depgraph::build_dependency_graph(&PathBuf::from(p))?;
                 Ok(compact::truncate(
-                    compact::render_dep_graph(&g, top),
-                    max_chars,
+                    compact::render_symbols(&fs),
+                    compact::Strength::Detailed.max_chars(),
                 ))
             }, &path);
         }
@@ -134,14 +130,6 @@ fn main() {
             }, &path);
         }
     }
-}
-
-async fn serve() {
-    use rmcp::ServiceExt;
-    let service = mcp::CodeSupermanServer;
-    let transport = (tokio::io::stdin(), tokio::io::stdout());
-    let server = service.serve(transport).await.expect("MCP server 启动失败");
-    server.waiting().await.expect("MCP server 运行出错");
 }
 
 fn run<F>(f: F, path: &str)

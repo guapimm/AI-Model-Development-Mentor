@@ -18,29 +18,23 @@ AI 代码库理解工具 —— 以 **MCP Server + CLI** 形态供大模型自�
 }
 ```
 
-| Tool | 说明 |
-|---|---|
-| `analyze_static` | 技术栈识别、入口点定位、行数/TODO 度量、超大文件警告 |
-| `scan_project` | 语言占比统计 + 目录结构概览 |
-| `get_file_symbols` | tree-sitter 单文件符号大纲（函数/类/结构体 + import） |
-| `get_dependency_graph` | import 关系解析为文件级依赖图，按连接度找核心文件 |
-| `export_xmind` | 导出架构 .xmind 思维导图 |
+仅 **3 个工具**，`strength` 三档控制详略：
 
-所有输出为 Markdown 并带 token 截断保护（`max_chars` 参数，默认 20000 字符）。
+| 工具 | 参数 | 说明 |
+|---|---|---|
+| `analyze` | `path`, `strength?`, `xmind_out?` | 语言占比、技术栈、入口点、度量、核心模块；brief/standard/detailed 控制详略 |
+| `get_file_symbols` | `path`, `file` | tree-sitter 单文件函数/类大纲 |
+| `export_xmind` | `path`, `out?` | 导出架构 .xmind 思维导图 |
 
 ### 2. CLI
 
 ```bash
-code-superman analyze <path> [--top 10] [--max-chars 20000]   # 静态分析报告
-code-superman deps <path> [--top 20]                          # 依赖关系图
-code-superman symbols <path> <file>                           # 单文件符号大纲
-code-superman scan <path> [--depth 2]                         # 目录 + 语言统计
-code-superman xmind <path> [-o out.xmind]                     # XMind 导出
+code-superman analyze <path> [--detail brief|standard|detailed] [--xmind out.xmind]
+code-superman symbols <path> <file>
+code-superman xmind <path> [-o out.xmind]
 ```
 
-### Agent Skill
-
-`skill/code-superman/SKILL.md` 提供现成的 Agent Skill 定义，教模型何时、如何调用上述命令。
+强度分档：**brief** = 语言/技术栈/入口点（3K 字符）；**standard**（默认）= 加目录树、度量 Top20、核心文件 Top15、警告（20K）；**detailed** = 加全量依赖边与全量度量（50K）。
 
 ## 能力细节
 
@@ -52,7 +46,7 @@ code-superman xmind <path> [-o out.xmind]                     # XMind 导出
 ## 安装
 
 ```bash
-cargo install --path crates/cli    # 安装 code-superman 到 ~/.cargo/bin
+cargo install --path crates/cli    # 安装 code-superman 到 cargo bin
 ```
 
 ## 技术栈
